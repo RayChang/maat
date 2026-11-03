@@ -1,5 +1,10 @@
 # Cross-Project Agent Engineering Toolkit Implementation Plan
 
+> **已被取代，請勿執行下列舊步驟。** 依 D10，改用
+> [新版實作計畫](./2026-11-03-five-layer-tool-implementation.md) 與
+> [正式 spec](../specs/2026-11-03-five-layer-tool-spec.md)。
+> 下文是歷史紀錄；原型程式、未建立 Git commit、六個 check 等敘述不是目前 repo 的事實或有效限制。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the v3.2 keyword scorecard core with a local, read-only, evidence-first audit that produces reproducible JSON and Markdown findings.

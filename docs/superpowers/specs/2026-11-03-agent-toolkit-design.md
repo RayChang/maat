@@ -1,7 +1,11 @@
 # Cross-Project Agent Engineering Toolkit — Design
 
-**Status:** Design revision approved; spec review pending; implementation plan awaits human review
+**Status:** Superseded — historical design, not an implementation authority
 **Date:** 2026-11-03
+
+> 已由 [五層工具正式 spec](./2026-11-03-five-layer-tool-spec.md) 取代（D10）。
+> 實作請使用 [新版計畫](../plans/2026-11-03-five-layer-tool-implementation.md)。
+> 下文保留當時的假設與範圍，包括六個 check 的限制及原型檔案描述，不代表目前工作目錄或新版需求。
 
 ## Context
 
