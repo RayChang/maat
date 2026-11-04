@@ -13,7 +13,7 @@
 
 不實作 CLI 寫檔式 init／apply、自動 executor／loop runner、遠端證據擷取或模型 API 呼叫。若後續選 C，需先明確修訂這個邊界及相依計畫。
 
-技術起點沿用舊計畫的 Python 3.11+、標準函式庫 `unittest`；只有解析實際支援格式需要時才宣告依賴。確切 CLI 命令、政策格式與套件布局在階段 2 定版，不先替不存在的舊程式保留命令介面。
+技術起點於 2026-11-04 由使用者改定為 TypeScript 搭配 Bun（≥ 1.4.0），執行期零依賴（`Bun.YAML`、`Bun.TOML`、`JSON` 內建），測試用 `bun test`；指令名稱 `maat`。CLI 命令、政策格式、結束代碼與套件布局的提案見 [maat 介面契約](../specs/2026-11-04-maat-cli-interface.md)，其中第 10 節的 Q-A～Q-C 已於同日決定：不保證 Windows、先從 GitHub 安裝不發布 `npm`、Skill 用 `npx skills add` 交付。
 
 ## 2. 階段與相依
 
@@ -50,6 +50,8 @@
 **完成標準：** D11 九項資訊完整、來源可追溯、相依沒有循環、所有列入 v1 的規則都有可執行或明確的人工作答契約。
 
 ## 4. 階段 2：資料與介面契約
+
+**進度：** 介面提案已寫成 [maat 介面契約](../specs/2026-11-04-maat-cli-interface.md)（2026-11-04）；下列勾選以該文件定稿為準。
 
 建議模組責任為 catalog、models、profile、discovery、adapters、detectors、evaluation、report、plan 與 CLI；實作可合併小模組，不為每個名詞強制建立檔案。
 

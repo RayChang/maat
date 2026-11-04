@@ -342,8 +342,8 @@ R-D3 已開放 v1 改善 Skill，由既有 agent 執行核准修改；診斷 CLI
 | 逐題 catalog | [Catalog 0.1.0](./2026-11-03-five-layer-catalog.md)已補齊 41 題九項契約、版本、來源對照、保護觀察格式及組件登錄；Codex 第四輪審閱全部 41 題，提出的一致性修正已套用。這不是已實作的 catalog |
 | 能力與基本項政策 | 範圍、接受證據與條件式提案已明列；使用者於 2026-11-04 再確認先標準後清單的程序，並於同日逐題核准 B1–B6 選擇標準（每題選 A，見 catalog 3.1）。23 題條件式 baseline 與 18 題進階的分級與適用條件於同日逐層審查通過（catalog 第 6 節審查紀錄）；能力前置條件（catalog 第 7 節）同日核准；逐題證據契約（第 8 節）由 Claude 依授權核對與 B1–B6 一致；`catalog_version` 0.1.0 同日凍結；工程介面待定版 |
 | Loop L-D1–L-D6 | 修正版見 [Loop 研究第 12 節](./2026-11-03-loop-control-research.md#12-herdr-與-codex-的共同討論)，已於 2026-11-03 核准；方向已反映於 catalog，逐題門檻已隨 2026-11-04 清單審查核准。保護採 P-C／U-3 A，不評分；長期目標狀態採 I-B，v1 不新增檢查 |
-| 產品介面細節 | CLI 指令名稱、政策檔名、schema 格式、exit code 契約在實作前定版 |
+| 產品介面細節 | 2026-11-04 使用者決定 TypeScript＋Bun、指令名 `maat`；命令、政策檔、schema、結束代碼提案見 [maat 介面契約](./2026-11-04-maat-cli-interface.md)，Q-A～Q-C 已於同日決定 |
 | 運作架構修訂 | [運作架構](./2026-11-04-toolkit-operation-architecture.md)已與 Claude 討論兩輪；使用者於 2026-11-04 明確核准 A，責任基線已定。審核標準已核准（catalog 0.1.0），實作介面仍待定版，完整 runner 未獲核准 |
-| 平台與 adapter 版本 | 三家 CLI 優先已定；最低版本與作業系統測試矩陣尚需核對 |
+| 平台與 adapter 版本 | 三家 CLI 優先已定；最低 Bun 1.4.0；macOS／Linux 列入矩陣，Windows 標 `unknown`（介面契約 Q-A） |
 
 可先進行 catalog 整理與介面設計；未決事項只阻擋依賴它的部分，不要求把所有研究議題一次解完。
