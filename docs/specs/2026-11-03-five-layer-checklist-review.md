@@ -5,12 +5,11 @@
 **檢視對象：** [Agent 工程五層檢查表（Claude Artifact）](https://claude.ai/artifact/3fQDhdVvAYqZDhvNRpnjeT)，頁面標示「整理 2026.10」
 **相關文件：**
 [五層工具正式 spec](./2026-11-03-five-layer-tool-spec.md)、
-[新版實作計畫](../plans/2026-11-03-five-layer-tool-implementation.md)、
-[舊設計（已取代）](./2026-11-03-agent-toolkit-design.md)
+[新版實作計畫](../plans/2026-11-03-five-layer-tool-implementation.md)。舊設計 spec 與舊實作計畫已於 2026-11-04 移除
 
 ## 1. 背景與目的
 
-[工具組設計 spec](./2026-11-03-agent-toolkit-design.md) 的未解事項寫著：
+舊設計文件（已移除）的未解事項曾寫著：
 Claude Artifact 只能抓到用戶端渲染的外殼，無法逐行比對。本次改用瀏覽器渲染頁面，
 並直接從 artifact 的 iframe 取出題目資料與判斷邏輯，所以可以補上全文。
 
@@ -366,7 +365,7 @@ flowchart TB
     並修 “the lowest layer that's still your bottleneck”。沒勾滿不等於是瓶頸。
   - Thiyagarajan 引用 OpenAI 的做法：linter 錯誤訊息 “doubled as context for the next attempt”，
     外層可以部分補救內層。
-  - [工具組設計 spec](./2026-11-03-agent-toolkit-design.md) 已定調這五層
+  - [正式 spec](./2026-11-03-five-layer-tool-spec.md) 延續舊設計的立場：這五層
     「不是強制的同心圓架構，也不是驗證過的成熟度階梯」。
 - 提案：改用 Shirley 的「症狀 → 層」表決定先補哪裡；同心圓視覺可以保留，
   但刪掉「救不回來」，也不再用勾選數決定順序。
@@ -428,7 +427,7 @@ flowchart TB
 **F-10　勾選只代表「有做」，不代表「有效」或「被強制」。**
 
 - 證據：Lulla et al. 發現幾乎所有迴圈都提交了啟動設定，卻幾乎沒有狀態檔；
-  [工具組設計 spec](./2026-11-03-agent-toolkit-design.md) 區分 artifact presence、operational enforcement、task outcome。
+  舊設計文件（已移除）區分 artifact presence、operational enforcement、task outcome；正式 spec 以證據等級延續此區分。
 - 提案：每題改為三種狀態：「沒有／有但靠自覺（文件寫了）／系統強制（hook、CI、權限設定）」，外加「不適用」。
 
 ### P3：引用與標示
@@ -454,7 +453,7 @@ Sarthak 的標題可補上副標。
   - spec 的 research basis 把 LangChain “The Art of Loop Engineering” 列了兩次。
   - spec 說 2602.11988 中開發者撰寫的檔案比 LLM 生成的高 7%；v3 摘要未提到這點，
     且說結論對兩種檔案都成立，需要對照全文確認。
-- **題數差異：** [實作計畫](../plans/2026-11-03-agent-engineering-toolkit.md) 提到 v3.2 skill 使用 32 項 heuristic，
+- **題數差異：** 舊實作計畫（已移除）提到 v3.2 skill 使用 32 項 heuristic，
   artifact 是 27 題。本 repo 沒有 v3.2 workbench HTML，無法確認兩者的關係。
 
 ### 7.2 27 題與 v1 scanner 的初步對應

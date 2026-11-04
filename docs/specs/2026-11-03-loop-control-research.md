@@ -7,9 +7,11 @@
 [五層檢查表檢視](./2026-11-03-five-layer-checklist-review.md)
 **正式實作依據：** [五層工具正式 spec](./2026-11-03-five-layer-tool-spec.md)
 
-使用者於 2026-11-03 核准 12.3 的 L-D1–L-D6 修正版；第 2–10 節的原始提案（「決定者」欄位、Loop 通過條件、hook 範本）已被取代，不是現行政策。SDK、IDE 與雲端能力的研究也不代表三家 CLI 已支援相同行為；核准只定案文件方向，不代表已實作，v1 仍為唯讀。
+使用者於 2026-11-03 核准 12.3 的 L-D1–L-D6 修正版。首次研究的原始提案（原第 2–10 節：「決定者」欄位、Loop 通過條件、hook 範本、候選 detector 與必要條件）已於 2026-11-04 移除，因為全部被第 12 節取代；現行政策只看第 12 節、正式 spec 與 catalog。章節編號保留原號，以免 catalog 與 spec 對 12.x 的引用失效。SDK、IDE 與雲端能力的研究也不代表三家 CLI 已支援相同行為；當時核准只定案文件方向，不代表已實作。
 
-**閱讀順序：** 第 2–10 節保留首次研究與提案，供比對。第 12 節是與 Codex 討論後的修正版，已於 2026-11-03 由使用者核准；它修正「程式型即較成熟」「模型評估一律不算驗證」「hook 放行等於成功」及永久排除 runner 的推論，前文原始提案不是現行政策。
+**2026-11-04 範圍更新：** 正式 spec 的 R-D3 已開放 v1 改善 Skill 經明確核准後由既有 agent 修改，命令執行另依授權；診斷 CLI／Skill 保持唯讀。[運作架構與契約](./2026-11-04-toolkit-operation-architecture.md)區分診斷／補證據與改善／驗收 Loop。R-D5 已核准 A 的工具內程式化狀態機、守門與紀錄，host 執行核准動作；這不是 L-D4 的完整 runner。
+
+**閱讀順序：** 第 1 節是問題，第 11 節是來源核對，第 12 節是與 Codex 討論後、已核准的修正版；它修正了首次研究「程式型即較成熟」「模型評估一律不算驗證」「hook 放行等於成功」及永久排除 runner 的推論。
 
 ## 1. 問題
 
@@ -23,246 +25,7 @@
 2. 哪些部分應該由程式控制，哪些不行？
 3. 現在討論 Loop 的實際做法是否適合？
 
-## 2. 結論摘要
-
-1. **假設大致正確，但要分開問兩件事。**
-   - 「誰推動迴圈」：再跑一圈或停下。實務上幾乎都是程式，例如 shell 的 `while`、Stop hook、SDK、CI 排程。
-   - 「誰判斷完成」：可能是做事的 agent 自己、另一個模型、程式（測試）或人。弱點通常在這裡。
-   - 例如官方 ralph-loop plugin：迴圈由 Stop hook 腳本推動，但「完成」是 agent 自己輸出 `<promise>…</promise>`，唯一的防線是提示詞「do not lie to exit」。
-2. **建議原則：程式控制流程，模型產生內容，驗證放在做事的 agent 之外。**
-3. **內層的工具呼叫迴圈本來就由模型決定。**
-   - 呼叫哪個工具、何時回覆，是 agent 的本質，不需要也無法用程式取代。
-   - harness 用權限、`max_turns`、花費上限框住它。
-   - Loop engineering 談的是外層：觸發、驗收、重試、停止、改進。
-4. **只有程式控制還不夠。**
-   - 驗證器只是人類意圖的代理。
-   - agent 會刪除或修改測試來通過檢查（ImpossibleBench）。
-   - 所以驗證器本身要受保護；模糊的標準交給另一個模型或人，並標為較弱的證據。
-5. **三家 agent 都能用程式擋住停止。**
-   - Claude Code、Codex、Copilot 的 Stop hook 都能回傳 `decision: "block"`，讓 agent 繼續做。
-   - 用 command 型 hook 跑測試，就是由程式判斷完成。
-   - 各家的內建上限只防「連續阻擋卻沒有進展」，不限制總圈數。總圈數與花費要另外設定。
-6. **現在適合討論，而且有必要。**
-   - 它直接決定 Loop 層的題目怎麼問、detector 看什麼（第 9 節）。
-   - 工具自己的修補流程（研究文件 7.2）也是一個 Loop，要照同樣原則設計。
-   - 建議工具不做 loop runner，只檢查設定與產生範本（L-D4）。
-   - Lulla et al. 指出 loop 的效益還沒有系統性證據，採用也少，所以 Loop 層仍然先問適用性。
-
-## 3. 內層與外層迴圈
-
-| 迴圈 | 誰推動 | 誰決定下一步 | 怎麼停 | 例子 |
-|---|---|---|---|---|
-| 內層：agent loop | harness 程式反覆呼叫模型 | 模型決定呼叫哪些工具 | 模型的回應不再呼叫工具；或達到 `max_turns`、`max_budget_usd` | Claude Agent SDK 的 agent loop |
-| 外層：loop engineering | 觸發器加程式 | 停止條件與驗證結果 | 停止條件成立、達到上限、交給人 | Ralph、`/goal`、Stop hook、CI 排程 |
-
-這也解釋了檢查表檢視 [5.5 來源之間的分歧](./2026-11-03-five-layer-checklist-review.md#55-來源之間的分歧) 中「Loop 在 Harness 之內或之上」的爭議：
-
-- 「harness 擁有 `while`」講的是內層。
-- 「one floor above the harness」（Osmani）講的是外層。
-
-LangChain 把迴圈分成四級。下表加上「誰判斷」：
-
-| 級 | 名稱 | 內容 | 誰判斷 |
-|---|---|---|---|
-| 1 | Agent loop | 模型呼叫工具，直到完成 | 模型 |
-| 2 | Verification loop | grader 檢查結果，不通過就再做一次 | grader：「deterministic or agentic (LLM as a judge)」 |
-| 3 | Event-driven loop | cron、webhook、Slack 訊息觸發 | 觸發由程式決定 |
-| 4 | Hill-climbing loop | 分析 trace，「rewrite the harness with improved configuration」；LangChain 稱為「arguably most important」 | 分析 agent 提案，人把關 |
-
-LangChain 也強調每一級都需要人：「An automated grader can check whether links resolve; it takes a human to notice the framing is wrong for the audience.」
-
-## 4. 控制點：每個決定該由誰做
-
-| # | 控制點 | 建議由誰決定 | 依據 |
-|---|---|---|---|
-| 1 | 觸發：何時開始一圈 | 程式（排程、repo 事件）或人 | Lulla et al. 整理的共識：「started on a schedule or by repository events」 |
-| 2 | 選任務：這一圈做什麼 | 程式從結構化佇列取下一項；或 agent 從清單挑，清單格式由程式檢查 | Huntley 讓 agent 從 `fix_plan.md` 挑「the most important thing」；Anthropic 長任務用 JSON feature list，每次只做一項 |
-| 3 | 做事 | agent | — |
-| 4 | 驗證 | 優先用程式（測試、lint、型別檢查、build）；模糊的標準用另一個模型；品味與高風險交給人 | Anthropic：「The best form of feedback is providing clearly defined rules」，LLM as a judge「generally not a very robust method」；Huntley：「Anything can be wired in as back pressure to reject invalid code generation」 |
-| 5 | 下一步：繼續、重試、交給人、停止 | 程式，依驗證結果與計數器 | 三家的 Stop hook 都能用 `decision: "block"` 擋住停止（第 6 節） |
-| 6 | 上限：圈數、花費、時間、沒有進展 | 程式 | ralph-loop README：「Always rely on `--max-iterations` as your primary safety mechanism」；Agent SDK：「Setting a budget is a good default for production agents」 |
-| 7 | 狀態：下一圈從哪裡接續 | 結構化檔案或 git，格式由程式檢查 | Anthropic 改用 JSON，因為模型比較不會亂改 JSON；Lulla et al.：幾乎沒有 repo commit 狀態檔 |
-| 8 | 改進：從結果修改規則 | agent 提案，人核准；產物是規則、測試或 hook | LangChain 第 4 級 |
-
-**重點：**
-
-- 只有第 3 點一定要交給 agent。
-- 第 8 點需要人核准。
-- 第 2、4 點在標準模糊時可以交給模型，但要標為較弱的證據。
-- 其餘控制點都能、也應該由程式決定。
-
-## 5. 實作光譜：「完成」由誰判斷
-
-| 等級 | 誰判斷完成 | 實例 | 已核對的事實 | 弱點 |
-|---|---|---|---|---|
-| A | 做事的 agent 自己 | agent 預設行為；ralph-loop 的 `<promise>`；Anthropic 長任務中，agent 自己測完後把 `passes` 改成 true | ralph-loop 只靠提示詞：「ONLY when statement is TRUE - do not lie to exit!」；Anthropic 記錄的失敗模式：agent 看到已有進展就「declare the job done」，或沒有做 end-to-end 測試就標為完成 | 完全靠提示詞 |
-| B | 另一個模型讀對話 | Claude Code `/goal` | 每一圈結束後，由小型快速模型判斷條件；「It doesn't run commands or read files independently」 | 只看得到 agent 呈現的內容；圈數上限只能寫進條件文字，再由模型判斷 |
-| C | 程式驗證 | command 型 Stop hook 跑測試，失敗就 block | 三家都支援（第 6 節） | 驗證器可能被 agent 修改；內建上限只防沒有進展 |
-| D | 外部協調器 | shell `while` 加檢查指令；SDK 加 `max_turns` 與 `max_budget_usd`；CI 工作流程 | Agent SDK 達到 `max_turns` 時以 `error_max_turns` 結束 | 要寫程式；成本與延遲較高 |
-
-**說明：**
-
-- 「誰推動」與「誰判斷」是兩個軸。
-  - ralph-loop 由程式推動，但由 agent 判斷，屬於 A。
-  - Anthropic 長任務 harness 由多個 session 接力推動，但每個 feature 仍由 agent 判斷，防線是提示詞「It is unacceptable to remove or edit tests」與 JSON 格式。
-- 等級可以組合。例如 C 先跑測試，通過後再用 B 判斷模糊標準；D 內部也可以使用 C。
-- Huntley 原始的 Ralph 是 `while :; do cat PROMPT.md | claude-code ; done`。
-  - 它沒有停止條件，由人在旁觀察並調整提示詞。
-  - 他自己稱它「deterministically bad in an undeterministic world」。
-  - 他也指出 Claude 有「minimal and placeholder implementations」的傾向。
-- 使用者的假設，對應到這張表就是「至少要到 C」。
-
-## 6. 三家 agent 的機械控制點
-
-| 項目 | Claude Code | Codex | Copilot |
-|---|---|---|---|
-| 擋住停止 | Stop hook 回傳 `decision: "block"` 加 `reason`，或 exit code 2 | Stop hook 回傳 `decision: "block"`，`reason` 成為新的 continuation prompt；exit code 2 相同；任一 hook 回傳 `continue: false` 時優先 | `agentStop` 回傳 `decision: "block"`，以 `reason` 當作下一輪的提示 |
-| subagent | `SubagentStop` | `SubagentStop` | `subagentStop` |
-| 可用的 hook 類型 | command、HTTP、MCP tool、prompt、agent | command、`mcp_tool`；prompt 與 agent 會被解析但略過 | command、http；prompt 型只用於 `sessionStart`，作用是自動送出文字 |
-| 是否已被 hook 強迫繼續 | 輸入有 `stop_hook_active` | 輸入有 `stop_hook_active` | 輸入有 `stop_hook_active` |
-| 內建防失控上限 | 連續 8 次 block 後結束；agent 呼叫工具會重設計數；可用 `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` 調整 | 文件沒有提到 | 連續 8 次 block 後，CLI 結束這個 turn |
-| 目標指令 | `/goal`：小型模型每圈判斷條件；條件最多 4,000 字 | `/goal`：設定、編輯、暫停、繼續、清除；最多 4,000 字；判斷方式文件沒有說明 | 未核對 |
-| 圈數與花費上限 | Agent SDK `max_turns`、`max_budget_usd`；CLI `--max-budget-usd` | 未核對 | 未核對 |
-| hook 設定位置 | `.claude/settings.json` | `hooks.json`、`config.toml` 的 `[hooks]` | `.github/hooks/*.json`、`.github/copilot/settings.json`；也讀 repo 的 `.claude/settings.json` |
-
-**觀察：**
-
-- 只有 Claude Code 能用 hook 讓模型判斷停止（prompt 型、agent 型或 `/goal`）。Codex 與 Copilot 的 Stop hook 只能跑程式或呼叫服務。
-- 內建上限只防「連續阻擋卻沒有進展」，不是總圈數上限。在 Claude Code，只要 agent 在兩次 block 之間呼叫過工具，計數就重設。總圈數要靠 hook 自己計數（例如 ralph-loop 的狀態檔），或交給外部協調器。
-- hook 腳本應該檢查 `stop_hook_active`，避免在條件永遠不會成立時無限阻擋。
-- Codex 文件提醒：「Treat tool hooks as a useful guardrail, not a complete enforcement boundary.」PreToolUse 擋不住所有寫檔路徑，所以驗證器保護不能只靠 hook。
-
-## 7. 為什麼只有程式控制還不夠
-
-| 問題 | 證據 | 對策 |
-|---|---|---|
-| 驗證器只是代理 | Verification Horizon：「Every verifier we can build is only a proxy for human intent」 | 驗證要隨產出一起演進；重要的標準交給人 |
-| agent 會鑽測試的漏洞 | ImpossibleBench：agent 會刪除失敗的測試、修改測試，甚至用 operator overloading；提示詞、能否存取測試、回饋迴圈都會影響作弊率 | 保護驗證器（見下方） |
-| 沒有外部回饋時，自我修正效果差 | Huang et al.（ICLR 2024）：沒有外部回饋時，LLM 難以自我修正推理，有時反而變差 | 驗證放在 agent 之外 |
-| 提示詞防線不可靠 | ralph-loop 與 Anthropic 長任務都只能用強烈措辭要求「不要說謊」「不要改測試」 | 改用程式檢查 |
-| LLM 判斷不穩定 | Anthropic：LLM as a judge「generally not a very robust method」 | 只用於模糊標準，標為較弱證據，並用不同的模型或 subagent |
-
-**保護驗證器的做法：**
-
-- 用權限規則或 PreToolUse hook 禁止 agent 修改測試與驗證設定的路徑。
-- 用 CODEOWNERS 要求測試與 CI 設定的變更由人審查。
-- 用 diff 檢查：測試被刪除、加了 skip、assertion 數量下降、門檻被放寬時，判定失敗。
-- 在 agent 無法寫入的環境重跑驗證，例如 CI。
-- 做事與驗收分開。Osmani 稱為「keep the maker away from the checker」。
-
-**偵測沒有進展：** 同樣的錯誤連續出現、diff 為空、測試結果沒有變化時，交給人，不要再跑一圈。
-
-## 8. 建議的控制原則
-
-1. 程式推動迴圈，程式決定停止；做事的 agent 不能單獨宣告完成。
-2. 停止條件寫成可執行的檢查：指令加預期結果。
-3. 驗證在做事的 agent 之外執行：另一個程序、另一個模型，或 CI。
-4. 驗證器受保護；修改驗證器需要人核准。
-5. 圈數、花費、時間都有上限，也偵測沒有進展。
-6. 超過上限或無法判斷時交給人，並附上目前狀態。
-7. 狀態用結構化檔案保存，格式由程式檢查。
-8. 改進由 agent 提案、人核准，產物是規則、測試或 hook。
-
-## 9. 對工具的影響
-
-### 9.1 Loop 題目改成問「誰決定」
-
-建議 Loop 題目加一個屬性「決定者」，取值為：
-
-- 程式
-- 另一個模型
-- 做事的 agent
-- 人
-- 沒有
-
-研究文件 4.2 的「作法形式」與「證據等級」照舊使用（L-D1）。
-
-| 編號 | 題目（依檢查表檢視的提案） | 建議的目標決定者 | 對應第 4 節的控制點 |
-|---|---|---|---|
-| L1 | 目標有可以測試的停止條件 | 程式 | 4、5 |
-| L2 | 每一圈都用檢查結果決定下一步（繼續、重試、交給人、停止） | 程式；模糊標準可用另一個模型 | 4、5 |
-| L3 | 圈數與花費都有上限，超過交給人 | 程式 | 6 |
-| L4 | 每一圈留下可接續的結構化紀錄 | 程式檢查格式 | 7 |
-| L5 | 誰來啟動迴圈有定義 | 程式或人 | 1 |
-| L6（新） | 驗證器不能被 agent 繞過 | 程式加人 | 4 |
-| L7（新） | 從紀錄找出重複的錯，變成規則、測試或工具 | agent 提案，人核准 | 8 |
-
-**報告呈現方式（示意）：**
-
-```text
-Loop     ready
-  - L1 停止條件：有；決定者＝做事的 agent（ralph-loop <promise>）
-           → 目標：程式。建議：加 command 型 Stop hook 跑 npm test（需要核准）
-  - L3 上限：只有 --max-iterations，沒有花費上限
-  - L6 驗證器保護：無；agent 可以修改 tests/
-```
-
-### 9.2 候選 detector
-
-| detector | 看什麼 | 判定 |
-|---|---|---|
-| `loop.stop-gate.command` | Stop／agentStop hook 是 command 型，而且指令包含已記錄的驗證指令（`commands.verify-documented`） | 決定者＝程式 |
-| `loop.stop-gate.model` | Claude Code 的 prompt 型或 agent 型 Stop hook | 決定者＝另一個模型 |
-| `loop.self-declared` | ralph-loop 狀態檔、`--completion-promise` 這類只比對 agent 輸出字串的設定 | 決定者＝做事的 agent；列為風險 |
-| `loop.bounds` | `--max-iterations`、`max_turns`、`max_budget_usd`／`--max-budget-usd`、CI 的 `timeout-minutes` | 有哪些上限 |
-| `loop.stop-hook-active-checked` | Stop hook 腳本是否讀取 `stop_hook_active` | 靜態搜尋，只當弱訊號 |
-| `verifier.protected` | 權限規則禁止修改測試路徑、PreToolUse hook、CODEOWNERS 涵蓋測試與 CI、CI 檢查測試是否被刪除 | 驗證器保護的程度 |
-| `loop.state-structured` | 結構化的狀態檔（feature list、進度檔），而且已 commit 或明確 ignore | 狀態保存方式 |
-| `loop.trigger` | CI 工作流程呼叫 agent CLI 或 action（例如 `anthropics/claude-code-action`、`codex exec`）；`schedule:` cron | 觸發方式 |
-
-> 依 [12.9](#129-第四輪兩項新修正的選項) 使用者選擇的 P-C，上表 `verifier.protected` 一列不再是單一能力或保護等級。四種訊號改為分項觀察，各自記錄保護什麼、防什麼、邊界、證據與未知，不產生 `verifier.protected` 的能力結果。
-
-**限制：**
-
-- 靜態掃描最多到「已設定，未確認生效」。要到「已確認生效」，需要 CI 執行紀錄或使用者附依據的確認。
-- ralph-loop 的狀態檔是 `.claude/ralph-loop.local.md`，通常不 commit，所以常常看不到，只能靠 plugin 設定或使用者回答。
-- 這些 detector 只描述設定，不評估 loop 的效果。
-
-### 9.3 必要條件的調整（提案）
-
-研究文件 4.3 目前的 Loop 條件：
-
-- 必要條件：`verifier.configured`、`recovery.available`
-- 建議條件：`verifier.confirmed`
-
-提案（L-D2）：
-
-- 新增建議條件 `verifier.protected`。沒有保護時，等級 C 的驗證可以被 agent 改掉。因為靜態偵測不完整，暫不列為必要條件。（已被 12.9 的 P-C 取代：不新增此能力；L-D2 其餘部分仍待決。）
-- 只有模型判斷的 Stop gate（prompt 型 hook 或 `/goal`）不滿足 `verifier.configured`，因為它不會執行驗證指令。
-
-### 9.4 工具自己的修補流程
-
-研究文件 7.2 的修補流程照這份原則設計：
-
-| 控制點 | 修補流程中的做法 |
-|---|---|
-| 推動 | CLI 決定下一步；agent skill 只呼叫 CLI，不自行判斷 |
-| 做事 | agent 依規則卡修改檔案 |
-| 驗證 | CLI 獨立重跑 `verify` 欄位的 detector，不採信 agent 的回報 |
-| 停止 | detector 結果達到目標，或用完每個缺口的圈數與花費上限，或遇到需要人決定的項目 |
-| 驗證器保護 | 同一次修改不能放寬測試、lint、detector 或 CI（研究文件 7.2 已有） |
-| 狀態 | patch manifest 與每一步的結果放在 CI artifact 或本機快取 |
-
-- v1 只產生報告與計畫（D7），但報告格式要先帶好 `verify` 與停止資訊，之後開放修補時不必改格式。
-- agent skill 本身是提示詞。要維持程式控制，完成與否由 CLI 的 exit code 決定。必要時可以搭配 Stop hook 呼叫 CLI 的 verify 指令，讓 agent 在 detector 通過前無法結束。
-
-### 9.5 工具不做什麼（建議）
-
-- 不做 loop runner 或協調器。工具檢查專案的 loop 設定、產生設定範本，不負責長時間執行 agent。
-- 不判斷專案「該不該」有 loop。Loop 層仍由適用性問題決定，允許 `not_applicable`。
-
-## 10. 待決問題
-
-以下是首次研究的建議紀錄；[第 12 節](#12-herdr-與-codex-的共同討論) 列出兩輪討論與第三輪忠實度審查後的修正版，修正版已由使用者核准，首次建議已被取代。
-
-| 編號 | 問題 | 選項 | 建議 |
-|---|---|---|---|
-| L-D1 | Loop 題目是否加「決定者」屬性 | 加／不加，只用作法形式與證據等級 | 加；報告顯示目前與目標的決定者 |
-| L-D2 | 驗證器保護與模型判斷怎麼影響必要條件 | `verifier.protected` 列為必要條件、建議條件或只當題目；只有模型判斷的 Stop gate 是否滿足 `verifier.configured` | `verifier.protected` 先當建議條件；只有模型判斷時不滿足 `verifier.configured` |
-| L-D3 | 修補內容是否提供 Stop hook 範本 | 依 vendor adapter 提供範本／只給文字說明 | 提供 command 型範本；預設檢查 `stop_hook_active`，並在 hook 內記錄圈數上限 |
-| L-D4 | 工具是否做 loop runner | 做／不做 | 不做；只檢查設定與產生範本 |
-| L-D5 | 「agent 自己宣告完成」的 loop 怎麼呈現 | 視為達標／視為沒有停止條件／有停止條件但未達目標 | 有停止條件，但決定者是「做事的 agent」，未達目標決定者「程式」；列為風險，建議改成程式判斷 |
-| L-D6 | 修補流程的預設上限（之後的版本） | 每個缺口的圈數、花費、時間 | 開放修補功能時再決定 |
+首次研究對這三題的回答已被第 12 節取代並移除；現行答案見 12.2–12.6，三家 CLI 的 hook 與上限行為見第 11 節的來源表。
 
 ## 11. 來源核對狀態
 
@@ -376,7 +139,7 @@ Audit 回答有哪些控制、缺什麼與證據不足之處；runtime 負責喚
 | L-D5 | 自稱完成可提交 candidate 或結束一次 visit；是否 accepted 依政策、授權與證據判斷。audit 的 `verified` 僅限該 check 明定的證據範圍，不代表 runtime 任務已完成 | 不再一律要求「最終決定者＝程式」；低風險自我宣告若被政策允許，也須明示，不得偽裝成獨立驗證；blocked 通常可恢復，終止狀態依政策定義，不先固定所有 runtime 枚舉 | 同意，已修文 |
 | L-D6 | 現在先定義額度作用範圍、持久計數、重試／重啟帳務、無進展、取消與外部操作不確定性的處理；並釐清誰有權取消或提高額度、限制涵蓋哪些啟動路徑與進行中的外部效果。數值待場景量測 | 不預設固定圈數／金額；hard limit 只在可證明的強制範圍內成立，與估算／soft limit 分開；不要求每個情境都有 attempt／time 上限或能精確量測所有資源 | 同意，已修文 |
 
-核准的是方向：這些建議不改變 D7 的 v1 唯讀範圍，也不代表新增必填欄位、profile 門檻、可執行範本或 runner 已獲核准。
+2026-11-03 核准的是方向：當時這些建議不改變 D7 的 v1 唯讀範圍，也不代表新增必填欄位、profile 門檻、可執行範本或 runner 已獲核准。2026-11-04 的 R-D3 僅另行修訂改善 Skill 的範圍；本表不因此成為對所有被檢查專案的新 runtime schema。
 
 ### 12.4 用六個情境檢驗設計
 
@@ -462,7 +225,7 @@ Codex 也強調：第三輪只是比對文件與來源，不是執行測試或�
 
 ### 12.9 第四輪：兩項新修正的選項
 
-**狀態：** 使用者於 2026-11-03 決定採用 **P-C** 與 **I-B**。已反映於 9.2、9.3 的註記與 12.5 的詞彙表。使用者隨後也核准了 12.3 的 L-D1–L-D6 修正版。
+**狀態：** 使用者於 2026-11-03 決定採用 **P-C** 與 **I-B**。已反映於 12.5 的詞彙表與 catalog 6.2。使用者隨後也核准了 12.3 的 L-D1–L-D6 修正版。
 
 兩項決定的範圍：P 只決定「怎麼呈現」驗證器保護，不決定 L-D2 的必要或建議條件。I 的選項都不改變 D7 的 v1 唯讀範圍。所有選項中，`verified` 只代表符合該檢查定義的證據要求；設定存在、使用者確認與實際執行仍分開記錄，unknown 不會被改成 missing 或通過。
 
