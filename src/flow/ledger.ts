@@ -1,4 +1,4 @@
-import { link,mkdir,readFile,readdir,rename,unlink,writeFile } from "node:fs/promises";
+import { link,mkdir,open,readFile,readdir,unlink,writeFile } from "node:fs/promises";
 import { join,resolve } from "node:path";
 import { homedir,hostname } from "node:os";
 import { randomUUID } from "node:crypto";
@@ -56,9 +56,11 @@ export async function readFlow(dir:string,id:string):Promise<Flow> {
  return decode(await textFile(dir,id)).flow;
 }
 const errno=(e:unknown)=>(e as NodeJS.ErrnoException).code;
-async function acquire(lock:string):Promise<void> {
+const lockedError=()=>new MaatError(1,"ledger_locked");
+async function attempt(lock:string,token:string):Promise<boolean> {
  const temp=lock+"."+randomUUID()+".tmp";
- try{await writeFile(temp,JSON.stringify({pid:process.pid,host:hostname()}),{flag:"wx",mode:0o600});await link(temp,lock);}
+ try{await writeFile(temp,token,{flag:"wx",mode:0o600});await link(temp,lock);return true;}
+ catch(e){if(errno(e)==="EEXIST")return false;throw new MaatError(1,"ledger_lock_io");}
  finally{await unlink(temp).catch(()=>{});}
 }
 function stale(text:string):boolean {
@@ -66,25 +68,35 @@ function stale(text:string):boolean {
  if(owner?.host!==hostname()||!Number.isInteger(owner.pid)||owner.pid<=0)return false;
  try{process.kill(owner.pid,0);return false;}catch(e){return errno(e)==="ESRCH";}
 }
-async function clearStale(lock:string):Promise<boolean> {
- const seen=await readFile(lock,"utf8").catch(()=>null);
- if(seen===null||!stale(seen))return false;
- // Rename is atomic: if another process replaced the lock after our read, the moved file differs from `seen`,
- // so we put it back instead of deleting a live lock.
- const moved=lock+"."+randomUUID()+".stale";
- try{await rename(lock,moved);}catch{return false;}
- if(await readFile(moved,"utf8").catch(()=>null)===seen){await unlink(moved);return true;}
- await link(moved,lock).catch(()=>{});await unlink(moved).catch(()=>{});return false;
+// Stale clearing is serialized by `<lock>.break`: only its holder may delete the lock, and only if the lock still
+// holds the exact stale content judged, so a fresh lock taken meanwhile is never removed.
+async function breakStale(lock:string,seen:string):Promise<void> {
+ const breaker=lock+".break";let handle;
+ try{handle=await open(breaker,"wx",0o600);}catch(e){throw errno(e)==="EEXIST"?lockedError():new MaatError(1,"ledger_lock_io");}
+ try{
+  await handle.writeFile(String(process.pid));await handle.close();handle=undefined;
+  if(await readFile(lock,"utf8").catch(()=>null)===seen)await unlink(lock);
+ }finally{await handle?.close();await unlink(breaker).catch(()=>{});}
+}
+export async function takeLock(lock:string,read=(p:string)=>readFile(p,"utf8")):Promise<string> {
+ const token=JSON.stringify({pid:process.pid,host:hostname(),nonce:randomUUID()});
+ if(await attempt(lock,token))return token;
+ let seen:string|null;
+ try{seen=await read(lock);}catch(e){if(errno(e)!=="ENOENT")throw lockedError();seen=null;}
+ if(seen!==null) {
+  if(!stale(seen))throw lockedError();
+  await breakStale(lock,seen);
+ }
+ if(await attempt(lock,token))return token;
+ throw lockedError();
+}
+export async function releaseLock(lock:string,token:string):Promise<void> {
+ try{if(await readFile(lock,"utf8")===token)await unlink(lock);}catch{}
 }
 async function locked<T>(dir:string,id:string,root:string,operation:()=>Promise<T>):Promise<T> {
  dir=await outsidePath(dir,root);await mkdir(dir,{recursive:true});
- const lock=join(dir,id+".lock");
- const fail=(e:unknown)=>new MaatError(1,errno(e)==="EEXIST"?"ledger_locked":"ledger_lock_io");
- try{await acquire(lock);}catch(e){
-  if(errno(e)!=="EEXIST"||!await clearStale(lock))throw fail(e);
-  try{await acquire(lock);}catch(again){throw fail(again);}
- }
- try{return await operation();}finally{await unlink(lock);}
+ const lock=join(dir,id+".lock"),token=await takeLock(lock);
+ try{return await operation();}finally{await releaseLock(lock,token);}
 }
 export async function createLedger(dir:string,f:Flow):Promise<void> {
  await locked(dir,f.flow_id,f.repository.path,async()=>{
