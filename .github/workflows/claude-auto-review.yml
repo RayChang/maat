@@ -1,7 +1,7 @@
 name: Claude Auto Review and Merge
 
 # Reviews every PR automatically. A PR into develop is merged when either
-# claude[bot] approves the current head commit (and the PR does not touch .github/)
+# claude[bot] approves the current head commit, CI passes on that commit, and the PR does not touch .github/;
 # or the repository owner comments "/merge <head commit sha>" (7-40 hex chars).
 # Other bases are never merged.
 
@@ -23,6 +23,7 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -105,6 +106,17 @@ jobs:
           fi
           if gh pr diff "$PR" --name-only | grep -q '^\.github/'; then
             echo "Not merging: this PR changes .github/; the owner must comment /merge"; exit 0
+          fi
+          # Wait up to 20 minutes for the CI workflow run of this exact commit; merge only on success.
+          ci=""
+          for i in $(seq 1 40); do
+            ci=$(gh run list --workflow ci.yml --commit "$SHA" --event pull_request --limit 1 \
+              --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"' || true)
+            case "$ci" in completed*) break;; esac
+            sleep 30
+          done
+          if [ "$ci" != "completed success" ]; then
+            echo "Not merging: CI for $SHA is '${ci:-missing}'"; exit 0
           fi
           body=$(gh api --paginate --slurp "repos/$GH_REPO/issues/$PR/comments" \
             | jq -r --arg run "REVIEW_RUN: $RUN" '[.[][] | select(.user.login == "claude[bot]" and (.body | contains($run)))] | last | .body // ""' \
