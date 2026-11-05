@@ -2,7 +2,8 @@ name: Claude Auto Review and Merge
 
 # Reviews every PR automatically. A PR into develop is merged when either
 # claude[bot] approves the current head commit (and the PR does not touch .github/)
-# or the repository owner comments exactly "/merge". Other bases are never merged.
+# or the repository owner comments "/merge <head commit sha>" (7-40 hex chars).
+# Other bases are never merged.
 
 on:
   pull_request:
@@ -103,20 +104,30 @@ jobs:
     if: |
       github.event_name == 'issue_comment' && github.event.issue.pull_request &&
       github.event.comment.user.login == github.repository_owner &&
-      github.event.comment.body == '/merge'
+      startsWith(github.event.comment.body, '/merge ')
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - name: Merge on owner /merge command
+      - name: Merge on owner "/merge <sha>" command
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR: ${{ github.event.issue.number }}
+          COMMENT: ${{ github.event.comment.body }}
         run: |
+          cmd=$(printf '%s' "$COMMENT" | tr -d '\r' | sed 's/[[:space:]]*$//')
+          if ! printf '%s' "$cmd" | grep -Eqx '/merge [0-9a-f]{7,40}'; then
+            echo "Not merging: expected '/merge <commit sha>'"; exit 0
+          fi
+          want=${cmd#/merge }
           base=$(gh pr view "$PR" --json baseRefName --jq .baseRefName)
+          head=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
           if [ "$base" != "develop" ]; then
             echo "Not merging: base=$base"; exit 0
           fi
-          gh pr merge "$PR" --merge --delete-branch
+          case "$head" in
+            "$want"*) gh pr merge "$PR" --merge --delete-branch --match-head-commit "$head" ;;
+            *) echo "Not merging: PR head is $head, not $want" ;;
+          esac
