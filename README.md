@@ -97,6 +97,6 @@ bun run build   # 輸出 dist/cli.js
 ## PR 流程
 
 - 每個 PR 都會由 Claude 自動審查。
-- 目標是 `develop` 的 PR：當 `claude[bot]` 核准目前的 head commit 時自動合併；若 PR 修改了 `.github/`，不會自動合併。
+- 目標是 `develop` 的 PR：當 Claude 審查（由 `github-actions[bot]` 留言）核准目前的 head commit 時自動合併；若 PR 修改了 `.github/`，不會自動合併。
 - 擁有者也可以留言 `/merge <commit sha>` 來合併。
 - 目標是 `main` 的 PR 由人工合併。
