@@ -1,0 +1,111 @@
+{
+  "id": "harness.recovery",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "改變狀態的各個影響範圍是否宣告復原、補償、對帳或不可逆限制的處置",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "工作會改變本機或外部狀態",
+    "omission": "失敗或結果不明時可能無法安全決定下一步",
+    "alternative": "可用補償或對帳與明確授權，不強迫所有效果可回滾"
+  },
+  "applicability": {
+    "applicable": "任務會改動原始碼、資料、設定或遠端資源",
+    "not_applicable": "確認完全唯讀且沒有外部副作用",
+    "unknown": "影響範圍未知；不能只看見 Git 就忽略其他效果",
+    "questions": [
+      "工作改變哪些狀態？結果不明時如何查核？哪些效果不可逆、誰能決定處置？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "效果清單",
+      "本機復原宣告與 Git 中繼資料",
+      "使用者提供的其他效果處置材料"
+    ],
+    "missing_input": "沒有 Git 可採其他基準；非本機 detector 不支援時仍接受明確材料",
+    "detectors": [
+      "recovery.local-plan@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐效果核對基準／識別、步驟、責任者、排除與未知結果處置；不可逆者須明列限制與授權安排",
+    "limits": "不執行回滾，不把宣告視為已演練；ignore 檔案與遠端資源不因 Git 存在被涵蓋"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "claims": {
+      "local": "recovery.local-source-plan-declared@1",
+      "other_effects": "recovery.effect-plan-declared@1"
+    },
+    "verified": "all；每個適用效果的相應處置宣告成立，涵蓋與排除明確",
+    "partial": "部分效果有完整宣告，其他範圍或未知結果處置不足",
+    "missing": "效果已確認，完整材料證實全部缺乏處置宣告",
+    "unknown": "只有 Git／worktree、效果未定或外部資料未提供",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "rollback-strategy",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "列出每種效果的基準、處置與排除",
+      "遠端結果不明先對帳再決定重試；不可逆者明示限制與授權，不假造回滾步驟"
+    ],
+    "targets": "指定恢復文件、任務風險區塊或外部處置程序引用",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "recovery.local-plan@1"
+    ],
+    "logic": "all；逐效果核對第 7.1 節的相應判斷式，不能由一個本機計畫替其他效果成立",
+    "expected": "所有選定效果都有可追溯處置或明示的不可逆限制；無 runtime 成功保證",
+    "attestation": {
+      "question": "請用失敗及回應遺失兩種情境說明基準、查核、授權與恢復；若宣稱演練成功，另附同範圍紀錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H6",
+      "use": "保留題目並改為效果範圍"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L159–170 Risk & Rollback；L318–344 Safe Fallbacks／Rollback",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D6",
+      "use": "取消不等於外部效果消失"
+    }
+  ]
+}

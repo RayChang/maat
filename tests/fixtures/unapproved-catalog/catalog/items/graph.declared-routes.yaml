@@ -1,0 +1,97 @@
+{
+  "id": "graph.declared-routes",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "節點間允許的路徑、路由權責與無法選路時的處置是否有宣告",
+  "layer": {
+    "primary": "graph",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "Graph 適用且有節點轉移",
+    "omission": "不清楚誰接誰或路由失敗時如何處理",
+    "alternative": "程式、模型或人路由皆可；簡單表格足夠"
+  },
+  "applicability": {
+    "applicable": "有多節點轉移或分支流程",
+    "not_applicable": "確認無 Graph 路由需求",
+    "unknown": "節點或流程範圍不明",
+    "questions": [
+      "哪些轉移允許？誰選路？沒有符合條件或多條同時符合時怎麼辦？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "節點與路由宣告",
+      "起點／終點",
+      "分支選擇規則與例外處理"
+    ],
+    "missing_input": "沒有 graph DSL 仍可審閱文字流程；動態路由不能被硬猜",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐路徑核對起訖節點、選路者、分支條件與未匹配／衝突處置；單一路徑也可",
+    "limits": "宣告路由不證明 agent 無法跳關；模型路由不是自動不合格"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；選定流程路徑、路由責任與例外處置完整且引用有效節點",
+    "partial": "部分路徑已宣告，但終點、未匹配或衝突處理缺漏",
+    "missing": "完整範圍沒有路由規約且適用性已確認",
+    "unknown": "只有節點清單或無法確認的動態選路聲稱",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "graph-routing",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "以現有流程寫最小路由表，保留允許的人／模型選路",
+      "補無法選路時的等待或交人，不自行新增循環"
+    ],
+    "targets": "流程文件或既有路由宣告",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；核對節點引用、正常路徑與未匹配／衝突情境",
+    "expected": "允許路徑與決策責任可追溯；關卡是否阻擋另由 edge-gates 限定",
+    "attestation": {
+      "question": "請說明一條正常路徑及一次無法選路的處置，指出決策者與依據",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 G2；F-07",
+      "use": "政策改寫，不強制程式選路"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 Graph",
+      "use": "路由與關卡分離"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "foundation.security-signals",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "選定的安全控制目標是否有對應設定、處置責任與證據邊界",
+  "layer": {
+    "primary": "foundation",
+    "related": [
+      "harness"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "不清楚已有安全控制涵蓋什麼；不把此窄題當安全基線",
+    "alternative": "可沿用外部治理與既有工具，不要求所有工具同時存在"
+  },
+  "applicability": {
+    "applicable": "已選定秘密偵測、相依更新或其他明確安全設定作為觀察目標",
+    "not_applicable": "附理由確認沒有本題涵蓋的控制需求；不代表沒有安全風險",
+    "unknown": "未選控制目標，或控制在外部而無資料",
+    "questions": [
+      "要核對哪些安全控制？由誰處理告警？哪些控制位於平台而非 repo？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "選定控制清單",
+      "相關設定",
+      "去敏感的外部政策材料"
+    ],
+    "missing_input": "只報告可讀設定與未知，不掃描或輸出秘密值",
+    "detectors": [
+      "security.config-signals@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user"
+    ],
+    "review": "逐控制核對範圍、設定引用與發現後的負責人／處置方式",
+    "limits": "不做漏洞掃描，不判定沒有秘密或程式安全"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config"
+    ],
+    "verified": "all；選定控制各有設定依據、範圍與處置責任",
+    "partial": "至少一項控制有明確設定，但其他項或責任未定",
+    "missing": "完整搜尋及有效確認均無選定控制的配置",
+    "unknown": "只見工具名稱、平台設定看不到且無確認，或控制目標未定",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "security-privacy",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先盤點既有控制與缺口，再提出專案需要的措施",
+      "記錄告警處理責任，不假設新增工具便完成安全治理"
+    ],
+    "targets": "指定安全政策與既有工具設定",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "security.config-signals@1"
+    ],
+    "logic": "all；只核對選定控制的宣告與責任",
+    "expected": "每項附範圍證據與未知；沒有安全總分或無漏洞保證",
+    "attestation": {
+      "question": "請提供去敏感的設定片段、涵蓋範圍與處理流程；平台控制需指明來源與有效時間",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L414–430 Security and Privacy",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "本文件 5.4 Factory Security 映射",
+      "use": "政策改寫為有限設定主張"
+    }
+  ]
+}

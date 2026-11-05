@@ -1,0 +1,45 @@
+{
+  "policy_schema": "1.0.0",
+  "catalog_version": "0.1.0",
+  "target_clis": [],
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": []
+  },
+  "applicability": {
+    "foundation.verify-entrypoints": {
+      "status": "applicable"
+    }
+  },
+  "targets": {
+    "foundation.verify-entrypoints": {
+      "baseline": true
+    }
+  },
+  "exemptions": [],
+  "attestations": [
+    {
+      "check": "foundation.verify-entrypoints",
+      "claims": [
+        "declared"
+      ],
+      "answer": "This guide declares the verification command and purpose.",
+      "materials": [
+        {
+          "path": "AGENTS.md",
+          "sha256": "999b5125b33ff1e67946f96afb33e5492b093b3781387b4f23ba061350ee6599",
+          "lines": "1-2",
+          "quote": "Verification command: bun run verify\nVerification purpose: regression\n"
+        }
+      ],
+      "scope": {},
+      "attested_by": "ray",
+      "attested_at": "2026-11-04T01:00:00Z",
+      "expires_at": "2027-02-01",
+      "catalog_version": "0.1.0",
+      "adapter_version": {}
+    }
+  ]
+}

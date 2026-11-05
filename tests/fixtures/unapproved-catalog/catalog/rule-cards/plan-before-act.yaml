@@ -1,0 +1,82 @@
+{
+  "id": "plan-before-act",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "prompt.task-spec",
+      "item_version": 1,
+      "actions": [
+        "在既有任務入口補上目標、範圍與驗收條件",
+        "只有歧義會影響實作時才要求釐清或範例，不一律加長提示詞"
+      ],
+      "targets": "任務入口、工作慣例或既有範本",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；人工逐項核對四項約定與一個代表用例，沒有未解決的關鍵歧義",
+        "expected": "每項都能指向具體文字，不宣稱所有未來任務會遵從",
+        "attestation": {
+          "question": "請指出代表任務的目標、不能改的部分與可驗收結果；沒有的項目會如何澄清？",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-04、F-09 與第 8 節 Prompt 提案",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L27–46 WO1；L143–170 Task Management；L202–210 State Assumptions；L483–502 DoD",
+          "use": "規則卡沿用"
+        }
+      ]
+    },
+    {
+      "check": "prompt.plan-for-nontrivial",
+      "item_version": 1,
+      "actions": [
+        "依專案風險定義何時先計畫",
+        "將驗證安排進步驟；必要時加風險與復原說明，不普遍擴大流程"
+      ],
+      "targets": "既有任務追蹤、規劃慣例或範本",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；對一個非小型任務核對步驟、驗證、假設失效後的更新方法",
+        "expected": "計畫可對應任務目標；小任務不被無理由套用",
+        "attestation": {
+          "question": "請用代表任務說明何時啟用計畫、如何驗證、什麼情況要改計畫",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視第 8 節 Prompt 大任務拆解",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L27–46 WO1；L505–522 Plan Template",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "policy_schema": "1.0.0",
+  "catalog_version": "0.1.0",
+  "target_clis": [],
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": []
+  },
+  "applicability": {
+    "prompt.task-spec": {
+      "status": "not_applicable",
+      "reason": "No delegated work",
+      "owner": "ray",
+      "expires_at": "2027-02-01"
+    },
+    "prompt": {
+      "status": "applicable",
+      "reason": "Delegated task delivery"
+    }
+  },
+  "targets": {
+    "prompt.task-spec": {
+      "baseline": true
+    }
+  },
+  "exemptions": [],
+  "attestations": []
+}

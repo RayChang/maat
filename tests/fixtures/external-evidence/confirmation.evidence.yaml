@@ -1,0 +1,26 @@
+{
+  "check": "prompt.task-spec",
+  "claims": [
+    "goal",
+    "scope",
+    "constraints",
+    "acceptance"
+  ],
+  "answer": "The cited representative task supplies these agreed requirements.",
+  "materials": [
+    {
+      "path": "tasks/login.md",
+      "sha256": "e8bdbc3671e8e2055f910855565d12d30c90d7e32fed3d796e553a57b087ef81",
+      "lines": "1-4",
+      "quote": "Goal: Fix login feedback.\nScope: Login view only.\nConstraints: Keep the API unchanged.\nAcceptance: Show Invalid password.\n"
+    }
+  ],
+  "scope": {},
+  "attested_by": "ray",
+  "attested_at": "2026-11-04T01:00:00Z",
+  "expires_at": "2027-02-01",
+  "catalog_version": "0.1.0",
+  "adapter_version": {},
+  "source": "User-supplied review",
+  "provided_by": "ray"
+}

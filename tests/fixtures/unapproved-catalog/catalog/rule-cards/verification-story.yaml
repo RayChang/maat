@@ -1,0 +1,44 @@
+{
+  "id": "verification-story",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "prompt.output-contract",
+      "item_version": 1,
+      "actions": [
+        "沿用接收者格式，加上變更與證據的位置",
+        "列出未跑項目、原因與適用的後續步驟；有風險或基線比較需求時附對應說明"
+      ],
+      "targets": "指引、PR／交接範本或輸出 schema",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；用成功與無法驗證兩種回報核對約定，不能把 skipped 當 pass",
+        "expected": "兩種回報皆能辨識範圍、來源與未完成驗證",
+        "attestation": {
+          "question": "請提供可接受與不可接受的回報例子，說明哪些欄位必須呈現、何時可省略",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 P4",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L94–110 No silent skips；L211–222 Verification Story；L457–480 Git Hygiene",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

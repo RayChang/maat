@@ -1,0 +1,89 @@
+{
+  "id": "todo-file",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.maintenance",
+      "item_version": 1,
+      "actions": [
+        "指定維護責任與相關變更時的檢查點",
+        "整理工作摘要但保留必要原始證據定位，修正已知失效來源"
+      ],
+      "targets": "指引維護約定與被標示過期的內容",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [
+          "documents.local-links@1"
+        ],
+        "logic": "all；核對宣告並逐筆確認已知失效項，非追求全部連結都在本機",
+        "expected": "有更新與過期處置依據，外部不可查部分保留未知",
+        "attestation": {
+          "question": "請用一個規範改動例子說明誰更新、何時更新、如何保留依據",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視第 8 節 Context 過期文件提案",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L249–260 Keep a Working Memory",
+          "use": "規則卡沿用"
+        }
+      ]
+    },
+    {
+      "check": "loop.resumable-state",
+      "item_version": 1,
+      "actions": [
+        "在選定保存機制加入必要進度與證據連結",
+        "精簡工作摘要並保留重要原始定位；未知外部結果恢復後先查核，別默認重做"
+      ],
+      "targets": "專案選定狀態紀錄；依 D5 決定 commit／ignore",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以一筆中斷情境核對結構是否能描述完成、待查與下一步",
+        "expected": "接續資訊可定位；若沒有實際恢復紀錄，不標示已驗證可恢復",
+        "attestation": {
+          "question": "請用代表狀態說明新 session 如何辨認成果版本、已執行操作與下一步；明示哪些仍需對帳",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L4",
+          "use": "改寫為接續資訊契約"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L143–170 Task Management；L249–260 Working Memory",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "user_decision",
+          "ref": "spec D5；Loop 研究 L-D6",
+          "use": "保存方式與恢復界線"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+on: [push]
+jobs:
+  verify:
+    steps:
+      - run: bun run verify
+        continue-on-error: true

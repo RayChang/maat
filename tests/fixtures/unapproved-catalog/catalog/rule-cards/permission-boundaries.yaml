@@ -1,0 +1,51 @@
+{
+  "id": "permission-boundaries",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.permission-boundaries",
+      "item_version": 1,
+      "actions": [
+        "依現有工作需求列出最小權限與需核准操作",
+        "提出選定 CLI 的設定位置與契約，避免擴權；改寫歷史等敏感操作另需明確授權"
+      ],
+      "targets": "已選 adapter 的權限設定或指定治理來源",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "permissions.declarations@1"
+        ],
+        "logic": "all；逐 CLI 核對權限範圍、核准及來源優先順序",
+        "expected": "可區分宣告與 runtime 未觀察，不因設定存在而保證隔離",
+        "attestation": {
+          "question": "請指出每類資源的允許／禁止／核准規則及來源；外部覆蓋需附去敏感片段",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H3",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L414–430 Least privilege；L457–480 Git Hygiene",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 第 7 節 CLI 支援契約",
+          "use": "adapter 範圍約束"
+        }
+      ]
+    }
+  ]
+}

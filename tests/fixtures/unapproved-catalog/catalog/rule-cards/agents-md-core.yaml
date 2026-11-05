@@ -1,0 +1,61 @@
+{
+  "id": "agents-md-core",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.instruction-authority",
+      "item_version": 1,
+      "actions": [
+        "指定權威來源",
+        "依各 CLI 的 adapter 描述接法，例如在 CLAUDE.md 中匯入 AGENTS.md（工具研究 8.2）",
+        "列出候選衝突請使用者決定"
+      ],
+      "targets": "依 adapter",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [
+          "instruction-file-found@1",
+          "instructions.import-topology@1",
+          "instructions.precedence-model@1"
+        ],
+        "logic": "authority 對所有選定 CLI 成立，且沒有未解決的候選衝突",
+        "expected": "權威來源與優先順序有範圍依據；已知候選衝突已處理，不宣稱任何地方都沒有衝突",
+        "agent_review": "重新列出候選衝突，只當候選",
+        "attestation": {
+          "question": "哪份指引具權威？列出的候選衝突是否成立、如何處理？",
+          "requires": [
+            "檔案範圍與雜湊",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ],
+          "invalidated_by": "依據的檔案改變、catalog 或 adapter 改版、到期"
+        },
+        "conflicts": "機器觀察到的相反事實不會被確認覆寫；兩者並列並保持待確認"
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "P1（檢查表檢視 3.3）",
+          "use": "保留題目（改寫）"
+        },
+        {
+          "type": "review_finding",
+          "ref": "F-04",
+          "use": "移層理由"
+        },
+        {
+          "type": "vendor_doc",
+          "ref": "工具研究第 6 節、8.2（三家 CLI 的指引載入方式）",
+          "use": "adapter 假設"
+        },
+        {
+          "type": "research",
+          "ref": "Dos Santos et al. arXiv:2606.15828：Conflicting Instructions（工具研究 5.2）",
+          "use": "衝突評估的依據"
+        }
+      ]
+    }
+  ]
+}

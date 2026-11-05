@@ -1,0 +1,99 @@
+{
+  "id": "loop.stopping-policy",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "迴圈何時暫停、停止、取消或恢復，及其權責與未完成效果如何處理",
+  "layer": {
+    "primary": "loop",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "專案迴圈有需要控制的執行生命週期",
+    "omission": "無法分辨正常結束、阻塞或耗盡額度，也不知如何交接",
+    "alternative": "人工流程可用簡短停止與回復約定，不要求 runtime 枚舉或新預算"
+  },
+  "applicability": {
+    "applicable": "指定迴圈會持續、重試或等待",
+    "not_applicable": "確認沒有專案迴圈執行控制需求",
+    "unknown": "執行範圍或控制權未明",
+    "questions": [
+      "誰可取消？什麼情況等待或停止？阻塞後如何恢復？遠端操作如何處理？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "執行政策",
+      "停止／取消宣告",
+      "已有額度政策",
+      "未完成效果處置"
+    ],
+    "missing_input": "沒有上限設定不妨礙核對人工停止約定；適用分支未知不跳過",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "分開核對正常結束、取消、阻塞／恢復及有額度時的耗盡處置與授權",
+    "limits": "blocked 可恢復；程序停止不等於接受成果或取消遠端效果"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "claim": "loop.stopping-policy-declared@1",
+    "verified": "all；所有適用停止／等待分支與責任已宣告，不適用分支有理由",
+    "partial": "有正常結束約定但適用取消、阻塞或耗盡分支未明",
+    "missing": "完整範圍確認無執行生命週期政策",
+    "unknown": "只有上限數字或結束字串，不能判定整體處置",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "loop-stop-policy",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "分開寫停止原因、成果接受與可否恢復",
+      "指定取消權責與執行中效果查核，不無限阻擋退出"
+    ],
+    "targets": "迴圈控制政策",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；逐適用分支核對決策者、動作、結果紀錄與恢復條件",
+    "expected": "停止原因有依據，取消不被宣稱為外部操作一定未發生",
+    "attestation": {
+      "question": "請用取消、阻塞與既有額度耗盡例子說明處置；沒有某分支時附不適用理由",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 L1",
+      "use": "拆分後保留停止問題"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D3、L-D5、L-D6",
+      "use": "停止與接受分離"
+    }
+  ]
+}

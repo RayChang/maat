@@ -1,0 +1,92 @@
+{
+  "id": "review-checklist",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.review-ownership",
+      "item_version": 1,
+      "actions": [
+        "為必要語意判斷指定人或模型及規準",
+        "分開記錄意見、接受權與例外，不聲稱審查已執行"
+      ],
+      "targets": "審查政策、角色說明或既有 PR 流程",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以一項適用變更追溯責任者、判準及結果去向",
+        "expected": "有可定位的審查約定，不以 reviewer 數量判定成熟",
+        "attestation": {
+          "question": "請指出誰負責這類審查、授權來自哪裡，以及缺席或意見衝突如何處理",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H2",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L624–646 Review Checklist",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D2",
+          "use": "人與模型皆可合法評估"
+        }
+      ]
+    },
+    {
+      "check": "loop.acceptance-policy",
+      "item_version": 1,
+      "actions": [
+        "引用 Prompt 的驗收條件，另寫誰如何接受哪個成果版本",
+        "錯誤／逾時不得改寫成 pass；例外接受另記授權與證據缺漏"
+      ],
+      "targets": "迴圈驗收宣告與既有任務規準",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；核對登錄表主張，使用成果 A 的證據不得默認驗收 B",
+        "expected": "任務條件、驗證結果、接受決策與停止原因分開",
+        "attestation": {
+          "question": "請說明通過、證據不足與例外接受各由誰判斷，如何綁定成果版本及必要驗證輸入",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L1",
+          "use": "拆分為驗收與停止"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D1、L-D2、L-D5",
+          "use": "權責與證據分開"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L94–110 WO5；L483–502 DoD；L624–646 Review Checklist",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

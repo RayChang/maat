@@ -1,0 +1,1 @@
+{"scripts":{"postinstall":"touch MAAT_MUST_NOT_RUN","test":"touch MAAT_MUST_NOT_RUN"}}

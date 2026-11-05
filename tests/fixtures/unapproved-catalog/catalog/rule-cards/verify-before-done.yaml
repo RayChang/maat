@@ -1,0 +1,127 @@
+{
+  "id": "verify-before-done",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "foundation.verify-entrypoints",
+      "item_version": 1,
+      "actions": [
+        "先詢問權威的驗證進入點；不得猜測",
+        "計畫文字：在核心指引加一行，記錄驗證指令與回報方式"
+      ],
+      "targets": "依選定 CLI 的 adapter；位置未知時列為問題",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [
+          "manifest.verify-entrypoint@1",
+          "instructions.verify-entrypoint@1",
+          "policy.verify-entrypoint@1"
+        ],
+        "logic": "declared 與 documented 都要成立",
+        "expected": "兩個能力判定成立",
+        "attestation": {
+          "question": "哪個指令是權威的驗證進入點？記錄在哪裡？",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        },
+        "conflicts": "使用者確認與機器觀察矛盾時，兩者並列，保持待確認"
+      },
+      "derived_from": [
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 工程基礎「驗證指令」",
+          "use": "保留題目"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "工具研究 4.3 commands.verify-documented",
+          "use": "政策改寫（拆成兩個能力）"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa › Workflow Orchestration › 5. Verification Before \"Done\"（第 94 行）",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa › Repository Discovery Playbook 第 5 步（第 548 行）",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "practitioner",
+          "ref": "Factory Agent Readiness：Style & Validation、Testing（工具研究第 3 節）",
+          "use": "政策改寫"
+        }
+      ]
+    },
+    {
+      "check": "harness.verification-wiring",
+      "item_version": 1,
+      "actions": [
+        "描述各 CLI 的 hook 契約（L-D3：只描述契約，v1 不提供可執行範本；error／timeout 不得視為通過）",
+        "或描述人工驗收流程與結果的紀錄位置",
+        "指令未知時列為問題"
+      ],
+      "targets": "依 adapter",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "hooks.invokes-entrypoint@1",
+          "evaluation.model-gate@1",
+          "policy.human-evaluation@1"
+        ],
+        "logic": "all；每個工作流程四個主張成立；設定存在不代表實際可用或評估充分",
+        "expected": {
+          "command": "工作流程命令可對應宣告入口；本機、CI、runner 或人工叫用皆可，觸發與結果交付另需宣告",
+          "model": "有模型評估的輸入、規準、觸發與結果交付宣告，不限某家 CLI gate",
+          "human": "政策寫明審查者、輸入規準、何時審查與結果紀錄位置"
+        },
+        "attestation": {
+          "question": "這個工作流程的驗證由誰、在何時執行？結果記在哪裡？",
+          "requires": [
+            "工作流程範圍",
+            "證據指紋",
+            "版本",
+            "確認者",
+            "有效期限"
+          ]
+        },
+        "conflicts": "同 8.1"
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "H5（檢查表檢視 3.3）",
+          "use": "保留題目（改寫）"
+        },
+        {
+          "type": "review_finding",
+          "ref": "F-06（檢查表檢視第 6 節）",
+          "use": "去重理由"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa › Workflow Orchestration › 5.（第 94 行）",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 6.3 去重表",
+          "use": "範圍邊界"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D2、L-D3",
+          "use": "約束"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "policy_schema": "1.0.0",
+  "catalog_version": "0.1.0",
+  "target_clis": [
+    "claude-code",
+    "codex",
+    "copilot"
+  ],
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": []
+  },
+  "applicability": {},
+  "targets": {},
+  "exemptions": [],
+  "attestations": []
+}

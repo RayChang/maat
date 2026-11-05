@@ -1,0 +1,46 @@
+{
+  "id": "instruction-maintenance",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.maintenance",
+      "item_version": 1,
+      "actions": [
+        "指定維護責任與相關變更時的檢查點",
+        "整理工作摘要但保留必要原始證據定位，修正已知失效來源"
+      ],
+      "targets": "指引維護約定與被標示過期的內容",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [
+          "documents.local-links@1"
+        ],
+        "logic": "all；核對宣告並逐筆確認已知失效項，非追求全部連結都在本機",
+        "expected": "有更新與過期處置依據，外部不可查部分保留未知",
+        "attestation": {
+          "question": "請用一個規範改動例子說明誰更新、何時更新、如何保留依據",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視第 8 節 Context 過期文件提案",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L249–260 Keep a Working Memory",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

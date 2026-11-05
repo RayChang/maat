@@ -1,0 +1,114 @@
+{
+  "id": "foundation.ci-verification",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "CI 叫用已宣告的驗證進入點；叫用與失敗後果分開回報",
+  "layer": {
+    "primary": "foundation",
+    "related": [
+      "harness"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "選定工作流程明確由 CI 承擔驗證",
+    "omission": "無法知道 CI 是否叫用指定驗證，而非只做部署或同步",
+    "alternative": "其他流程可使用本機或人工驗證；既有 CI 的一個明確步驟即可"
+  },
+  "applicability": {
+    "applicable": "CI 承擔驗證或被選作驗證目標；CI 存在只是待確認線索",
+    "not_applicable": "使用者確認不使用 CI 驗證，附理由與期限",
+    "unknown": "沒有偵測到 CI，也沒有回答。此時不判定 missing",
+    "questions": [
+      "這個專案是否以 CI 驗證變更？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "adapter 支援的 CI 設定路徑",
+      "foundation.verify-entrypoints 的觀察結果"
+    ],
+    "missing_input": "沒有已宣告的進入點時，仍回報 CI 步驟；「是否叫用已宣告的進入點」回報 unknown，計畫先詢問權威指令",
+    "detectors": [
+      "ci-config-found@1",
+      "ci.step-invokes-entrypoint@1",
+      "ci.failure-consequence@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user"
+    ],
+    "limits": "不證明 pipeline 會執行或通過；required check 屬遠端設定，無法觀察"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "config"
+    ],
+    "claims": {
+      "invocation": "每個指定 CI 驗證義務，都有步驟對應其宣告的進入點；不是任一成功步驟代表全部",
+      "consequence": "另外回報，不影響叫用的判定；advisory 是合法的觀察，不是「未設定」"
+    },
+    "verified": "全部指定叫用成立；有效人工材料也可補足動態或外部部分",
+    "partial": "至少一項指定叫用已確認，其餘缺少或未知；列出已成立子主張",
+    "missing": "CI 驗證適用、搜尋完整，所有指定叫用都無設定且無其他來源",
+    "unknown": "只有驗證關鍵字、未對應步驟、解析失敗或未提供材料的遠端 workflow",
+    "not_applicable": "有效的不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "ci-verify",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "計畫文字：在既有 CI 加入執行 {entrypoint} 的步驟",
+      "提醒：required check 要在遠端設定"
+    ],
+    "targets": "既有的 CI 設定；沒有 CI 時不建議新增，改為詢問",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "ci-config-found@1",
+      "ci.step-invokes-entrypoint@1",
+      "ci.failure-consequence@1"
+    ],
+    "logic": "invocation 成立；consequence 分開回報",
+    "expected": "全部指定叫用由支援解析或有效人工材料成立；consequence 與遠端 required 狀態另列來源，無充分材料時為 unknown",
+    "attestation": {
+      "question": "哪些 CI 步驟對應哪些驗證義務與指令？提供設定片段；如要主張執行，再附對應版本紀錄",
+      "requires": [
+        "範圍",
+        "設定或政策材料位置",
+        "時間",
+        "確認者",
+        "有效期限"
+      ],
+      "execution_claim": "只有另行主張已執行時才要求同範圍、版本與時間的執行紀錄；另遵守 8.0 的共同中繼資料要求"
+    },
+    "conflicts": "同 8.1"
+  },
+  "sources": [
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 工程基礎「CI」",
+      "use": "保留題目"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "工具研究 5.3 規則卡示意 ci.step-runs-command",
+      "use": "政策改寫（叫用與後果分開）"
+    },
+    {
+      "type": "discussion",
+      "ref": "codex-catalog-round1.md B 節",
+      "use": "設計理由"
+    }
+  ]
+}

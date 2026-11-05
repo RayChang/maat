@@ -1,0 +1,51 @@
+{
+  "id": "loop-budget",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "loop.bounds",
+      "item_version": 1,
+      "actions": [
+        "先記錄專案選定額度與作用範圍，再規劃持久計數與恢復帳務",
+        "無進展不等於沒有 diff；提高額度與取消權責須有依據，不直接實作控制器"
+      ],
+      "targets": "既有迴圈額度政策與計數說明",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "loop.bounds@1"
+        ],
+        "logic": "all；逐限制核對範圍與耗盡處置；數值型核對累計／重置，授權型核對範圍消耗／有效性與擴充授權；重試或重開 session 不得自行重置或擴大限制",
+        "expected": "可分辨有效作用範圍及估算限制，沒有無證據的硬上限承諾",
+        "attestation": {
+          "question": "請指出限制來源、重試如何消耗同一額度、提高額度的授權與尚未回報的用量如何處理",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L3",
+          "use": "政策改寫為有範圍的上限"
+        },
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-09 花費上限",
+          "use": "合併，不另設重複題"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D6、12.6",
+          "use": "不預設數值與硬軟區分"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "harness.review-ownership",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "需要語意判斷的變更是否有指定審查者、規準與結果紀錄方式",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "語意規範可能沒有負責判斷的人或機制，不要求所有變更多模型審查",
+    "alternative": "單一授權人或符合政策的模型也可，不強迫 CODEOWNERS"
+  },
+  "applicability": {
+    "applicable": "政策要求理解意圖或品質的審查",
+    "not_applicable": "確認此範圍沒有語意審查需求，附理由",
+    "unknown": "哪些變更需審查或誰負責尚未定義",
+    "questions": [
+      "哪些品質無法機械判斷？由誰審、按什麼標準、如何記錄？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "審查政策",
+      "角色／所有權宣告",
+      "規準與紀錄位置"
+    ],
+    "missing_input": "沒有 CODEOWNERS 可使用人工政策；只有檔案不代表已授權或會被執行",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對範圍、評估者、判準、結果／例外與缺席處置；自評需明示",
+    "limits": "指定另一模型不證明獨立，指定人名不證明真實授權或核准"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；每類指定審查有對應責任、規準與結果處理宣告",
+    "partial": "有責任者但規準、範圍或結果紀錄不足",
+    "missing": "確認需要審查，完整範圍卻沒有責任分配",
+    "unknown": "只有團隊／模型名稱或未確認的所有權",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "review-checklist",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "為必要語意判斷指定人或模型及規準",
+      "分開記錄意見、接受權與例外，不聲稱審查已執行"
+    ],
+    "targets": "審查政策、角色說明或既有 PR 流程",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以一項適用變更追溯責任者、判準及結果去向",
+    "expected": "有可定位的審查約定，不以 reviewer 數量判定成熟",
+    "attestation": {
+      "question": "請指出誰負責這類審查、授權來自哪裡，以及缺席或意見衝突如何處理",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H2",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L624–646 Review Checklist",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D2",
+      "use": "人與模型皆可合法評估"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "loop.trigger",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "指定專案迴圈由誰、因什麼事件、以哪個範圍啟動",
+  "layer": {
+    "primary": "loop",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "有明確專案迴圈或選定的迴圈目標",
+    "omission": "啟動責任與事件範圍不明",
+    "alternative": "人工啟動與定期檢討也可，不要求 scheduler 或常駐模型"
+  },
+  "applicability": {
+    "applicable": "execution-feedback、event-driven 或 cross-run-improvement 的專案流程",
+    "not_applicable": "確認只有單次互動；CLI 內部模型迴圈不自動讓本題適用",
+    "unknown": "只有 CI／agent 檔案訊號而無法識別實際流程",
+    "questions": [
+      "有哪些專案層迴圈？誰能啟動？什麼事件啟動哪個範圍？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "流程清單",
+      "觸發設定或人工啟動約定",
+      "對應任務／目標"
+    ],
+    "missing_input": "無自動設定仍可看人工觸發政策；缺目標對應不能靠 cron 推論",
+    "detectors": [
+      "loop.trigger@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐迴圈核對啟動者、事件或命令、目標範圍及授權來源",
+    "limits": "有 schedule 不證明 scheduler 健康；不新增 I-B 明確排除的閒置／heartbeat 檢查"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config",
+      "reusable"
+    ],
+    "verified": "all；每個指定迴圈的啟動者、條件與目標對應已宣告",
+    "partial": "有已知啟動方式，但授權或目標範圍未明",
+    "missing": "迴圈已確認，完整範圍無啟動約定",
+    "unknown": "只有 CI 或排程訊號、未識別迴圈類型",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "loop-trigger",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "寫明既有人工或事件觸發流程與授權",
+      "先選定範圍，不為了題庫引入常駐 runtime"
+    ],
+    "targets": "既有流程宣告或觸發設定",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "loop.trigger@1"
+    ],
+    "logic": "all；每個迴圈的觸發能對應到同範圍工作與授權者",
+    "expected": "可回答何時由誰啟動，不聲稱實際曾喚醒",
+    "attestation": {
+      "question": "請指出一次人工或事件觸發的規約；若主張已執行，附對應 run 與時間紀錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 L5",
+      "use": "保留題目"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.5、12.9 I-B",
+      "use": "不新增持續健康檢查"
+    }
+  ]
+}

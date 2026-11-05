@@ -1,0 +1,44 @@
+{
+  "id": "instrumentation",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.agent-observability",
+      "item_version": 1,
+      "actions": [
+        "優先暴露既有必要訊號與查詢方式",
+        "設計最小權限與去敏感樣本，不收集原始秘密或完整個資"
+      ],
+      "targets": "既有診斷取用說明與設定",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；各指定訊號的取得方式、樣本、範圍與限制相符",
+        "expected": "可定位去敏感診斷證據；不以 log 存在代表 agent 可讀",
+        "attestation": {
+          "question": "請提供一次必要訊號的取用紀錄與樣本，說明權限、版本及未涵蓋部分",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視第 8 節 Harness 可觀測性",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L345–357 Instrumentation",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

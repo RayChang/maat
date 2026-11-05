@@ -1,0 +1,47 @@
+{
+  "id": "norm-check-mapping",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.mechanical-enforcement",
+      "item_version": 1,
+      "actions": [
+        "為選定規範列出既有檢查與失敗後果",
+        "需改為阻擋時提出另行核准的變更，不能把提示自動升級為 gate"
+      ],
+      "targets": "規範對應表與既有檢查設定",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "analysis.config@1",
+          "ci.failure-consequence@1"
+        ],
+        "logic": "all；每條指定規範有可追溯對應與後果，範圍相同",
+        "expected": "如實標示 advisory／blocking／unknown；沒有 runtime 強制保證",
+        "attestation": {
+          "question": "請指出每條規範由什麼條件檢查、在何處、失敗後會怎樣；語意規範改交審查",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H1",
+          "use": "政策改寫為對應與後果，不等同實際硬擋"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.2 證據；本文件 4.2 去重",
+          "use": "與分析工具設定分開"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "outcome-evaluation",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.outcome-measurement",
+      "item_version": 1,
+      "actions": [
+        "定義一個與任務相關的指標及母體",
+        "記錄結果來源、排除與未知，改善採納另由 Loop 題處理"
+      ],
+      "targets": "選定成效紀錄與指標說明",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；人工以樣本重算指標並核對各類結果與母體",
+        "expected": "有可解釋的量測而非保證 agent 成功，不需固定最低成功率",
+        "attestation": {
+          "question": "請提供指標定義及去敏感樣本，說明未知／取消／重試如何納入與樣本偏差",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H8",
+          "use": "保留量測，改進流程另題"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.2 證據；檢視第 6 節 Harness 與 Loop 邊界",
+          "use": "不將量測等同改善"
+        }
+      ]
+    }
+  ]
+}

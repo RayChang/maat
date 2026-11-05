@@ -1,0 +1,107 @@
+{
+  "id": "loop.bounds",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "自主執行或自動重試的上限是否有範圍、計數、恢復帳務與耗盡處置",
+  "layer": {
+    "primary": "loop",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "迴圈自主執行或可自動重試",
+    "omission": "新 session 或重試可能無聲重置額度，無法界定執行界線",
+    "alternative": "依專案選有效的次數、時間、用量或授權邊界，不要求四種同時存在"
+  },
+  "applicability": {
+    "applicable": "自主執行、自動重試或已有額度控制需求",
+    "not_applicable": "純人工逐次決定且確認不需要此類額度政策",
+    "unknown": "自主程度、重試路徑或額度作用範圍不明",
+    "questions": [
+      "限制哪個 attempt／run／goal？如何計數、何時重置？誰可增加額度？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "上限與計數宣告",
+      "迴圈啟動／重試範圍",
+      "人工提供的額度材料"
+    ],
+    "missing_input": "只看到一個 max 參數時保留片段，不推論跨 session 上限",
+    "detectors": [
+      "loop.bounds@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對選定限制的數值或授權來源、單位、作用範圍、重試／重啟帳務、耗盡與提高額度權責",
+    "limits": "工具不設定通用數字；估算花費只能標 soft／estimate；硬上限需另有強制範圍證據"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；專案選定的限制有明確來源與完整計數／處置宣告，硬軟與未知如實標示",
+    "partial": "已知閾值與單位，但跨 run 計數、重置或耗盡處置不足",
+    "missing": "自主或重試範圍已確認，完整材料沒有界線宣告",
+    "unknown": "只有參數名稱；數值型缺閾值或單位；授權型缺有限範圍、失效條件、重試／恢復處置或擴充權責；對應主張為 unknown",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "loop-budget",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先記錄專案選定額度與作用範圍，再規劃持久計數與恢復帳務",
+      "無進展不等於沒有 diff；提高額度與取消權責須有依據，不直接實作控制器"
+    ],
+    "targets": "既有迴圈額度政策與計數說明",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "loop.bounds@1"
+    ],
+    "logic": "all；逐限制核對範圍與耗盡處置；數值型核對累計／重置，授權型核對範圍消耗／有效性與擴充授權；重試或重開 session 不得自行重置或擴大限制",
+    "expected": "可分辨有效作用範圍及估算限制，沒有無證據的硬上限承諾",
+    "attestation": {
+      "question": "請指出限制來源、重試如何消耗同一額度、提高額度的授權與尚未回報的用量如何處理",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 L3",
+      "use": "政策改寫為有範圍的上限"
+    },
+    {
+      "type": "review_finding",
+      "ref": "檢視 F-09 花費上限",
+      "use": "合併，不另設重複題"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D6、12.6",
+      "use": "不預設數值與硬軟區分"
+    }
+  ]
+}

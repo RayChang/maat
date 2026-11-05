@@ -1,0 +1,44 @@
+{
+  "id": "plan-template",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "prompt.plan-for-nontrivial",
+      "item_version": 1,
+      "actions": [
+        "依專案風險定義何時先計畫",
+        "將驗證安排進步驟；必要時加風險與復原說明，不普遍擴大流程"
+      ],
+      "targets": "既有任務追蹤、規劃慣例或範本",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；對一個非小型任務核對步驟、驗證、假設失效後的更新方法",
+        "expected": "計畫可對應任務目標；小任務不被無理由套用",
+        "attestation": {
+          "question": "請用代表任務說明何時啟用計畫、如何驗證、什麼情況要改計畫",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視第 8 節 Prompt 大任務拆解",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L27–46 WO1；L505–522 Plan Template",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}
