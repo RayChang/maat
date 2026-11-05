@@ -68,6 +68,15 @@ test("a leftover breaker lock makes stale clearing fail safe",()=>withLedger(asy
  expect(await readFile(join(dir,"fixture.lock"),"utf8")).toBe(stale);
  expect(await readFile(join(dir,"fixture.lock.break"),"utf8")).toBe("123");
 }));
+test("a non-ENOENT error while reading the lock reports ledger_lock_io and leaves the lock",async()=>{
+ const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
+ try{
+  await writeFile(lock,"held");
+  await expect(takeLock(lock,async()=>{throw Object.assign(new Error("denied"),{code:"EACCES"});}))
+   .rejects.toMatchObject({code:1,message:"ledger_lock_io"});
+  expect(await readFile(lock,"utf8")).toBe("held");
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
 test("a lock released between EEXIST and the read is retried, and release removes only our own lock",async()=>{
  const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
  try{
