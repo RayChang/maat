@@ -70,12 +70,13 @@ function stale(text:string):boolean {
 }
 // Stale clearing is serialized by `<lock>.break`: only its holder may delete the lock, and only if the lock still
 // holds the exact stale content judged, so a fresh lock taken meanwhile is never removed.
-async function breakStale(lock:string,seen:string):Promise<void> {
+async function breakStale(lock:string,seen:string,read:(p:string)=>Promise<string>):Promise<void> {
  const breaker=lock+".break";let handle;
  try{handle=await open(breaker,"wx",0o600);}catch(e){throw errno(e)==="EEXIST"?lockedError():new MaatError(1,"ledger_lock_io");}
  try{
   await handle.writeFile(String(process.pid));await handle.close();handle=undefined;
-  if(await readFile(lock,"utf8").catch(()=>null)===seen)await unlink(lock);
+  if(await read(lock).catch(()=>null)===seen)
+   await unlink(lock).catch(e=>{if(errno(e)!=="ENOENT")throw new MaatError(1,"ledger_lock_io");});
  }finally{await handle?.close();await unlink(breaker).catch(()=>{});}
 }
 export async function takeLock(lock:string,read=(p:string)=>readFile(p,"utf8")):Promise<string> {
@@ -85,7 +86,7 @@ export async function takeLock(lock:string,read=(p:string)=>readFile(p,"utf8")):
  try{seen=await read(lock);}catch(e){if(errno(e)!=="ENOENT")throw lockedError();seen=null;}
  if(seen!==null) {
   if(!stale(seen))throw lockedError();
-  await breakStale(lock,seen);
+  await breakStale(lock,seen,read);
  }
  if(await attempt(lock,token))return token;
  throw lockedError();

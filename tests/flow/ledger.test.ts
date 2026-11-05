@@ -82,3 +82,13 @@ test("a lock released between EEXIST and the read is retried, and release remove
   expect(await readdir(dir)).toEqual([]);
  }finally{await rm(dir,{recursive:true,force:true});}
 });
+test("stale clearing keeps a lock that was replaced before the breaker re-read",async()=>{
+ const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
+ const fresh=JSON.stringify({pid:process.pid,host:hostname(),nonce:"fresh"});
+ try{
+  await writeFile(lock,JSON.stringify({pid:await deadPid(),host:hostname()}));let reads=0;
+  await expect(takeLock(lock,async p=>{if(++reads===2)await writeFile(p,fresh);return readFile(p,"utf8");}))
+   .rejects.toMatchObject({code:1,message:"ledger_locked"});
+  expect(reads).toBe(2);expect(await readFile(lock,"utf8")).toBe(fresh);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
