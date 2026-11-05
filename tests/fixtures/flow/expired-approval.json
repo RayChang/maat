@@ -4,7 +4,7 @@
   "expires_at": "2026-01-01",
   "by": "ray",
   "payload": {
-    "plan_fingerprint": "87b205e7bf024cdfc720fbd5007c131d10a97a8e734aa872b66075efa21474a1",
+    "plan_fingerprint": "72f5a5dd4b311c4ca475293b2f9f4e87d7ac10d7812f88f0781e59f07df09fd1",
     "base_fingerprint": "de086e56320e93dbb0b140168d2580d5b07f4828842fbf26907c187191d2f959",
     "actions": [
       "a"

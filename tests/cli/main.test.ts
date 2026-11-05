@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { main } from "../../src/cli/main";
 test("CLI distinguishes normal gaps, usage errors, and malformed inputs",async()=>{
  const v=await main(["version","--json"]);expect(v.code).toBe(0);
- expect(JSON.parse(v.stdout).tool_version).toBe("0.1.0");
+ expect(JSON.parse(v.stdout).tool_version).toBe("0.2.0");
  expect((await main(["scan","--fail-on","missing"])).code).toBe(2);
  expect((await main(["evaluate","--snapshot","/maat-no-such-input"])).code).toBe(3);
  expect((await main(["version","--quiet"])).stdout).toBe("");

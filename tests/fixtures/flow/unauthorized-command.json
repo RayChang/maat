@@ -15,7 +15,7 @@
     "report": {
       "valid_until": "2027-02-01T00:00:00.000Z",
       "report_schema": "1.0.0",
-      "tool_version": "0.1.0",
+      "tool_version": "0.2.0",
       "catalog_version": "0.1.0",
       "adapters": [],
       "generated_at": "2026-11-04T12:00:00Z",
