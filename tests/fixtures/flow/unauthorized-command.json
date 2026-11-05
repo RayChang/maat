@@ -20,8 +20,8 @@
       "adapters": [],
       "generated_at": "2026-11-04T12:00:00Z",
       "repository": {
-        "path": "/Users/raychangmbp2025/Workspace/agent-engineering-toolkit/.worktrees/t41/tests/fixtures/flow-target",
-        "repo_id": "2992fef45ef58af6"
+        "path": "/maat-fixture/flow-target",
+        "repo_id": "9710a920ca9d5d3d"
       },
       "scope": {
         "include": [
@@ -2307,7 +2307,7 @@
           "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
         }
       ],
-      "cwd": "/Users/raychangmbp2025/Workspace/agent-engineering-toolkit/.worktrees/t41/tests/fixtures/flow-target",
+      "cwd": "/maat-fixture/flow-target",
       "permissions": [
         "read"
       ],

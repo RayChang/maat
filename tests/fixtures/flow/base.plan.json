@@ -10,8 +10,8 @@
   },
   "catalog_version": "0.1.0",
   "repository": {
-    "path": "/Users/raychangmbp2025/Workspace/agent-engineering-toolkit/.worktrees/t41/tests/fixtures/flow-target",
-    "repo_id": "2992fef45ef58af6"
+    "path": "/maat-fixture/flow-target",
+    "repo_id": "9710a920ca9d5d3d"
   },
   "source_report_fingerprint": "c325a289f210ebecc1e75b6c6221de2b7cbff3bb8e72c9ae420b2182cb0f0310",
   "actions": [
@@ -79,5 +79,5 @@
   ],
   "authoritative": true,
   "diagnostics": [],
-  "plan_fingerprint": "6bac338f5bd157e9e938095bec5bc816d94f7d1c7a794b6a9f8f77f669816c03"
+  "plan_fingerprint": "87b205e7bf024cdfc720fbd5007c131d10a97a8e734aa872b66075efa21474a1"
 }

@@ -308,7 +308,6 @@ bun test tests/e2e/controller.test.ts
 
 ```ts
 import { mkdir,writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
 import { flowFixture } from "./flow";
 import { fingerprintSet } from "../../src/flow/model";
 import { makeSnapshot } from "../../src/snapshot";
@@ -317,9 +316,9 @@ import { loadCatalog } from "../../src/catalog/load";
 import { canonical,repoId } from "../../src/canonical";
 export async function materializeFlowFixtures():Promise<void> {
 const dir="tests/fixtures/flow";await mkdir(dir,{recursive:true});
-const root=resolve("tests/fixtures/flow-target");await mkdir(root,{recursive:true});
+const target="tests/fixtures/flow-target";await mkdir(target,{recursive:true});const root="/maat-fixture/flow-target";
 const task="Goal: Fix login feedback.\nScope: Login view.\nConstraints: Keep the API.\nAcceptance: Show Invalid password.\n";
-await writeFile(root+"/task.md","old");await writeFile(root+"/dirty.md","user work");
+await writeFile(target+"/task.md","old");await writeFile(target+"/dirty.md","user work");
 const f=flowFixture();
 f.repository={path:root,repo_id:repoId(root)};f.plan.repository=f.repository;
 const {plan_fingerprint:old,...unsigned}=f.plan;f.plan.plan_fingerprint=sha256(canonical(unsigned));
