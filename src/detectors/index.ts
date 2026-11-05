@@ -6,6 +6,11 @@ import { ciObservations } from "./ci";
 import { documentObservations } from "./documents";
 import { configurationObservations } from "./configuration";
 import { canonical } from "../canonical";
+const supported=new Set(["analysis.config@1","ci-config-found@1","ci.failure-consequence@1","ci.step-invokes-entrypoint@1",
+ "context-size-reported@1","documents.local-links@1","environment.declarations@1","evaluation.model-gate@1",
+ "hooks.invokes-entrypoint@1","instruction-file-found@1","instructions.import-topology@1","instructions.precedence-model@1",
+ "instructions.verify-entrypoint@1","loop.stop-gate.command@1","manifest.verify-entrypoint@1","permissions.declarations@1",
+ "policy.verify-entrypoint@1","security.config-signals@1"]);
 export function runDetectors(s:ScanData,p:Policy,c:Catalog):Observation[] {
  const out=[...s.adapters.flatMap(a=>a.observations),...entrypointObservations(s,p),
  ...ciObservations(s,p),...documentObservations(s),...configurationObservations(s)];
@@ -23,6 +28,8 @@ export function runDetectors(s:ScanData,p:Policy,c:Catalog):Observation[] {
  }
  const ids=new Set(out.map(o=>o.detector));
  for(const d of c.detectors) if(!ids.has(d.id))
-  out.push(observe(d.id,[],{},[],["No supported input for this detector"],["detector_unsupported: "+d.id]));
+  out.push(supported.has(d.id)
+   ?observe(d.id,[],{},[],["No supported observation produced; input absent, outside the supported grammar, for an unselected CLI, or unreadable"])
+   :observe(d.id,[],{},[],["No supported input for this detector"],["detector_unsupported: "+d.id]));
  return out.sort((a,b)=>canonical(a).localeCompare(canonical(b)));
 }
