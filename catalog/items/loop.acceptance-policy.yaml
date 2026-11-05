@@ -1,0 +1,110 @@
+{
+  "id": "loop.acceptance-policy",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "迴圈候選成果的接受權責、規準、證據與版本如何綁定",
+  "layer": {
+    "primary": "loop",
+    "related": [
+      "prompt"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "迴圈會提交成果或改進提案並決定是否接受",
+    "omission": "工作者停止可能被誤當成果已驗收",
+    "alternative": "合法人工或明示自我宣告政策亦可，不要求機械判斷所有品質"
+  },
+  "applicability": {
+    "applicable": "指定迴圈具有候選成果與接受決策",
+    "not_applicable": "確認沒有成果接受決策需求，附範圍與理由",
+    "unknown": "只見 DONE／Stop hook 而不知驗收意義",
+    "questions": [
+      "接受哪個成果版本？誰依什麼證據接受？允許自我宣告或例外嗎？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "迴圈驗收政策",
+      "任務驗收條件",
+      "版本／範圍宣告",
+      "例外規則"
+    ],
+    "missing_input": "可讀候選聲明不代表有接受政策；無宣告時請確認而不補猜",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐項核對候選對象、接受權責、規準引用、證據要求、拒絕與例外處置",
+    "limits": "政策存在不代表成果已接受；指令 exit 0、hook 放行、程序停止都不是充分證據"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "claim": "loop.acceptance-policy-declared@1",
+    "verified": "all；登錄表的宣告主張成立，允許自評時明示其限制，不偽裝獨立驗證",
+    "partial": "任務規準已確認，但接受權責、版本綁定或證據要求不足",
+    "missing": "迴圈與接受需求已確認，完整材料無政策",
+    "unknown": "只有完成字串、空白規準或未確認的外部政策",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "definition-of-done",
+        "version": 1
+      },
+      {
+        "id": "review-checklist",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "引用 Prompt 的驗收條件，另寫誰如何接受哪個成果版本",
+      "錯誤／逾時不得改寫成 pass；例外接受另記授權與證據缺漏"
+    ],
+    "targets": "迴圈驗收宣告與既有任務規準",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；核對登錄表主張，使用成果 A 的證據不得默認驗收 B",
+    "expected": "任務條件、驗證結果、接受決策與停止原因分開",
+    "attestation": {
+      "question": "請說明通過、證據不足與例外接受各由誰判斷，如何綁定成果版本及必要驗證輸入",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 L1",
+      "use": "拆分為驗收與停止"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D1、L-D2、L-D5",
+      "use": "權責與證據分開"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L94–110 WO5；L483–502 DoD；L624–646 Review Checklist",
+      "use": "規則卡沿用"
+    }
+  ]
+}

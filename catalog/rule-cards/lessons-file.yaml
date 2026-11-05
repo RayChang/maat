@@ -1,0 +1,49 @@
+{
+  "id": "lessons-file",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.lessons-store",
+      "item_version": 1,
+      "actions": [
+        "依專案選定保存機制與取用時機",
+        "建議 lessons commit、todo ignore，但尊重專案選擇與敏感資訊界線"
+      ],
+      "targets": "選定的經驗保存來源，未選時先詢問",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；核對保存位置、可見範圍、取用與保留政策",
+        "expected": "可從宣告定位經驗入口；不以紀錄數或固定檔名驗收",
+        "attestation": {
+          "question": "請說明如何存入與取用一條經驗，以及哪些資訊不能保存；新專案確認預定機制即可",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 C3",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L78–93 WO4",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "user_decision",
+          "ref": "spec 第 3 節 D5",
+          "use": "不強制保存位置"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "id": "harness.verification-wiring",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "選定的 agent 工作流程中，驗證怎麼觸發、結果回到哪裡",
+  "layer": {
+    "primary": "harness",
+    "related": [
+      "foundation",
+      "loop"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "選定工作流程的政策要求評估成果",
+    "omission": "不清楚何時評估、評估什麼及結果交給誰",
+    "alternative": "人工交付與簡短規約也可成立，不必安裝 hook 或 CI"
+  },
+  "applicability": {
+    "applicable": "每個選定 CLI 的 agent 工作流程，逐一評估",
+    "not_applicable": "使用者確認某個工作流程不需要驗證，附理由與期限",
+    "unknown": "沒有選定 CLI，且只有 CLI 專屬的設定",
+    "questions": [
+      "專案用哪些 CLI？各工作流程由誰驗收？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "選定的 CLI 與 adapter 版本",
+      "foundation.verify-entrypoints 的觀察結果",
+      "政策檔中的工作流程宣告"
+    ],
+    "missing_input": "缺少 CLI 或指令資訊時保留可讀的人工／共用政策觀察；受影響的接線為 unknown",
+    "detectors": [
+      "hooks.invokes-entrypoint@1",
+      "evaluation.model-gate@1",
+      "policy.human-evaluation@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user",
+      "assessed_by_agent"
+    ],
+    "limits": "hook 是否載入取決於 trust 與使用者、組織設定，無法觀察；一個 hook 不代表整條路徑"
+  },
+  "evidence_requirements": {
+    "accepted_forms": {
+      "command": [
+        "text",
+        "reusable",
+        "config"
+      ],
+      "model": [
+        "text",
+        "reusable",
+        "config"
+      ],
+      "human": [
+        "text",
+        "reusable",
+        "config"
+      ]
+    },
+    "claims": {
+      "trigger": "在哪個邊界觸發評估",
+      "input": "被評估的成果、版本與規準引用",
+      "evaluator": "評估者種類，可多值或 unknown",
+      "delivery": "結果送到哪裡（回給 agent、PR、決策者）"
+    },
+    "verified": "每個選定工作流程的四個主張都有觀察或有效確認",
+    "partial": "只有部分主張或部分工作流程成立",
+    "missing": "完整搜尋範圍內沒有任何宣告，且使用者確認沒有外部評估",
+    "unknown": "沒有本機宣告也沒有確認時（可能有外部評估）；agent 意見只當候選",
+    "not_applicable": "有效的不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": [],
+    "conditional": [
+      {
+        "when": "評估者包含 command，且由 worker 叫用",
+        "required": [
+          "verify.entrypoint-declared@1"
+        ],
+        "recommended": [
+          "verify.entrypoint-documented@1"
+        ]
+      }
+    ]
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "verify-before-done",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "描述各 CLI 的 hook 契約（L-D3：只描述契約，v1 不提供可執行範本；error／timeout 不得視為通過）",
+      "或描述人工驗收流程與結果的紀錄位置",
+      "指令未知時列為問題"
+    ],
+    "targets": "依 adapter",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "hooks.invokes-entrypoint@1",
+      "evaluation.model-gate@1",
+      "policy.human-evaluation@1"
+    ],
+    "logic": "all；每個工作流程四個主張成立；設定存在不代表實際可用或評估充分",
+    "expected": {
+      "command": "工作流程命令可對應宣告入口；本機、CI、runner 或人工叫用皆可，觸發與結果交付另需宣告",
+      "model": "有模型評估的輸入、規準、觸發與結果交付宣告，不限某家 CLI gate",
+      "human": "政策寫明審查者、輸入規準、何時審查與結果紀錄位置"
+    },
+    "attestation": {
+      "question": "這個工作流程的驗證由誰、在何時執行？結果記在哪裡？",
+      "requires": [
+        "工作流程範圍",
+        "證據指紋",
+        "版本",
+        "確認者",
+        "有效期限"
+      ]
+    },
+    "conflicts": "同 8.1"
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "H5（檢查表檢視 3.3）",
+      "use": "保留題目（改寫）"
+    },
+    {
+      "type": "review_finding",
+      "ref": "F-06（檢查表檢視第 6 節）",
+      "use": "去重理由"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa › Workflow Orchestration › 5.（第 94 行）",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 6.3 去重表",
+      "use": "範圍邊界"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D2、L-D3",
+      "use": "約束"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "incremental-delivery",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "loop.feedback-routing",
+      "item_version": 1,
+      "actions": [
+        "為每個迴圈寫下「結果 → 動作」表",
+        "描述 Stop hook 契約：錯誤與逾時不算驗證通過；可停止或交人，依政策例外接受須另記，不要求永遠阻擋退出"
+      ],
+      "targets": "政策檔或迴圈的設定位置；未知時列為問題",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "loop.routing-declared@1",
+          "loop.stop-gate.command@1",
+          "loop.stop-gate.model@1"
+        ],
+        "logic": "每個適用的迴圈都要成立",
+        "expected": "每個適用的結果類別都有對應動作與權責；不適用的分支附理由",
+        "attestation": {
+          "question": "這個迴圈在驗證失敗、錯誤、逾時時分別做什麼？由誰決定？記錄在哪裡？",
+          "requires": [
+            "迴圈範圍",
+            "證據指紋",
+            "版本",
+            "確認者",
+            "有效期限"
+          ]
+        },
+        "conflicts": "同 8.1"
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "L2（檢查表檢視 3.3）",
+          "use": "保留題目（改寫）"
+        },
+        {
+          "type": "review_finding",
+          "ref": "F-06",
+          "use": "去重理由"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D2、L-D3、L-D5",
+          "use": "約束"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa › WO3（第 64 行）、WO7（第 123 行）、Error Handling 1–2（第 290、303 行）",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

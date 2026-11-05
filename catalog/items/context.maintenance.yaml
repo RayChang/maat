@@ -1,0 +1,106 @@
+{
+  "id": "context.maintenance",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "指引與工作摘要是否有更新責任、觸發時機與過期內容處置",
+  "layer": {
+    "primary": "context",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "文件變動後可能保留失效指令或假設，不以修改日期單獨判斷",
+    "alternative": "一個責任者與變更觸發約定即可，不要求定期排程"
+  },
+  "applicability": {
+    "applicable": "有會持續使用的指引、索引或工作摘要",
+    "not_applicable": "確認只是一次性材料，不需要後續維護",
+    "unknown": "材料生命週期或維護責任未定",
+    "questions": [
+      "誰更新規範？程式或工具改版時怎麼知道要更新？過期內容怎麼處理？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "維護約定",
+      "指引與摘要",
+      "已知變更或失效連結"
+    ],
+    "missing_input": "沒有歷史更新不等於無維護機制；新專案可檢查宣告",
+    "detectors": [
+      "documents.local-links@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對責任者、觸發事件、更新／移除與原始證據連結保留方式",
+    "limits": "不以檔案年齡推論過期，不要求自動排程"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；責任、觸發與處置明確，已確認的失效項已處理或具有效範圍說明",
+    "partial": "有負責人但更新觸發或已知失效處置不足",
+    "missing": "完整材料與確認均沒有維護安排",
+    "unknown": "只見最近 commit 或日期，無法確認內容有效性",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "instruction-maintenance",
+        "version": 1
+      },
+      {
+        "id": "todo-file",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "指定維護責任與相關變更時的檢查點",
+      "整理工作摘要但保留必要原始證據定位，修正已知失效來源"
+    ],
+    "targets": "指引維護約定與被標示過期的內容",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [
+      "documents.local-links@1"
+    ],
+    "logic": "all；核對宣告並逐筆確認已知失效項，非追求全部連結都在本機",
+    "expected": "有更新與過期處置依據，外部不可查部分保留未知",
+    "attestation": {
+      "question": "請用一個規範改動例子說明誰更新、何時更新、如何保留依據",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視第 8 節 Context 過期文件提案",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L249–260 Keep a Working Memory",
+      "use": "規則卡沿用"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "id": "foundation.dev-environment",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "開發環境、相依、必要服務與 build 方式是否有可對應的宣告",
+  "layer": {
+    "primary": "foundation",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "新加入者可能猜測環境，但不據此自動阻擋所有面向",
+    "alternative": "README 的簡短設定步驟可取代 devcontainer 或特定 lockfile"
+  },
+  "applicability": {
+    "applicable": "工作需要本機工具鏈、相依或 build",
+    "not_applicable": "確認只編輯不需工具鏈的內容，沒有環境需求",
+    "unknown": "目標環境或遠端開發方式未說明",
+    "questions": [
+      "在哪裡開發？需哪些版本、服務與設定？是否真的有 build 步驟？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "工具鏈宣告",
+      "manifest 與 lockfile",
+      "設定／build 文件",
+      "明確提供的環境說明"
+    ],
+    "missing_input": "lockfile 不存在時仍核對替代相依管理；不得讀取秘密值",
+    "detectors": [
+      "environment.declarations@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "對應必要版本、相依安裝方式、服務與設定鍵名稱、build 或不需 build 的理由",
+    "limits": "lockfile 或容器檔不能證明環境可重現，不安裝或建置"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；該環境適用的設定與 build 項目完整且有來源對應",
+    "partial": "已有相依或版本宣告，但設定步驟或必要服務未說明",
+    "missing": "範圍完整且確認沒有環境宣告或設定說明",
+    "unknown": "僅檔名訊號、外部環境無材料或必要設定存在矛盾",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "dependency-discipline",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "補上現有環境的最短設定步驟與必要版本",
+      "說明 build 或免 build 理由與設定鍵，不記錄憑證值"
+    ],
+    "targets": "現有 README／CONTRIBUTING 或指定開發文件",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [
+      "environment.declarations@1"
+    ],
+    "logic": "all；逐項核對適用的環境需求與文件對應",
+    "expected": "設定與 build 方式可定位；不額外聲稱已重現環境",
+    "attestation": {
+      "question": "請按步驟指出工具版本、相依來源、服務與 build 方式；若聲稱可重現，附同版本的實際紀錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 開發環境與基本文件；本文件 5.4 Build System",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L402–413 Dependency Discipline；L159–170 Task Management Additions",
+      "use": "規則卡沿用"
+    }
+  ]
+}

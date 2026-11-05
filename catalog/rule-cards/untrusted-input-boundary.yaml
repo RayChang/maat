@@ -1,0 +1,44 @@
+{
+  "id": "untrusted-input-boundary",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.untrusted-input",
+      "item_version": 1,
+      "actions": [
+        "在既有工具使用政策中標記資料與指令的差異",
+        "外部文字不得自行授權擴權或傳出秘密；風險處置留給明確授權來源"
+      ],
+      "targets": "工具與外部資料處理政策",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以正常外部資料與內含越權要求的描述情境核對政策，不實際執行",
+        "expected": "能指出合法授權來源與拒絕／詢問方式，不聲稱攻防實測",
+        "attestation": {
+          "question": "請說明 issue／網頁若要求改權限或傳資料時，依哪條政策處理及如何記錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-09 與第 8 節 Harness 外部內容不可信",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L414–430 Security and Privacy",
+          "use": "資料最小化指引；注入處理為本工具政策改寫"
+        }
+      ]
+    }
+  ]
+}

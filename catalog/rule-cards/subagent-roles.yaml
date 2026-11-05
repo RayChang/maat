@@ -1,0 +1,82 @@
+{
+  "id": "subagent-roles",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "graph.roles",
+      "item_version": 1,
+      "actions": [
+        "先移除無必要的角色分拆，再為必要節點定義單一明確責任",
+        "列出交付及權限，不把 agent 數量當成果"
+      ],
+      "targets": "既有流程與節點定義",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；用代表任務對照每個節點的輸入、責任與輸出",
+        "expected": "無未解的必要交付責任衝突，不聲稱實際協作成功",
+        "attestation": {
+          "question": "請說明代表任務分給哪些節點、各自能決定什麼及交付給誰",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 P3、G1；F-01",
+          "use": "合併並歸 Graph"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L47–62 Subagent Strategy",
+          "use": "規則卡沿用，非強制平行化"
+        }
+      ]
+    },
+    {
+      "check": "graph.handoff-contract",
+      "item_version": 1,
+      "actions": [
+        "依接收者任務保留最小必要資訊、證據定位與版本",
+        "指定缺件／過期時補件或停止交接的方式，不擴充通用 protocol"
+      ],
+      "targets": "既有交接格式或流程文件",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以完整、缺件與過期版本樣本核對每個交接契約",
+        "expected": "接收者能依約辨識適用成果與缺件，不依自由文字猜測完成",
+        "attestation": {
+          "question": "請提供一筆交接範例，指出接收所需資訊與缺件／版本不符時的處理",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-09 與第 8 節 Graph 交接格式",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L47–62 Structured subagent deliverables",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

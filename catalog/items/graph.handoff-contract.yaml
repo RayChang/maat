@@ -1,0 +1,101 @@
+{
+  "id": "graph.handoff-contract",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "節點交接的必要內容、版本、接收與拒絕方式是否有約定",
+  "layer": {
+    "primary": "graph",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "節點間有任務或成果交接",
+    "omission": "接收者可能取得不足或過期的內容並錯誤繼續",
+    "alternative": "精確文字或結構化紀錄皆可，不強迫通用 RPC 或資料格式"
+  },
+  "applicability": {
+    "applicable": "節點間實際或計畫中有交接",
+    "not_applicable": "確認無交接或 Graph 不適用",
+    "unknown": "交接邊或接收者需要的資訊不明",
+    "questions": [
+      "誰交給誰？最少需要哪些內容？接收者如何辨識版本與缺件？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "交接邊清單",
+      "內容契約",
+      "代表交接或已填寫範例"
+    ],
+    "missing_input": "無 schema 可核對文字約定；空範本不證明可用",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對任務／成果識別、必要輸入、證據引用、版本、限制與接收／缺件處置",
+    "limits": "不要求把全部對話或共用狀態交給所有節點，不證明實際傳遞成功"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；每條指定交接有必要內容與版本對應、接收及拒絕／補件規則",
+    "partial": "有有效交付內容，但版本或缺件處置不足",
+    "missing": "交接適用，完整材料無任何契約",
+    "unknown": "只有欄位名字、未確認接收需求或無內容的 schema",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "handoff-contract",
+        "version": 1
+      },
+      {
+        "id": "subagent-roles",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "依接收者任務保留最小必要資訊、證據定位與版本",
+      "指定缺件／過期時補件或停止交接的方式，不擴充通用 protocol"
+    ],
+    "targets": "既有交接格式或流程文件",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以完整、缺件與過期版本樣本核對每個交接契約",
+    "expected": "接收者能依約辨識適用成果與缺件，不依自由文字猜測完成",
+    "attestation": {
+      "question": "請提供一筆交接範例，指出接收所需資訊與缺件／版本不符時的處理",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視 F-09 與第 8 節 Graph 交接格式",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L47–62 Structured subagent deliverables",
+      "use": "規則卡沿用"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "dependency-discipline",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "foundation.dev-environment",
+      "item_version": 1,
+      "actions": [
+        "補上現有環境的最短設定步驟與必要版本",
+        "說明 build 或免 build 理由與設定鍵，不記錄憑證值"
+      ],
+      "targets": "現有 README／CONTRIBUTING 或指定開發文件",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [
+          "environment.declarations@1"
+        ],
+        "logic": "all；逐項核對適用的環境需求與文件對應",
+        "expected": "設定與 build 方式可定位；不額外聲稱已重現環境",
+        "attestation": {
+          "question": "請按步驟指出工具版本、相依來源、服務與 build 方式；若聲稱可重現，附同版本的實際紀錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 開發環境與基本文件；本文件 5.4 Build System",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L402–413 Dependency Discipline；L159–170 Task Management Additions",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

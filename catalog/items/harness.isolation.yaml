@@ -1,0 +1,96 @@
+{
+  "id": "harness.isolation",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "執行環境與共享資源的隔離邊界是否有宣告及限制說明",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "同時工作可能互相影響，不據此要求所有任務啟動容器",
+    "alternative": "單一使用者工作區加明確共享限制也能回答宣告題"
+  },
+  "applicability": {
+    "applicable": "agent 有執行環境或與其他工作共享資源",
+    "not_applicable": "確認此評估範圍沒有執行或共享環境",
+    "unknown": "環境或共享方式不明",
+    "questions": [
+      "哪些檔案、程序、資料與憑證共享？每件工作的隔離方式是什麼？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "環境設定與政策",
+      "工作區／分支／容器宣告",
+      "共享資源清單"
+    ],
+    "missing_input": "看不到容器或 worktree 不推論無隔離；請確認外部環境",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對工作識別、隔離與共享對象、建立／清理責任及已知限制",
+    "limits": "worktree 只隔離部分檔案，不代表程序、網路、秘密或資料庫隔離"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config"
+    ],
+    "verified": "all；選定環境的隔離與共享邊界、限制與清理方式有依據",
+    "partial": "已知部分隔離但共享資源或清理限制未說明",
+    "missing": "完整範圍內沒有環境邊界宣告且已確認",
+    "unknown": "只有容器／worktree 名稱，無範圍材料",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "isolation-boundaries",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先描述既有共享與隔離範圍",
+      "依衝突風險提出最小隔離選項；不要把隔離當成復原"
+    ],
+    "targets": "工作區或執行環境政策",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以兩件工作可能共享的資源逐項核對宣告",
+    "expected": "可說明彼此是否共享及未知，不宣稱技術隔離已實測",
+    "attestation": {
+      "question": "請列出兩個工作環境的共享項與隔離項；若主張強制隔離，附同範圍驗證紀錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H4",
+      "use": "保留題目並限定宣告主張"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 Harness；本文件 4.4 人工證據邊界",
+      "use": "隔離與復原分離"
+    }
+  ]
+}

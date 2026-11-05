@@ -1,0 +1,44 @@
+{
+  "id": "graph-edge-gates",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "graph.edge-gates",
+      "item_version": 1,
+      "actions": [
+        "為政策要求的轉移列條件與證據，重用既有驗收規準",
+        "明示拒絕、未知與例外接受，不把錯誤改寫成 pass"
+      ],
+      "targets": "指定路徑的條件契約",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以通過、拒絕與無證據三種情境核對每條受控邊",
+        "expected": "有可追溯的條件及處置；非受控邊不強加 gate",
+        "attestation": {
+          "question": "請指出每條 gate 的證據來源、版本與授權者；若主張不可繞過，另提供強制邊界證據",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 G5",
+          "use": "保留題目，與 G2 分開"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D1、L-D3",
+          "use": "證據、接受與退出分開"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "context.just-in-time",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "依路徑或工作情境提供規範的選擇規則是否有宣告",
+  "layer": {
+    "primary": "context",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "容易載入不相關或漏掉情境規範，不強迫所有 repo 做動態載入",
+    "alternative": "清楚的人工選用規則也可，不要求特定 skills 機制"
+  },
+  "applicability": {
+    "applicable": "不同路徑或情境需要不同規範",
+    "not_applicable": "確認共用短指引足夠，沒有條件式取用需求",
+    "unknown": "規範範圍、CLI 或適用情境未定",
+    "questions": [
+      "哪些規範只適用特定路徑？由誰在何時選用？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "選定 CLI 的規則來源",
+      "路徑／情境對應",
+      "skill 或指引的用途說明"
+    ],
+    "missing_input": "未支援自動載入格式時可核對人工選用宣告；不能猜測預設載入",
+    "detectors": [
+      "instructions.scoping@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "對應情境、來源、選用時機與重疊規則的處理",
+    "limits": "本題只核對選擇宣告，執行時是否載入另需紀錄"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；適用情境與對應來源、時機、重疊處理均有依據",
+    "partial": "已知部分路徑／情境對應，其他必要情境未說明",
+    "missing": "確認有需求且完整範圍無選用宣告",
+    "unknown": "只有規則檔／skill 名稱或 adapter 無法辨識語法",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "contextual-rules",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "為不同情境寫明何時取用哪份規範",
+      "依已選 CLI 提出設定建議；未知格式先列待確認，不自動安裝"
+    ],
+    "targets": "指定指引、skill 或 adapter 支援的規則來源",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "instructions.scoping@1"
+    ],
+    "logic": "all；取一個命中與一個不命中的情境，核對宣告的選用結果",
+    "expected": "能說明應選哪份規範及衝突處理，不宣稱 runtime 已載入",
+    "attestation": {
+      "question": "請指出兩種情境的選用依據；若主張已自動載入，另附同 CLI 版本的紀錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 C2",
+      "use": "政策改寫為可觀察的選擇宣告"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 第 7 節 CLI 支援契約",
+      "use": "產品與版本邊界"
+    }
+  ]
+}

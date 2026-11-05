@@ -1,0 +1,44 @@
+{
+  "id": "data-migration",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.high-risk-controls",
+      "item_version": 1,
+      "actions": [
+        "依已宣告風險補驗證、資料範圍與回復／補償步驟",
+        "遷移情境提出分階段及核對方式；是否需人核准由政策決定"
+      ],
+      "targets": "既有風險政策、遷移或發布計畫",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；逐風險核對措施與責任，不要求不相關控制",
+        "expected": "高風險目標有可追溯安排；治理與 runtime 強制分開",
+        "attestation": {
+          "question": "請用代表風險說明驗證、資料安全、復原或不可逆限制與授權方式",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L568–600 High-Risk Change／Data Migration；L159–170 Task Management",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "本文件 5.3 高風險映射；spec 5.2",
+          "use": "不把 gist 改寫的控制誤稱來源原意"
+        }
+      ]
+    }
+  ]
+}

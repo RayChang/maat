@@ -1,0 +1,104 @@
+{
+  "id": "foundation.static-analysis",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "指定程式範圍是否有非純排版的靜態分析設定與入口",
+  "layer": {
+    "primary": "foundation",
+    "related": [
+      "harness"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "程式範圍的驗證政策需要靜態分析",
+    "omission": "無法依已選規範檢查語法型別或規則錯誤",
+    "alternative": "語言原生編譯／分析即可，不要求額外 lint 套件"
+  },
+  "applicability": {
+    "applicable": "有程式碼且存在對應的分析需求",
+    "not_applicable": "確認沒有此需求或適當工具，附替代驗證與理由",
+    "unknown": "語言、目標或設定格式未支援且未提供確認",
+    "questions": [
+      "哪些分析規則適用？使用 lint、型別檢查還是語言原生工具？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "語言與模組範圍",
+      "lint／型別或編譯設定",
+      "指令宣告"
+    ],
+    "missing_input": "無設定檔不否定原生預設，請確認工具與版本預設",
+    "detectors": [
+      "analysis.config@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user"
+    ],
+    "review": "核對工具、分析目標、規則或預設引用與執行方式",
+    "limits": "formatter 單獨不足；不推論所有不變量已強制或 CI 會阻擋"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config",
+      "reusable"
+    ],
+    "text_path": "文字須指明工具與版本、目標、非純排版規則或預設依據及入口；工具名稱或泛稱預設不足",
+    "verified": "all；分析工具與目標、非純排版規則／預設、入口均有依據",
+    "partial": "有分析設定與範圍，但規則或入口尚缺",
+    "missing": "完整範圍內只有排版或無分析設定，並已確認無外部設定",
+    "unknown": "僅套件名稱、動態設定不可讀或無法確認預設",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "static-analysis",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先採既有工具與規則集，記錄適用目標與入口，不把所有文字規範自動翻成 lint",
+      "適用時於輸入邊界驗證資料，並使用既有型別或模型表達不變量；此為選用改善指引，不增加 verified 條件，也不證明分析設定已強制不變量"
+    ],
+    "targets": "既有分析設定與驗證說明",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "analysis.config@1"
+    ],
+    "logic": "all；工具、範圍、分析內容與入口一致",
+    "expected": "可確認分析設定，不宣稱程式已通過分析",
+    "attestation": {
+      "question": "請指出分析哪些錯誤、排除哪些路徑與如何執行；若採原生預設，附工具版本與依據",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 lint；本文件 5.4 Style & Validation",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L390–401 Type Safety and Invariants",
+      "use": "規則卡沿用，設定不證明不變量生效"
+    }
+  ]
+}

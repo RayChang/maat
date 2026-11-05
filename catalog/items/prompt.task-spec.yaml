@@ -1,0 +1,102 @@
+{
+  "id": "prompt.task-spec",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "委託任務是否有目標、範圍、限制與驗收條件的明確約定",
+  "layer": {
+    "primary": "prompt",
+    "related": [
+      "loop"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "agent 接受工作委託",
+    "omission": "工作者不知道要完成什麼或哪些行為不能改",
+    "alternative": "一段清楚的任務說明或既有慣例即可，不要求範本系統"
+  },
+  "applicability": {
+    "applicable": "以 agent 執行專案任務",
+    "not_applicable": "確認此範圍不委託 agent 工作",
+    "unknown": "未提供任務慣例或代表任務，不能猜測任務需求",
+    "questions": [
+      "任務通常在哪裡描述？什麼算完成？哪些部分不在範圍內？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "權威任務慣例",
+      "代表任務或已填寫範本",
+      "驗收條件引用"
+    ],
+    "missing_input": "無範本仍可審閱明確提供的任務說明；沒有語意材料則待確認",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐項核對目標、限制、範圍／排除與可判定的驗收條件；模糊處列為問題",
+    "limits": "空範本只代表結構，不證明委託完整；本題不決定誰有接受權"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable"
+    ],
+    "verified": "all；指定慣例或任務清楚交代四項內容，或明確規定缺項時先澄清，並經有效確認",
+    "partial": "已確認部分內容，其餘未定或相互矛盾",
+    "missing": "指定委託範圍內無任何約定且已確認",
+    "unknown": "只有空欄位、關鍵字、agent 推測或無代表材料",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "plan-before-act",
+        "version": 1
+      },
+      {
+        "id": "definition-of-done",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "在既有任務入口補上目標、範圍與驗收條件",
+      "只有歧義會影響實作時才要求釐清或範例，不一律加長提示詞"
+    ],
+    "targets": "任務入口、工作慣例或既有範本",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；人工逐項核對四項約定與一個代表用例，沒有未解決的關鍵歧義",
+    "expected": "每項都能指向具體文字，不宣稱所有未來任務會遵從",
+    "attestation": {
+      "question": "請指出代表任務的目標、不能改的部分與可驗收結果；沒有的項目會如何澄清？",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視 F-04、F-09 與第 8 節 Prompt 提案",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L27–46 WO1；L143–170 Task Management；L202–210 State Assumptions；L483–502 DoD",
+      "use": "規則卡沿用"
+    }
+  ]
+}

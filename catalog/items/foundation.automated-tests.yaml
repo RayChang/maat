@@ -1,0 +1,101 @@
+{
+  "id": "foundation.automated-tests",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "指定程式範圍是否有自動化測試案例與對應的執行方式",
+  "layer": {
+    "primary": "foundation",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "可測試的程式且政策選定自動化回歸為基本驗證",
+    "omission": "缺少可反覆檢查行為的依據",
+    "alternative": "可用語言原生 runner 或既有小型測試，不要求第三方框架"
+  },
+  "applicability": {
+    "applicable": "有待驗證程式行為，或使用者選擇增加自動化回歸",
+    "not_applicable": "確認範圍無程式行為或只採其他合理驗證，附理由",
+    "unknown": "程式範圍或驗證目標未確認；不支援語言不是不適用",
+    "questions": [
+      "哪些行為要靠自動化回歸確認？是否已有原生 runner 或外部測試？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "宣告的程式範圍",
+      "測試設定與案例",
+      "manifest 或指定執行說明"
+    ],
+    "missing_input": "缺設定時仍列出案例；原生 runner 可由確認材料辨識",
+    "detectors": [
+      "tests.structure@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對案例中的實際斷言與執行入口，不以 test 目錄或套件名稱單獨判定",
+    "limits": "不跑測試，不宣稱涵蓋率、測試品質或目前通過"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "reusable",
+      "config"
+    ],
+    "verified": "all；有至少一個與目標行為相關的非空案例，且執行方式可對應；語意關聯需有效確認",
+    "partial": "已確認案例或入口其中一項，其餘不足",
+    "missing": "適用範圍搜尋完整且確認沒有任何案例或外部測試",
+    "unknown": "只有套件／檔名訊號、語法不支援且無有效材料",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "testing-strategy",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "沿用原生或既有 runner，為一個代表行為規劃最小測試",
+      "指認預期失敗與成功訊號，避免只測常數或工具本身"
+    ],
+    "targets": "專案既有測試位置；未知時先詢問",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "tests.structure@1"
+    ],
+    "logic": "all；案例與入口都可定位，對應同一行為範圍",
+    "expected": "案例有實質斷言及可追溯入口；未執行仍標示未執行",
+    "attestation": {
+      "question": "請指出哪個案例覆蓋哪個行為、如何執行；若宣稱改善有效，附修改前後紀錄及版本",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 測試；本文件 5.4 Factory Testing 映射",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L375–389 Testing Strategy",
+      "use": "規則卡沿用"
+    }
+  ]
+}

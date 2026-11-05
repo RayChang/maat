@@ -1,0 +1,97 @@
+{
+  "id": "harness.cost-visibility",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "選定範圍的耗時與用量／花費是否有可追溯紀錄和估計限制",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "無法比較工作成本，但不等同沒有預算上限",
+    "alternative": "可用 CLI 匯出或人工整理，缺精確金額時標示估算／不可得"
+  },
+  "applicability": {
+    "applicable": "專案需要或已採用成本／耗時觀測",
+    "not_applicable": "確認此範圍沒有觀測需求，附理由",
+    "unknown": "觀測範圍、帳務來源或可得指標未定",
+    "questions": [
+      "量測 run、任務還是專案？哪些是實際值、估算或不可得？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "指標定義",
+      "明確提供的去敏感用量／耗時紀錄",
+      "成本換算與涵蓋說明"
+    ],
+    "missing_input": "無供應商帳務權限不聯網補抓，保留未知或已知的可得限制",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對計數單位、時間範圍、來源、重試／子任務涵蓋與估算方式",
+    "limits": "延遲帳務與估算不是精確美元，也不代表有硬上限"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；選定指標有定義與樣本；不可得欄位有已確認原因而非虛構值",
+    "partial": "至少一個選定指標有紀錄，其餘來源或涵蓋未知",
+    "missing": "完整範圍與有效確認皆無任何選定指標紀錄",
+    "unknown": "只有看板設定、無來源總數或估算標籤不明",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "cost-recording",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "選少量可得指標，記錄單位、時間與來源",
+      "區分實際、估算及延後回報，不要求所有供應商有同精度"
+    ],
+    "targets": "專案選定的觀測紀錄或回報格式",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；依樣本追溯各指標來源與涵蓋，無法取得者須明示",
+    "expected": "可核對耗時／用量或花費的計算依據，不延伸為全域成本保證",
+    "attestation": {
+      "question": "請提供一筆去敏感紀錄，說明是否含重試與子任務，哪些金額只是估算",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H7",
+      "use": "保留題目"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D6",
+      "use": "估算與硬上限分開"
+    }
+  ]
+}

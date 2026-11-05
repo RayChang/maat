@@ -1,0 +1,46 @@
+{
+  "id": "static-analysis",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "foundation.static-analysis",
+      "item_version": 1,
+      "actions": [
+        "先採既有工具與規則集，記錄適用目標與入口，不把所有文字規範自動翻成 lint",
+        "適用時於輸入邊界驗證資料，並使用既有型別或模型表達不變量；此為選用改善指引，不增加 verified 條件，也不證明分析設定已強制不變量"
+      ],
+      "targets": "既有分析設定與驗證說明",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "analysis.config@1"
+        ],
+        "logic": "all；工具、範圍、分析內容與入口一致",
+        "expected": "可確認分析設定，不宣稱程式已通過分析",
+        "attestation": {
+          "question": "請指出分析哪些錯誤、排除哪些路徑與如何執行；若採原生預設，附工具版本與依據",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 lint；本文件 5.4 Style & Validation",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L390–401 Type Safety and Invariants",
+          "use": "規則卡沿用，設定不證明不變量生效"
+        }
+      ]
+    }
+  ]
+}

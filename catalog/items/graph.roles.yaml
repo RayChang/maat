@@ -1,0 +1,97 @@
+{
+  "id": "graph.roles",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "各節點的責任、輸入、輸出與決定範圍是否明確",
+  "layer": {
+    "primary": "graph",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "Graph 適用且選定流程需要分配節點責任，不以節點已命名或已有角色文件為條件",
+    "omission": "無法知道誰負責哪件事及交付什麼",
+    "alternative": "人、函式或同一 agent 的多步驟也可，不要求多 agent 或多角色檔"
+  },
+  "applicability": {
+    "applicable": "確認有明確多步驟／節點流程，或選定 Graph 作為目標",
+    "not_applicable": "確認單次直接工作已足夠，且無相反使用證據",
+    "unknown": "只有 subagent 定義檔，無流程用途與使用／目標確認",
+    "questions": [
+      "哪些節點實際負責工作？各自產出及權限是什麼？是否真的需要分節點？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "流程節點清單",
+      "角色／函式／人工責任宣告",
+      "任務輸入輸出"
+    ],
+    "missing_input": "缺少角色檔可用流程文件；不能從工具安裝推論 Graph 已採用",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐節點核對職責、輸入輸出與不能自行決定的事，辨識重疊或無人負責的交付",
+    "limits": "定義存在不證明節點正在執行；不同 agent 名稱不保證獨立性"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；每個指定節點都有一致責任與交付宣告，已知衝突有處理",
+    "partial": "部分節點完整，其他責任或交付未定",
+    "missing": "Graph 範圍已確認，完整材料無節點職責宣告",
+    "unknown": "只有角色名字、工具定義或用途未定",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "subagent-roles",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先移除無必要的角色分拆，再為必要節點定義單一明確責任",
+      "列出交付及權限，不把 agent 數量當成果"
+    ],
+    "targets": "既有流程與節點定義",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；用代表任務對照每個節點的輸入、責任與輸出",
+    "expected": "無未解的必要交付責任衝突，不聲稱實際協作成功",
+    "attestation": {
+      "question": "請說明代表任務分給哪些節點、各自能決定什麼及交付給誰",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 P3、G1；F-01",
+      "use": "合併並歸 Graph"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L47–62 Subagent Strategy",
+      "use": "規則卡沿用，非強制平行化"
+    }
+  ]
+}
