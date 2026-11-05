@@ -5,7 +5,7 @@ export interface Versions {
   adapters: { name: string; adapter_version: string; verified_cli_range: string; checked_at: string }[];
 }
 export const versions: Versions = {
-  tool_version: "0.1.0", report_schema: "1.0.0", policy_schema: "1.0.0",
+  tool_version: "0.2.0", report_schema: "1.0.0", policy_schema: "1.0.0",
   ledger_schema: "1.0.0",
   catalog_version: "0.1.0",
   adapters: ["claude-code", "codex", "copilot"].map(name => ({

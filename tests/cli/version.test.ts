@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { versions } from "../../src/versions";
 test("version contains every schema and adapter without running a target", () => {
-  expect(versions.tool_version).toBe("0.1.0");
+  expect(versions.tool_version).toBe("0.2.0");
   expect(versions.catalog_version).toBe("0.1.0");
   expect(versions.adapters.map(a => a.name)).toEqual(["claude-code", "codex", "copilot"]);
   for (const key of ["report_schema", "policy_schema", "ledger_schema"] as const)
