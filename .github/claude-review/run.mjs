@@ -1,5 +1,6 @@
 // Runs Claude through the Agent SDK for PR reviews and @claude mentions, then posts the answer as one PR comment.
 // The workflows load this runner from the base/default branch, never from the PR under review.
+// The workflow file itself still comes from the PR (pull_request events), so PRs that touch .github/ never auto-merge.
 // The agent gets no shell: only Read/Glob/Grep (kept inside the checkout by guard.mjs) and fixed-argument
 // git/gh tools that run in this process, so secrets never reach anything the agent controls.
 // In review mode the verdict goes to $GITHUB_OUTPUT (result=APPROVED|CHANGES_REQUESTED); the merge step trusts only that.
@@ -12,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createSdkMcpServer, query, tool } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { MCP_TOOLS, checkTool, safeRepoPath } from "./guard.mjs";
+import { MCP_TOOLS, checkTool, insideWorkdir, safeRepoPath } from "./guard.mjs";
 
 const env = (name) => {
   const value = process.env[name];
@@ -103,6 +104,20 @@ const repoServer = createSdkMcpServer({
 });
 
 // --- Run ----------------------------------------------------------------------------------------
+
+// Grep and Glob without a path walk the whole checkout, so refuse to run if any tracked symlink leads outside it.
+let tracked;
+try {
+  tracked = execFileSync("git", ["ls-files", "-s", "-z"], { cwd: workdir, env: gitEnv, maxBuffer: 64 * 1024 * 1024 }).toString("utf8");
+} catch {
+  fail("Claude 未執行：無法列出專案檔案。");
+}
+const escapingLink = tracked
+  .split("\0")
+  .filter((entry) => entry.startsWith("120000 "))
+  .map((entry) => entry.slice(entry.indexOf("\t") + 1))
+  .find((path) => !insideWorkdir(workdir, path));
+if (escapingLink !== undefined) fail(`Claude 未執行：PR 含有指向專案外的符號連結 \`${escapingLink}\`。`);
 
 let systemPrompt = "";
 try {

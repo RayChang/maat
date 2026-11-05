@@ -19,7 +19,7 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # gh pr merge in the merge step
       pull-requests: write
       issues: write
       actions: read
