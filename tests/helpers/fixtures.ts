@@ -59,3 +59,57 @@ fixtureFiles["configured-not-effective"]={"AGENTS.md":guide,".maat/policy.yaml":
  ".github/workflows/ci.yml":"on: [push]\njobs:\n  verify:\n    steps:\n      - run: bun run verify\n        continue-on-error: true\n"};
 fixtureFiles["external-evidence"]={"confirmation.evidence.yaml":json({...policy(task,full).attestations[0]!,
  source:"User-supplied review",provided_by:"ray"})};
+import { mkdir,writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { flowFixture } from "./flow";
+import { fingerprintSet } from "../../src/flow/model";
+import { makeSnapshot } from "../../src/snapshot";
+import { buildReport } from "../../src/report";
+import { loadCatalog } from "../../src/catalog/load";
+import { canonical,repoId } from "../../src/canonical";
+export async function materializeFlowFixtures():Promise<void> {
+const dir="tests/fixtures/flow";await mkdir(dir,{recursive:true});
+const root=resolve("tests/fixtures/flow-target");await mkdir(root,{recursive:true});
+const task="Goal: Fix login feedback.\nScope: Login view.\nConstraints: Keep the API.\nAcceptance: Show Invalid password.\n";
+await writeFile(root+"/task.md","old");await writeFile(root+"/dirty.md","user work");
+const f=flowFixture();
+f.repository={path:root,repo_id:repoId(root)};f.plan.repository=f.repository;
+const {plan_fingerprint:old,...unsigned}=f.plan;f.plan.plan_fingerprint=sha256(canonical(unsigned));
+const baseMaterials=[{path:"task.md",text:"old",sha256:sha256("old")},{path:"dirty.md",text:"user work",sha256:sha256("user work")}];
+const candidate=baseMaterials.map(x=>x.path==="task.md"?{...x,text:task,sha256:sha256(task)}:x);
+const p=emptyPolicy();
+p.applicability["prompt.task-spec"]={status:"applicable"};p.targets["prompt.task-spec"]={baseline:true};
+p.attestations=[{check:"prompt.task-spec",claims:["goal","scope","constraints","acceptance"],
+ answer:"This representative task states the agreed goal, scope, constraint, and observable acceptance result.",
+ materials:[{path:"task.md",sha256:sha256(task),lines:"1-4",quote:task.trim()}],scope:{},attested_by:"ray",
+ attested_at:"2026-11-04T01:00:00Z",expires_at:"2027-02-01",catalog_version:"0.1.0",adapter_version:{}}];
+const inventory=(materials:typeof baseMaterials)=>({root,repo_id:repoId(root),materials,complete:true,
+ include:["."],exclude:[],limits:[],diagnostics:[]});
+const base=makeSnapshot(inventory(baseMaterials),emptyPolicy()),after=makeSnapshot(inventory(candidate),p);
+const report=buildReport(after,p,await loadCatalog("catalog"),"2026-11-04T12:00:00Z","provided-policy");
+const envelope=(id:string,seq:number,payload:unknown)=>({id,expected_seq:seq,expires_at:"2027-01-01",by:"ray",payload});
+const before=f.plan.fingerprints,afterFP=candidate.map(({path,sha256})=>({path,sha256}));
+const approval={plan_fingerprint:f.plan.plan_fingerprint,base_fingerprint:fingerprintSet(before),
+ actions:["a"],paths:["task.md"],mode:"plan",candidate_fingerprint:null,max_fixes:{a:1},role_approvals:[],
+ expires_at:"2027-01-01",by:"ray",source:"user"};
+const evaluation={action:"a",candidate_fingerprint:fingerprintSet(afterFP),
+ method:{kind:"manual",id:"task-review",version:"1"},result:"pass",report,execution:null,
+ evidence:afterFP,by:"ray",source:"user confirmation",unknown_effects:[]};
+const files:Record<string,unknown>={
+ "drift-before.json":envelope("drift",1,{action:"a",fingerprints:before.map(x=>x.path==="dirty.md"?{...x,sha256:sha256("outside change")}:x)}),
+ "out-of-scope-after.json":envelope("outside",2,{action:"a",fingerprints:afterFP.map(x=>x.path==="dirty.md"?{...x,sha256:sha256("outside change")}:x)}),
+ "expired-approval.json":{...envelope("expired",0,approval),expires_at:"2026-01-01"},
+ "base.plan.json":f.plan,"base.snapshot.json":base,"candidate.snapshot.json":after,"candidate.report.json":report,
+ "approval.json":envelope("approval",0,approval),
+ "stale-approval.json":envelope("stale",0,{...approval,plan_fingerprint:sha256("different plan")}),
+ "before.json":envelope("before",1,{action:"a",fingerprints:before}),
+ "after.json":envelope("after",2,{action:"a",fingerprints:afterFP}),
+ "change.json":envelope("change",3,{action:"a",candidate_fingerprint:fingerprintSet(afterFP),paths:["task.md"],
+ executed_by:"host",source:"fixture host",unknown_effects:[]}),
+ "evaluation.json":envelope("evaluation",4,evaluation),
+ "timeout.json":envelope("timeout",4,{...evaluation,result:"timeout",report:null,unknown_effects:["Remote result uncertain"]}),
+ "unauthorized-command.json":envelope("command",4,{...evaluation,method:{kind:"command",id:"bun test",version:"1"},
+ execution:{action:"a",command:"bun test",script:null,inputs:afterFP,cwd:root,permissions:["read"],effects:[]}})
+};
+for(const [name,value] of Object.entries(files))await writeFile(dir+"/"+name,JSON.stringify(value,null,2)+"\n");
+}

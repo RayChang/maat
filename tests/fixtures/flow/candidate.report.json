@@ -1,0 +1,2281 @@
+{
+  "valid_until": "2027-02-01T00:00:00.000Z",
+  "report_schema": "1.0.0",
+  "tool_version": "0.1.0",
+  "catalog_version": "0.1.0",
+  "adapters": [],
+  "generated_at": "2026-11-04T12:00:00Z",
+  "repository": {
+    "path": "/Users/raychangmbp2025/Workspace/agent-engineering-toolkit/.worktrees/t41/tests/fixtures/flow-target",
+    "repo_id": "2992fef45ef58af6"
+  },
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": [],
+    "limits": [],
+    "diagnostics": [],
+    "complete": true
+  },
+  "target_clis": [],
+  "policy": {
+    "path": "provided-policy",
+    "policy_schema": "1.0.0",
+    "valid": true,
+    "diagnostics": []
+  },
+  "items": [
+    {
+      "id": "context.code-navigation",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "如何定位定義、使用處與相關測試？是否能提供代表查詢結果？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "method",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "scope",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "definition_sample",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "relationship_sample",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.index-to-details",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "agent 必須找到哪些細節？現有導航是否足夠？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "navigation",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "topic_mapping",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.instruction-authority",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "專案用哪些 CLI？是否有放在 repo 外的使用者或組織層級指引？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "conflicts",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.instruction-hygiene",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些內容影響工作？哪些與工具已檢查規則重複？重複是否刻意？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "purpose",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "candidate_resolution",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.just-in-time",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些規範只適用特定路徑？由誰在何時選用？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "contexts",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "sources",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "timing",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "overlap",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.lessons-store",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "經驗存哪裡？誰可以讀？何時回看？是否要 commit？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "location",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "entry_rules",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "retrieval",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "maintenance",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "sensitive_boundary",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.maintenance",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "誰更新規範？程式或工具改版時怎麼知道要更新？過期內容怎麼處理？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "owner",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "trigger",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "disposition",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "known_invalid_items",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "context.reusable-workflows",
+      "item_version": 1,
+      "layer": "context",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪項工作反覆發生？現有作法放在哪裡、何時取用？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "repeated_work",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "steps",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "inputs_outputs",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "verification",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "retrieval",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.automated-tests",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些行為要靠自動化回歸確認？是否已有原生 runner 或外部測試？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "case",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "entrypoint",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "relevance",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.ci-verification",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "這個專案是否以 CI 驗證變更？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "invocation",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.dev-environment",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "在哪裡開發？需哪些版本、服務與設定？是否真的有 build 步驟？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "versions",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "dependencies",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "setup",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "services",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "build",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.security-signals",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "要核對哪些安全控制？由誰處理告警？哪些控制位於平台而非 repo？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "controls",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "scope",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "responsibility",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.static-analysis",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些分析規則適用？使用 lint、型別檢查還是語言原生工具？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "tool",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "targets",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "rules",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "entrypoint",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "foundation.verify-entrypoints",
+      "item_version": 1,
+      "layer": "foundation",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪個指令是權威的驗證進入點？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "declared",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "documented",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.declared-routes",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些轉移允許？誰選路？沒有符合條件或多條同時符合時怎麼辦？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "nodes",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "routes",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "router",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "terminal",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unmatched",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "ambiguous",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.edge-gates",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪幾條轉移受控？要求什麼證據？無法檢查時能否繼續？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "edges",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "conditions",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "evidence",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unknown",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "exceptions",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.handoff-contract",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "誰交給誰？最少需要哪些內容？接收者如何辨識版本與缺件？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "edges",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "content",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "version",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "acceptance",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "missing",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "stale",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.human-gates",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些點必須等人？誰有權核准？未回覆、拒絕與改版後怎麼辦？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "location",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "version",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "rejection",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "no_reply",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "expiry",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.roles",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些節點實際負責工作？各自產出及權限是什麼？是否真的需要分節點？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "responsibilities",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "inputs",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "outputs",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "conflicts",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "graph.shared-state",
+      "item_version": 1,
+      "layer": "graph",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪個來源對哪部分狀態具權威？誰可讀寫？衝突與過期怎麼處理？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "structure",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "views",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "writers",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "version",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "conflicts",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.agent-observability",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "要診斷什麼？需要哪些資料？agent 如何取得且避免讀到敏感內容？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "signals",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "access",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "sample",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "scope",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "redaction",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.cost-visibility",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "量測 run、任務還是專案？哪些是實際值、估算或不可得？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "metrics",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unit",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "period",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "source",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "coverage",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "estimation",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.high-risk-controls",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些變更被視為高風險？要哪些額外驗證、資料保護與授權？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "risk_targets",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "controls",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "responsibility",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "exceptions",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.isolation",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些檔案、程序、資料與憑證共享？每件工作的隔離方式是什麼？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "identity",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "isolated",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "shared",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "cleanup",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "limits",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.mechanical-enforcement",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些規範可由機器判定？在哪個邊界檢查？失敗是提示還是阻擋？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "mapping",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "boundary",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "consequence",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.outcome-measurement",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "什麼算成功？哪些任務納入？取消、未知與失敗如何計算？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "population",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "criteria",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "source",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "calculation",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unknown_cancel",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "bias",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.permission-boundaries",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些資源可讀寫？哪些命令或外部操作需核准？使用者／組織層是否覆蓋 repo？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "resources",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "rules",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "approval",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "precedence",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "external_overrides",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.recovery",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "工作改變哪些狀態？結果不明時如何查核？哪些效果不可逆、誰能決定處置？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "local",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "other_effects",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.review-ownership",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些品質無法機械判斷？由誰審、按什麼標準、如何記錄？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "scope",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "reviewer",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "criteria",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "result",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "absence",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.untrusted-input",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些來源不可信？其中的指令能否改變任務或權限？哪些資料不得外傳？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "sources",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "data_instruction_boundary",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "sensitive_boundary",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "conflicts",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "harness.verification-wiring",
+      "item_version": 1,
+      "layer": "harness",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "專案用哪些 CLI？各工作流程由誰驗收？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "trigger",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "input",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "evaluator",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "delivery",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [
+          {
+            "capability": "verify.entrypoint-declared@1",
+            "status": "unknown"
+          }
+        ],
+        "recommended": [
+          {
+            "capability": "verify.entrypoint-documented@1",
+            "status": "unknown"
+          }
+        ]
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.acceptance-policy",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "接受哪個成果版本？誰依什麼證據接受？允許自我宣告或例外嗎？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "candidate",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "criteria",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "evidence",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "accept",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "reject",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "exception",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.bounds",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "限制哪個 attempt／run／goal？如何計數、何時重置？誰可增加額度？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "limit",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unit",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "scope",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "accounting",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "exhaustion",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "increase_authority",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.feedback-routing",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "專案有哪些迴圈？各自在什麼邊界驗證？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "outcomes",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unevaluable",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [
+          {
+            "capability": "evaluation.config-declared@1",
+            "status": "unknown"
+          }
+        ],
+        "recommended": [
+          {
+            "capability": "evaluation.run-recorded@1",
+            "status": "unknown"
+          }
+        ]
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.learn-from-results",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些結果會提出改善？誰採納或拒絕？如何判斷改善有用？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "proposal",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "decision",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "adoption_rejection",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "review_effect",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "history_or_not_started",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.resumable-state",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "恢復者要知道什麼？狀態存哪裡？如何區分已完成、待查與尚未執行？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "goal",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "step",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "known_unknown",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "version",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "next",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "recovery_owner",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "effects",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.stopping-policy",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "誰可取消？什麼情況等待或停止？阻塞後如何恢復？遠端操作如何處理？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "normal",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "cancel",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "blocked",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "resume",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "exhausted",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "responsibility",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "loop.trigger",
+      "item_version": 1,
+      "layer": "loop",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "有哪些專案層迴圈？誰能啟動？什麼事件啟動哪個範圍？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "initiator",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "event",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "target",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "authority",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "prompt.output-contract",
+      "item_version": 1,
+      "layer": "prompt",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "誰消費輸出？需要什麼格式？如何回報未跑的驗證與原因？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "receiver",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "format",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "summary",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "locations",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "verification",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "unperformed",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "unknown"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "prompt.plan-for-nontrivial",
+      "item_version": 1,
+      "layer": "prompt",
+      "scope": {},
+      "applicability": {
+        "status": "unknown",
+        "reason": "",
+        "questions": [
+          "哪些任務必須先規劃？計畫失效時如何停下調整？"
+        ]
+      },
+      "result": "unknown",
+      "claims": [
+        {
+          "name": "activation",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "steps",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "verification",
+          "status": "unknown",
+          "basis": []
+        },
+        {
+          "name": "replan",
+          "status": "unknown",
+          "basis": []
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "advanced",
+        "when_status": "fails"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "prompt.task-spec",
+      "item_version": 1,
+      "layer": "prompt",
+      "scope": {},
+      "applicability": {
+        "status": "applicable",
+        "reason": "",
+        "questions": [
+          "任務通常在哪裡描述？什麼算完成？哪些部分不在範圍內？"
+        ]
+      },
+      "result": "verified",
+      "claims": [
+        {
+          "name": "goal",
+          "status": "holds",
+          "basis": [
+            "attested_by_user: ray #0"
+          ]
+        },
+        {
+          "name": "scope",
+          "status": "holds",
+          "basis": [
+            "attested_by_user: ray #0"
+          ]
+        },
+        {
+          "name": "constraints",
+          "status": "holds",
+          "basis": [
+            "attested_by_user: ray #0"
+          ]
+        },
+        {
+          "name": "acceptance",
+          "status": "holds",
+          "basis": [
+            "attested_by_user: ray #0"
+          ]
+        }
+      ],
+      "observations": [],
+      "assessments": [],
+      "attestations": [
+        {
+          "ref": "0",
+          "valid": true,
+          "invalid_reason": null
+        }
+      ],
+      "prerequisites": {
+        "required": [],
+        "recommended": []
+      },
+      "baseline": {
+        "tier": "baseline",
+        "when_status": "holds"
+      },
+      "diagnostics": []
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "verify.entrypoint-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "verify.entrypoint-documented@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "evaluation.config-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "evaluation.run-recorded@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "recovery.local-source-plan-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "recovery.effect-plan-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "loop.acceptance-policy-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "loop.stopping-policy-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    },
+    {
+      "id": "loop.feedback-routing-declared@1",
+      "status": "unknown",
+      "scope": {},
+      "basis": []
+    }
+  ],
+  "layers": [
+    {
+      "layer": "foundation",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [],
+      "baseline_gaps": [
+        "foundation.automated-tests",
+        "foundation.ci-verification",
+        "foundation.static-analysis",
+        "foundation.verify-entrypoints"
+      ],
+      "usage_signals": []
+    },
+    {
+      "layer": "prompt",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [],
+      "baseline_gaps": [
+        "prompt.output-contract"
+      ],
+      "usage_signals": []
+    },
+    {
+      "layer": "context",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [],
+      "baseline_gaps": [
+        "context.index-to-details",
+        "context.instruction-authority"
+      ],
+      "usage_signals": []
+    },
+    {
+      "layer": "harness",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [
+        "worker_evaluation_requirement"
+      ],
+      "baseline_gaps": [
+        "harness.permission-boundaries",
+        "harness.recovery",
+        "harness.verification-wiring"
+      ],
+      "usage_signals": []
+    },
+    {
+      "layer": "loop",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [
+        "conditional_evaluation_requirement"
+      ],
+      "baseline_gaps": [
+        "loop.acceptance-policy",
+        "loop.bounds",
+        "loop.feedback-routing",
+        "loop.resumable-state",
+        "loop.stopping-policy",
+        "loop.trigger"
+      ],
+      "usage_signals": []
+    },
+    {
+      "layer": "graph",
+      "scope": {},
+      "status": "pending",
+      "authoritative": true,
+      "missing_required": [],
+      "unknown_required": [
+        "conditional_evaluation_requirement"
+      ],
+      "baseline_gaps": [
+        "graph.declared-routes",
+        "graph.edge-gates",
+        "graph.handoff-contract",
+        "graph.human-gates",
+        "graph.roles",
+        "graph.shared-state"
+      ],
+      "usage_signals": []
+    }
+  ],
+  "protection_observations": [],
+  "diagnostics": []
+}

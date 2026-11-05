@@ -1,0 +1,83 @@
+{
+  "report_schema": "1.0.0",
+  "versions": {
+    "tool_version": "0.1.0",
+    "report_schema": "1.0.0",
+    "policy_schema": "1.0.0",
+    "ledger_schema": "1.0.0",
+    "catalog_version": "0.1.0",
+    "adapters": []
+  },
+  "catalog_version": "0.1.0",
+  "repository": {
+    "path": "/Users/raychangmbp2025/Workspace/agent-engineering-toolkit/.worktrees/t41/tests/fixtures/flow-target",
+    "repo_id": "2992fef45ef58af6"
+  },
+  "source_report_fingerprint": "c325a289f210ebecc1e75b6c6221de2b7cbff3bb8e72c9ae420b2182cb0f0310",
+  "actions": [
+    {
+      "id": "a",
+      "check": "prompt.task-spec",
+      "scope": {},
+      "item_version": 1,
+      "rule_cards": [
+        {
+          "id": "plan-before-act",
+          "version": 1
+        }
+      ],
+      "template": null,
+      "current": "missing",
+      "target": "verified",
+      "kind": "modify",
+      "actions": [
+        "Fill the task contract"
+      ],
+      "target_path": "task.md",
+      "command": null,
+      "depends_on": [],
+      "necessity": "required",
+      "risk": "low",
+      "needs_approval": true,
+      "role_approval_required": false,
+      "verification": {
+        "detectors": [],
+        "expected": "Four task claims established",
+        "manual": "Confirm task content"
+      },
+      "fingerprints": [
+        {
+          "path": "task.md",
+          "sha256": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"
+        },
+        {
+          "path": "dirty.md",
+          "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
+        }
+      ],
+      "fix_conditions": {
+        "max_fixes": 1
+      },
+      "stop_conditions": [
+        "scope_change",
+        "fingerprint_drift",
+        "unknown_effect",
+        "no_progress",
+        "cancelled"
+      ]
+    }
+  ],
+  "fingerprints": [
+    {
+      "path": "task.md",
+      "sha256": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"
+    },
+    {
+      "path": "dirty.md",
+      "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
+    }
+  ],
+  "authoritative": true,
+  "diagnostics": [],
+  "plan_fingerprint": "6bac338f5bd157e9e938095bec5bc816d94f7d1c7a794b6a9f8f77f669816c03"
+}

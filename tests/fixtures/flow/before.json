@@ -1,0 +1,19 @@
+{
+  "id": "before",
+  "expected_seq": 1,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "action": "a",
+    "fingerprints": [
+      {
+        "path": "task.md",
+        "sha256": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"
+      },
+      {
+        "path": "dirty.md",
+        "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
+      }
+    ]
+  }
+}

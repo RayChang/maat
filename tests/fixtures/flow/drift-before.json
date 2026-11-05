@@ -1,0 +1,19 @@
+{
+  "id": "drift",
+  "expected_seq": 1,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "action": "a",
+    "fingerprints": [
+      {
+        "path": "task.md",
+        "sha256": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"
+      },
+      {
+        "path": "dirty.md",
+        "sha256": "44f9adf7e7837ffd4b1fac4a2f7383b03e29bc77cafc58de50373d51f101d7ba"
+      }
+    ]
+  }
+}

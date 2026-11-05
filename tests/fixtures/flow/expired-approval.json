@@ -1,0 +1,25 @@
+{
+  "id": "expired",
+  "expected_seq": 0,
+  "expires_at": "2026-01-01",
+  "by": "ray",
+  "payload": {
+    "plan_fingerprint": "6bac338f5bd157e9e938095bec5bc816d94f7d1c7a794b6a9f8f77f669816c03",
+    "base_fingerprint": "de086e56320e93dbb0b140168d2580d5b07f4828842fbf26907c187191d2f959",
+    "actions": [
+      "a"
+    ],
+    "paths": [
+      "task.md"
+    ],
+    "mode": "plan",
+    "candidate_fingerprint": null,
+    "max_fixes": {
+      "a": 1
+    },
+    "role_approvals": [],
+    "expires_at": "2027-01-01",
+    "by": "ray",
+    "source": "user"
+  }
+}

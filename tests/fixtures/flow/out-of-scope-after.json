@@ -1,0 +1,19 @@
+{
+  "id": "outside",
+  "expected_seq": 2,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "action": "a",
+    "fingerprints": [
+      {
+        "path": "task.md",
+        "sha256": "acca5eac05d380c57dd2b40c6bf2e37eb4d8961f0e0deb855182e496e9c0600e"
+      },
+      {
+        "path": "dirty.md",
+        "sha256": "44f9adf7e7837ffd4b1fac4a2f7383b03e29bc77cafc58de50373d51f101d7ba"
+      }
+    ]
+  }
+}
