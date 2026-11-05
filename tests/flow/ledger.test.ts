@@ -55,7 +55,9 @@ test("flow list skips a corrupt ledger, keeps the healthy flows, and reports the
  const listed=await listFlows(dir,f.repository.repo_id);
  expect(listed.flows.map(x=>x.flow_id)).toEqual(["fixture"]);
  expect(listed.diagnostics).toEqual(["ledger_skipped: "+broken+": ledger_truncated"]);
- const cli=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04","/tmp");
+ // The cwd must not contain the ledger directory, or it would count as inside the repository.
+ const cwd=await mkdtemp(join(tmpdir(),"maat-cwd-"));
+ const cli=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04",cwd).finally(()=>rm(cwd,{recursive:true,force:true}));
  expect(cli.code).toBe(0);expect(JSON.parse(cli.stdout)).toEqual([]);
  expect(cli.stderr).toBe("ledger_skipped: "+await realpath(broken)+": ledger_truncated\n");
 }));
