@@ -14,7 +14,7 @@
 | 項目 | 決定 | 依據 |
 |---|---|---|
 | 指令名稱 | `maat` | 使用者 2026-11-04 選定，典故為古埃及審判中與真理之羽比重的天秤：拿證據對標準，不打分數 |
-| 套件名稱與安裝 | `package.json` 名稱 `maat`、`private: true`、`bin` 為 `maat`；從 GitHub 倉庫安裝：`bunx github:<owner>/agent-engineering-toolkit` | 使用者 Q-B 選擇先不發布；`npm` 上 `maat` 已被占用，日後若發布改掛 scope。倉庫目前尚無遠端，推送前先建 |
+| 套件名稱與安裝 | `package.json` 名稱 `maat`、`private: true`、`bin` 為 `maat`；從 GitHub 倉庫安裝：`bunx github:RayChang/maat` | 使用者 Q-B 選擇先不發布；`npm` 上 `maat` 已被占用，日後若發布改掛 scope。遠端倉庫定為 `github.com/RayChang/maat`（私有，2026-11-05 使用者決定），建立前先確認 |
 | 語言與執行環境 | TypeScript，Bun ≥ 1.4.0 | 使用者選 B。Bun 1.4.4 為 2026-10-22 最新版；`Bun.YAML.parse`、`Bun.TOML.parse`、`JSON.parse` 皆內建，執行期零依賴 |
 | 開發依賴 | `typescript`、`@types/bun` | 僅用於 `tsc --noEmit` 型別檢查；`bun test` 為測試執行器 |
 | 支援平台 | macOS、Linux 列入測試矩陣；Windows 標 `unknown`，不保證 | 使用者 Q-A 決定 |
@@ -225,14 +225,14 @@ tests/                  bun test；正反 fixtures、unknown、不適用、衝�
 兩種 `maat` Skill 以 Agent Skills 標準格式放在 `skills/<name>/SKILL.md`，由使用者在專案內執行
 
 ```text
-npx skills add <owner>/agent-engineering-toolkit -a claude-code|codex|github-copilot
+npx skills add RayChang/maat -a claude-code|codex|github-copilot
 ```
 
 安裝到各 CLI 的 skill 目錄（Claude Code `.claude/skills/`、Codex 與 Copilot `.agents/skills/`）。一份來源服務三家；CLI 差異寫在 Skill 內文，不分三份維護。`skills` 工具需 Node 22.20 以上，這是使用者環境的前提，不是 `maat` 的執行依賴。
 
 **所有 skill 都用 `npx skills add` 安裝**（使用者 2026-11-04 補充決定）。規則卡裡「skill 形式」的作法，不做成帶替換詞的範本，而是寫成通用 skill 放在本倉庫 `skills/<name>/`。專案專屬的值（驗證指令、路徑、目標 CLI）不寫死在 skill 裡，skill 執行時從該專案的 `.maat/policy.yaml` 或既有指引讀取；讀不到就先問，不猜。改善 Skill 只維護一版，不分五層；層與題目的差異由規則卡和範本資料承擔。
 
-`maat plan` 遇到 skill 形式的改善動作時，輸出的是安裝指令，例如 `npx skills add <owner>/agent-engineering-toolkit --skill verify-before-done -a claude-code`，並標示這是命令執行，需另取得執行授權或由使用者自己執行；不由 `maat` 代跑。
+`maat plan` 遇到 skill 形式的改善動作時，輸出的是安裝指令，例如 `npx skills add RayChang/maat --skill verify-before-done -a claude-code`，並標示這是命令執行，需另取得執行授權或由使用者自己執行；不由 `maat` 代跑。
 
 範本資源庫只剩文字、設定、script 三種形式（例如指引段落、hook 設定、CI 步驟）。流程是：`maat plan` 依報告與政策把替換詞填好，填不出來的列「先詢問」；改善 Skill 展示後取得核准，由既有 agent（host）寫入專案。`maat` 本身不寫入專案。
 

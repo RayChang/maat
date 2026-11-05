@@ -314,8 +314,8 @@ These are implementation choices left open by the source contracts, not new prod
 
 ## OPEN QUESTIONS
 
-No unresolved question blocks this v1 specification, and no coverage row is unassigned.
+Both questions below were resolved by the user on 2026-11-05; no coverage row is unassigned.
 
-- The GitHub owner and remote URL do not exist in the recorded repository configuration. Supply them before distribution or a concrete skill-install command; the CLI asks when a plan needs this value.
-- No exercised live CLI version ranges are supplied. Adapter metadata remains verified_cli_range: unverified; checked_at records the official-document review date, not runtime certification. No additional executor or certification subsystem is included.
+- RESOLVED 2026-11-05: GitHub repository is `RayChang/maat` (private). Install with `bunx github:RayChang/maat`; skills with `npx skills add RayChang/maat`. The remote is created only when the user approves the push.
+- RESOLVED 2026-11-05 (user chose A): v1 adapters record `verified_cli_range: unverified` and `checked_at` = the official-document review date; no exercised version range is claimed. A range is added only after each CLI is run live once. No additional executor or certification subsystem is included.
 
