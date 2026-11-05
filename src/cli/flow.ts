@@ -26,8 +26,8 @@ function status(f:Flow):unknown {
  return {...f,remaining_fixes:Object.fromEntries(f.plan.actions.map(a=>[a.id,
  Math.max(0,(f.approval?.max_fixes[a.id]??0)-(f.fixes[a.id]??0))]))};
 }
-export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promise<CommandResult> {
- let repository=await realpath(resolve(cwd)),value:unknown;
+export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promise<CommandResult&{diagnostics?:string[]}> {
+ let repository=await realpath(resolve(cwd)),value:unknown,diagnostics:string[]|undefined;
  if(a.command==="flow open") {
   const plan=parsePlan(await input(one(a,"plan")!)),snapshot=parseSnapshot(await input(one(a,"snapshot")!));
   repository=plan.repository.path;
@@ -36,7 +36,10 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
  } else {
   if(a.command==="flow list")repository=await repositoryRoot(cwd);
   const dir=a.command==="flow list"?await ledgerDirectory(repository,one(a,"ledger")):await flowDirectory(one(a,"flow")!,one(a,"ledger"));
-  if(a.command==="flow list")value=(await listFlows(dir,repoId(repository))).map(f=>({flow_id:f.flow_id,status:f.status}));
+  if(a.command==="flow list") {
+   const listed=await listFlows(dir,repoId(repository));diagnostics=listed.diagnostics;
+   value=listed.flows.map(f=>({flow_id:f.flow_id,status:f.status}));
+  }
   else {
    const id=one(a,"flow")!,flow=await readFlow(dir,id);repository=flow.repository.path;
    if(a.command==="flow status")value=status(flow);
@@ -72,5 +75,5 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
   }
  }
  return {value,markdown:"# maat "+a.command+"\n\n\u0060\u0060\u0060json\n"+JSON.stringify(value,null,2)+"\n\u0060\u0060\u0060\n",
- repository,kind:a.command.replaceAll(" ","-")};
+ repository,kind:a.command.replaceAll(" ","-"),diagnostics};
 }
