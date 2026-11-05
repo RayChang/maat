@@ -1,4 +1,4 @@
-// Run with: node --test .github/claude-review/
+// Run with: node --test .github/claude-review/guard.test.mjs
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -21,6 +21,8 @@ test("Read stays inside the checkout", () => {
   assert.ok(!allowed("Read", { file_path: "../../etc/passwd" }));
   assert.ok(!allowed("Read", { file_path: "to-outside" }));
   assert.ok(!allowed("Read", { file_path: "broken" }));
+  assert.ok(!allowed("Read", { file_path: "~/.bashrc" }));
+  assert.ok(!allowed("Read", { file_path: "$HOME/.bashrc" }));
 });
 
 test("Glob and Grep stay inside the checkout", () => {
@@ -31,6 +33,8 @@ test("Glob and Grep stay inside the checkout", () => {
   assert.ok(allowed("Grep", { pattern: "foo/../bar" }));
   assert.ok(!allowed("Grep", { pattern: "x", glob: "../**" }));
   assert.ok(!allowed("Grep", { pattern: "x", path: "to-outside" }));
+  assert.ok(!allowed("Grep", { pattern: "x", path: "~" }));
+  assert.ok(!allowed("Glob", { pattern: "~/**" }));
 });
 
 test("only Read, Glob, Grep and the listed MCP tools are available", () => {

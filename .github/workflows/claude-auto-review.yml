@@ -19,10 +19,11 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
-      contents: write # gh pr merge in the merge step
+      contents: read
       pull-requests: write
       issues: write
-      actions: read
+    outputs:
+      result: ${{ steps.review.outputs.result }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -66,9 +67,18 @@ jobs:
           SYSTEM_PROMPT_FILE: ${{ runner.temp }}/.github/claude-review/system-prompt.md
         run: node "$RUNNER_TEMP/.github/claude-review/run.mjs"
 
-      # Trusts only the verdict the review step above wrote to its own output, never PR comments.
+  # Trusts only the verdict the review step wrote to its own output, never PR comments.
+  # Separate job so only this step, which runs no PR code and no agent, holds contents: write.
+  merge:
+    needs: review
+    if: needs.review.outputs.result == 'APPROVED'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
       - name: Merge when this run's review approved this head commit
-        if: steps.review.outputs.result == 'APPROVED'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

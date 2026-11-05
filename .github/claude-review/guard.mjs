@@ -11,6 +11,8 @@ export const MCP_TOOLS = [
 
 /** True when `path` (relative to `workdir`, or absolute) resolves inside `workdir`. */
 export function insideWorkdir(workdir, path) {
+  // Claude Code expands a leading ~ to $HOME, which resolve() would treat as a plain directory name.
+  if (path.startsWith("~") || path.includes("$")) return false;
   const absolute = resolve(workdir, path);
   let real;
   try {
@@ -51,7 +53,7 @@ export function checkTool(workdir, name, input) {
       }
       // Glob's pattern and Grep's glob filter are paths; Grep's pattern is a regex and is not checked.
       const pathPattern = name === "Glob" ? input.pattern : input.glob;
-      if (typeof pathPattern === "string" && (isAbsolute(pathPattern) || pathPattern.split(/[\\/]/).includes(".."))) {
+      if (typeof pathPattern === "string" && (isAbsolute(pathPattern) || pathPattern.startsWith("~") || pathPattern.split(/[\\/]/).includes(".."))) {
         return `${name} patterns must stay inside the repository checkout.`;
       }
       return true;
