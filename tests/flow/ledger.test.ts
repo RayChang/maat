@@ -55,7 +55,9 @@ test("flow list skips a corrupt ledger, keeps the healthy flows, and reports the
  const listed=await listFlows(dir,f.repository.repo_id);
  expect(listed.flows.map(x=>x.flow_id)).toEqual(["fixture"]);
  expect(listed.diagnostics).toEqual(["ledger_skipped: "+broken+": ledger_truncated"]);
- const cli=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04","/tmp");
+ // The cwd must not contain the ledger directory, or it would count as inside the repository.
+ const cwd=await mkdtemp(join(tmpdir(),"maat-cwd-"));
+ const cli=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04",cwd).finally(()=>rm(cwd,{recursive:true,force:true}));
  expect(cli.code).toBe(0);expect(JSON.parse(cli.stdout)).toEqual([]);
  expect(cli.stderr).toBe("ledger_skipped: "+await realpath(broken)+": ledger_truncated\n");
 }));
@@ -66,6 +68,15 @@ test("a leftover breaker lock makes stale clearing fail safe",()=>withLedger(asy
  expect(await readFile(join(dir,"fixture.lock"),"utf8")).toBe(stale);
  expect(await readFile(join(dir,"fixture.lock.break"),"utf8")).toBe("123");
 }));
+test("a non-ENOENT error while reading the lock reports ledger_lock_io and leaves the lock",async()=>{
+ const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
+ try{
+  await writeFile(lock,"held");
+  await expect(takeLock(lock,async()=>{throw Object.assign(new Error("denied"),{code:"EACCES"});}))
+   .rejects.toMatchObject({code:1,message:"ledger_lock_io"});
+  expect(await readFile(lock,"utf8")).toBe("held");
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
 test("a lock released between EEXIST and the read is retried, and release removes only our own lock",async()=>{
  const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
  try{

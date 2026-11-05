@@ -84,7 +84,7 @@ export async function takeLock(lock:string,read=(p:string)=>readFile(p,"utf8")):
  const token=JSON.stringify({pid:process.pid,host:hostname(),nonce:randomUUID()});
  if(await attempt(lock,token))return token;
  let seen:string|null;
- try{seen=await read(lock);}catch(e){if(errno(e)!=="ENOENT")throw lockedError();seen=null;}
+ try{seen=await read(lock);}catch(e){if(errno(e)!=="ENOENT")throw new MaatError(1,"ledger_lock_io");seen=null;}
  if(seen!==null) {
   if(!stale(seen))throw lockedError();
   await breakStale(lock,seen,read);
