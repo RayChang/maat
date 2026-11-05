@@ -35,6 +35,9 @@ test("Glob and Grep stay inside the checkout", () => {
   assert.ok(!allowed("Grep", { pattern: "x", path: "to-outside" }));
   assert.ok(!allowed("Grep", { pattern: "x", path: "~" }));
   assert.ok(!allowed("Glob", { pattern: "~/**" }));
+  assert.ok(!allowed("Glob", { pattern: "{..,x}/**" }));
+  assert.ok(!allowed("Grep", { pattern: "x", glob: "{..}/*" }));
+  assert.ok(allowed("Grep", { pattern: "x", glob: "*.ts" }));
 });
 
 test("only Read, Glob, Grep and the listed MCP tools are available", () => {

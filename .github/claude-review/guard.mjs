@@ -53,7 +53,8 @@ export function checkTool(workdir, name, input) {
       }
       // Glob's pattern and Grep's glob filter are paths; Grep's pattern is a regex and is not checked.
       const pathPattern = name === "Glob" ? input.pattern : input.glob;
-      if (typeof pathPattern === "string" && (isAbsolute(pathPattern) || pathPattern.startsWith("~") || pathPattern.split(/[\\/]/).includes(".."))) {
+      // Brace expansion such as {..,src} could rebuild a parent path, so `..` and `{` are refused anywhere.
+      if (typeof pathPattern === "string" && (isAbsolute(pathPattern) || /^~|\.\.|\{/.test(pathPattern))) {
         return `${name} patterns must stay inside the repository checkout.`;
       }
       return true;
