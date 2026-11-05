@@ -1,7 +1,7 @@
 name: Claude Auto Review and Merge
 
 # Reviews every PR automatically. A PR into develop is merged when either
-# the Claude review (posted by github-actions[bot]) approves the current head commit, the Linux CI job passes on that commit, and the PR does not touch .github/;
+# the Claude review step of the same run approves the current head commit, the Linux CI job passes on that commit, and the PR does not touch .github/;
 # or the repository owner comments "/merge <head commit sha>" (7-40 hex chars).
 # Other bases are never merged.
 
@@ -22,25 +22,40 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-      actions: read
+    outputs:
+      result: ${{ steps.review.outputs.result }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }} # the reviewed commit, not the merge preview
           fetch-depth: 0
           persist-credentials: false
 
-      # Review rules come from the base branch, never from the copy this PR may change.
-      - name: Prepare Claude review runner
+      # The runner, its lockfile and the review rules come from the base branch; nothing from the PR runs with secrets.
+      - name: Prepare Claude review runner (base branch copy)
+        id: prep
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          cp -R .github/claude-review "$RUNNER_TEMP/claude-review"
-          git show "origin/$BASE_REF:.github/claude-review/system-prompt.md" > "$RUNNER_TEMP/system-prompt.md" \
-            || rm -f "$RUNNER_TEMP/system-prompt.md"
-          npm ci --prefix "$RUNNER_TEMP/claude-review" --ignore-scripts --no-audit --no-fund
+          set -o pipefail
+          if git archive "origin/$BASE_REF" .github/claude-review | tar -x -C "$RUNNER_TEMP"; then
+            npm ci --prefix "$RUNNER_TEMP/.github/claude-review" --ignore-scripts --no-audit --no-fund
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report missing review runner
+        if: steps.prep.outputs.ready != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR" --body "審查未執行：base 分支沒有 .github/claude-review。"
 
       - name: Run Claude review (Agent SDK)
+        id: review
+        if: steps.prep.outputs.ready == 'true'
         env:
           MODE: review
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -50,16 +65,26 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           REVIEW_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
-          SYSTEM_PROMPT_FILE: ${{ runner.temp }}/system-prompt.md
-        run: node "$RUNNER_TEMP/claude-review/run.mjs"
+          SYSTEM_PROMPT_FILE: ${{ runner.temp }}/.github/claude-review/system-prompt.md
+        run: node "$RUNNER_TEMP/.github/claude-review/run.mjs"
 
-      - name: Merge when the review approved this head commit
+  # Trusts only the verdict the review step wrote to its own output, never PR comments.
+  # Separate job so only this step, which runs no PR code and no agent, holds contents: write.
+  merge:
+    needs: review
+    if: needs.review.outputs.result == 'APPROVED'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Merge when this run's review approved this head commit
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
           SHA: ${{ github.event.pull_request.head.sha }}
-          RUN: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           base=$(gh pr view "$PR" --json baseRefName --jq .baseRefName)
           head=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
@@ -85,17 +110,7 @@ jobs:
           if [ "$ci" != "completed success" ]; then
             echo "Not merging: Linux CI for $SHA is '${ci:-missing}'"; exit 0
           fi
-          body=$(gh api --paginate --slurp "repos/$GH_REPO/issues/$PR/comments" \
-            | jq -r --arg run "REVIEW_RUN: $RUN" '[.[][] | select(.user.login == "github-actions[bot]" and (.body | contains($run)))] | last | .body // ""' \
-            | tr -d '\r' | sed 's/[[:space:]]*$//')
-          ran=$(printf '%s\n' "$body" | grep '^REVIEW_RUN:' | tail -n1 || true)
-          reviewed=$(printf '%s\n' "$body" | grep '^REVIEWED_SHA:' | tail -n1 || true)
-          result=$(printf '%s\n' "$body" | grep '^REVIEW_RESULT:' | tail -n1 || true)
-          if [ "$ran" = "REVIEW_RUN: $RUN" ] && [ "$reviewed" = "REVIEWED_SHA: $SHA" ] && [ "$result" = "REVIEW_RESULT: APPROVED" ]; then
-            gh pr merge "$PR" --merge --delete-branch --match-head-commit "$SHA"
-          else
-            echo "Not merging: latest review result for $SHA is '$result'"
-          fi
+          gh pr merge "$PR" --merge --delete-branch --match-head-commit "$SHA"
 
   owner-merge:
     if: |
