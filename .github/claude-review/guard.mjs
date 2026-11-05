@@ -9,6 +9,8 @@ export const MCP_TOOLS = [
   "mcp__context7__resolve-library-id",
 ];
 
+const SAFE_GLOB = /^[A-Za-z0-9_.*?\/ -]+$/;
+
 /** True when `path` (relative to `workdir`, or absolute) resolves inside `workdir`. */
 export function insideWorkdir(workdir, path) {
   // Claude Code expands a leading ~ to $HOME, which resolve() would treat as a plain directory name.
@@ -53,8 +55,8 @@ export function checkTool(workdir, name, input) {
       }
       // Glob's pattern and Grep's glob filter are paths; Grep's pattern is a regex and is not checked.
       const pathPattern = name === "Glob" ? input.pattern : input.glob;
-      // Brace expansion such as {..,src} could rebuild a parent path, so `..` and `{` are refused anywhere, as is `$`.
-      if (typeof pathPattern === "string" && (isAbsolute(pathPattern) || /^~|\.\.|\{|\$/.test(pathPattern))) {
+      // Allow-list: plain path characters plus * and ?. Braces, brackets, escapes, ~ and $ could rebuild a parent path.
+      if (typeof pathPattern === "string" && (!SAFE_GLOB.test(pathPattern) || pathPattern.startsWith("/") || pathPattern.includes(".."))) {
         return `${name} patterns must stay inside the repository checkout.`;
       }
       return true;
