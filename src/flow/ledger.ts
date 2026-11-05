@@ -1,6 +1,7 @@
-import { mkdir,open,readFile,readdir,unlink } from "node:fs/promises";
+import { link,mkdir,open,readFile,readdir,unlink,writeFile } from "node:fs/promises";
 import { join,resolve } from "node:path";
-import { homedir } from "node:os";
+import { homedir,hostname } from "node:os";
+import { randomUUID } from "node:crypto";
 import type { Flow,FlowEvent,LedgerRow,Transition } from "./types";
 import { MaatError } from "../errors";
 import { canonical,repoId } from "../canonical";
@@ -54,13 +55,50 @@ async function textFile(dir:string,id:string):Promise<string> {
 export async function readFlow(dir:string,id:string):Promise<Flow> {
  return decode(await textFile(dir,id)).flow;
 }
+const errno=(e:unknown)=>(e as NodeJS.ErrnoException).code;
+const lockedError=()=>new MaatError(1,"ledger_locked");
+async function attempt(lock:string,token:string):Promise<boolean> {
+ const temp=lock+"."+randomUUID()+".tmp";
+ try{await writeFile(temp,token,{flag:"wx",mode:0o600});await link(temp,lock);return true;}
+ catch(e){if(errno(e)==="EEXIST")return false;throw new MaatError(1,"ledger_lock_io");}
+ finally{await unlink(temp).catch(()=>{});}
+}
+// Assumes a hostname identifies one pid namespace; containers sharing a hostname and state dir could misjudge a live owner.
+function stale(text:string):boolean {
+ let owner;try{owner=JSON.parse(text);}catch{return false;}
+ if(owner?.host!==hostname()||!Number.isInteger(owner.pid)||owner.pid<=0)return false;
+ try{process.kill(owner.pid,0);return false;}catch(e){return errno(e)==="ESRCH";}
+}
+// Stale clearing is serialized by `<lock>.break`: only its holder may delete the lock, and only if the lock still
+// holds the exact stale content judged, so a fresh lock taken meanwhile is never removed.
+async function breakStale(lock:string,seen:string,read:(p:string)=>Promise<string>):Promise<void> {
+ const breaker=lock+".break";let handle;
+ try{handle=await open(breaker,"wx",0o600);}catch(e){throw errno(e)==="EEXIST"?lockedError():new MaatError(1,"ledger_lock_io");}
+ try{
+  await handle.writeFile(String(process.pid));await handle.close();handle=undefined;
+  if(await read(lock).catch(()=>null)===seen)
+   await unlink(lock).catch(e=>{if(errno(e)!=="ENOENT")throw new MaatError(1,"ledger_lock_io");});
+ }finally{await handle?.close();await unlink(breaker).catch(()=>{});}
+}
+export async function takeLock(lock:string,read=(p:string)=>readFile(p,"utf8")):Promise<string> {
+ const token=JSON.stringify({pid:process.pid,host:hostname(),nonce:randomUUID()});
+ if(await attempt(lock,token))return token;
+ let seen:string|null;
+ try{seen=await read(lock);}catch(e){if(errno(e)!=="ENOENT")throw new MaatError(1,"ledger_lock_io");seen=null;}
+ if(seen!==null) {
+  if(!stale(seen))throw lockedError();
+  await breakStale(lock,seen,read);
+ }
+ if(await attempt(lock,token))return token;
+ throw lockedError();
+}
+export async function releaseLock(lock:string,token:string):Promise<void> {
+ try{if(await readFile(lock,"utf8")===token)await unlink(lock);}catch{}
+}
 async function locked<T>(dir:string,id:string,root:string,operation:()=>Promise<T>):Promise<T> {
  dir=await outsidePath(dir,root);await mkdir(dir,{recursive:true});
- const lock=join(dir,id+".lock");let handle;
- try{handle=await open(lock,"wx",0o600);}catch(e){
-  throw new MaatError(1,(e as NodeJS.ErrnoException).code==="EEXIST"?"ledger_locked":"ledger_lock_io");
- }
- try{return await operation();}finally{await handle.close();await unlink(lock);}
+ const lock=join(dir,id+".lock"),token=await takeLock(lock);
+ try{return await operation();}finally{await releaseLock(lock,token);}
 }
 export async function createLedger(dir:string,f:Flow):Promise<void> {
  await locked(dir,f.flow_id,f.repository.path,async()=>{
@@ -82,10 +120,14 @@ export async function appendEvent(dir:string,id:string,event:FlowEvent):Promise<
   return transition;
  });
 }
-export async function listFlows(dir:string,repositoryId:string):Promise<Flow[]> {
+export async function listFlows(dir:string,repositoryId:string):Promise<{flows:Flow[];diagnostics:string[]}> {
  let names:string[];
  try{names=(await readdir(dir)).filter(n=>n.endsWith(".jsonl")).sort();}
- catch(e){if((e as NodeJS.ErrnoException).code==="ENOENT")return [];throw new MaatError(3,"ledger_read");}
- const flows=await Promise.all(names.map(n=>readFlow(dir,n.slice(0,-6))));
- return flows.filter(f=>f.repository.repo_id===repositoryId);
+ catch(e){if(errno(e)==="ENOENT")return {flows:[],diagnostics:[]};throw new MaatError(3,"ledger_read");}
+ const flows:Flow[]=[],diagnostics:string[]=[];
+ for(const n of names) {
+  try{flows.push(await readFlow(dir,n.slice(0,-6)));}
+  catch(e){if(!(e instanceof MaatError)||e.code!==3)throw e;diagnostics.push("ledger_skipped: "+join(dir,n)+": "+e.message);}
+ }
+ return {flows:flows.filter(f=>f.repository.repo_id===repositoryId),diagnostics};
 }
