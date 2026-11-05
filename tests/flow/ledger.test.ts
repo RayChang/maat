@@ -29,27 +29,24 @@ test("restart preserves counters, bytes append, and locks reject races",async()=
   await expect(appendEvent(dir,f.flow_id,flowEvent(t.flow,"resume",{}))).rejects.toMatchObject({code:1,message:"ledger_locked"});
  }finally{await rm(dir,{recursive:true,force:true});}
 });
-let dead:number|undefined;
-async function deadPid():Promise<number> {
- if(dead===undefined){const child=Bun.spawn(["true"]);await child.exited;dead=child.pid;}
- return dead;
-}
+// No process can have this pid: kill(pid,0) throws ESRCH on Linux and macOS.
+const DEAD_PID=2147483647;
 async function withLedger(run:(dir:string,f:ReturnType<typeof flowFixture>)=>Promise<void>):Promise<void> {
  const dir=await mkdtemp(join(tmpdir(),"maat-ledger-"));
  try{const f=flowFixture();await createLedger(dir,f);await run(dir,f);}finally{await rm(dir,{recursive:true,force:true});}
 }
 test("a lock left by a dead pid on this host is cleared once and the append succeeds",()=>withLedger(async(dir,f)=>{
- await writeFile(join(dir,"fixture.lock"),JSON.stringify({pid:await deadPid(),host:hostname()}));
+ await writeFile(join(dir,"fixture.lock"),JSON.stringify({pid:DEAD_PID,host:hostname()}));
  expect((await appendEvent(dir,f.flow_id,flowEvent(f,"stop",{}))).accepted).toBe(true);
  expect((await readFlow(dir,f.flow_id)).seq).toBe(1);
  expect((await readdir(dir)).sort()).toEqual(["fixture.jsonl"]);
 }));
 for(const [name,content] of [
  ["a live pid",()=>JSON.stringify({pid:process.pid,host:hostname()})],
- ["another hostname",()=>JSON.stringify({pid:dead,host:hostname()+"-elsewhere"})],
+ ["another hostname",()=>JSON.stringify({pid:DEAD_PID,host:hostname()+"-elsewhere"})],
  ["unparseable content",()=>"{not json"],
 ] as const) test("a lock with "+name+" still yields ledger_locked",()=>withLedger(async(dir,f)=>{
- await deadPid();await writeFile(join(dir,"fixture.lock"),content());
+ await writeFile(join(dir,"fixture.lock"),content());
  await expect(appendEvent(dir,f.flow_id,flowEvent(f,"stop",{}))).rejects.toMatchObject({code:1,message:"ledger_locked"});
  expect(await readFile(join(dir,"fixture.lock"),"utf8")).toBe(content());
 }));
@@ -63,7 +60,7 @@ test("flow list skips a corrupt ledger, keeps the healthy flows, and reports the
  expect(cli.stderr).toBe("ledger_skipped: "+await realpath(broken)+": ledger_truncated\n");
 }));
 test("a leftover breaker lock makes stale clearing fail safe",()=>withLedger(async(dir,f)=>{
- const stale=JSON.stringify({pid:await deadPid(),host:hostname()});
+ const stale=JSON.stringify({pid:DEAD_PID,host:hostname()});
  await writeFile(join(dir,"fixture.lock"),stale);await writeFile(join(dir,"fixture.lock.break"),"123");
  await expect(appendEvent(dir,f.flow_id,flowEvent(f,"stop",{}))).rejects.toMatchObject({code:1,message:"ledger_locked"});
  expect(await readFile(join(dir,"fixture.lock"),"utf8")).toBe(stale);
@@ -86,7 +83,7 @@ test("stale clearing keeps a lock that was replaced before the breaker re-read",
  const dir=await mkdtemp(join(tmpdir(),"maat-lock-")),lock=join(dir,"x.lock");
  const fresh=JSON.stringify({pid:process.pid,host:hostname(),nonce:"fresh"});
  try{
-  await writeFile(lock,JSON.stringify({pid:await deadPid(),host:hostname()}));let reads=0;
+  await writeFile(lock,JSON.stringify({pid:DEAD_PID,host:hostname()}));let reads=0;
   await expect(takeLock(lock,async p=>{if(++reads===2)await writeFile(p,fresh);return readFile(p,"utf8");}))
    .rejects.toMatchObject({code:1,message:"ledger_locked"});
   expect(reads).toBe(2);expect(await readFile(lock,"utf8")).toBe(fresh);

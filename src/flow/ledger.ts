@@ -63,6 +63,7 @@ async function attempt(lock:string,token:string):Promise<boolean> {
  catch(e){if(errno(e)==="EEXIST")return false;throw new MaatError(1,"ledger_lock_io");}
  finally{await unlink(temp).catch(()=>{});}
 }
+// Assumes a hostname identifies one pid namespace; containers sharing a hostname and state dir could misjudge a live owner.
 function stale(text:string):boolean {
  let owner;try{owner=JSON.parse(text);}catch{return false;}
  if(owner?.host!==hostname()||!Number.isInteger(owner.pid)||owner.pid<=0)return false;
