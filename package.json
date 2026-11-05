@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "bin": {
-    "maat": "dist/cli.js"
+    "maat": "src/cli/index.ts"
   },
   "engines": {
     "bun": ">=1.4.0"

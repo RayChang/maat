@@ -1,0 +1,502 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "maat report schema 1",
+  "type": "object",
+  "required": [
+    "report_schema",
+    "tool_version",
+    "catalog_version",
+    "adapters",
+    "generated_at",
+    "repository",
+    "scope",
+    "target_clis",
+    "policy",
+    "items",
+    "capabilities",
+    "layers",
+    "protection_observations",
+    "diagnostics",
+    "valid_until"
+  ],
+  "properties": {
+    "report_schema": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "tool_version": {
+      "type": "string"
+    },
+    "catalog_version": {
+      "type": "string"
+    },
+    "adapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "adapter_version",
+          "verified_cli_range",
+          "checked_at",
+          "surfaces"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "adapter_version": {
+            "type": "string"
+          },
+          "verified_cli_range": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": "string"
+          },
+          "surfaces": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "surface",
+                "support",
+                "reason"
+              ],
+              "properties": {
+                "surface": {
+                  "type": "string"
+                },
+                "support": {
+                  "enum": [
+                    "supported",
+                    "unsupported",
+                    "unknown"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "object",
+      "required": [
+        "path",
+        "repo_id"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "repo_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$"
+        }
+      }
+    },
+    "scope": {
+      "type": "object"
+    },
+    "target_clis": {
+      "type": "array"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "path",
+        "policy_schema",
+        "valid",
+        "diagnostics"
+      ],
+      "properties": {
+        "policy_schema": {
+          "type": "string"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "item_version",
+          "layer",
+          "scope",
+          "applicability",
+          "result",
+          "claims",
+          "observations",
+          "assessments",
+          "attestations",
+          "prerequisites",
+          "baseline",
+          "diagnostics"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "item_version": {
+            "type": "number"
+          },
+          "layer": {
+            "enum": [
+              "foundation",
+              "prompt",
+              "context",
+              "harness",
+              "loop",
+              "graph"
+            ]
+          },
+          "scope": {
+            "type": "object"
+          },
+          "applicability": {
+            "type": "object",
+            "required": [
+              "status",
+              "reason",
+              "questions"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "applicable",
+                  "not_applicable",
+                  "unknown"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "questions": {
+                "type": "array"
+              }
+            }
+          },
+          "result": {
+            "enum": [
+              "verified",
+              "partial",
+              "missing",
+              "not_applicable",
+              "unknown"
+            ]
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "status",
+                "basis"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "holds",
+                    "fails",
+                    "unknown"
+                  ]
+                },
+                "basis": {
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "detector",
+                "version",
+                "scope",
+                "evidence",
+                "limits",
+                "facts",
+                "diagnostics"
+              ],
+              "properties": {
+                "detector": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "number"
+                },
+                "scope": {
+                  "type": "object"
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "sha256",
+                      "lines"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "lines": {
+                        "type": "string",
+                        "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+                      },
+                      "quote": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "limits": {
+                  "type": "array"
+                },
+                "facts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "subject",
+                      "claim",
+                      "status",
+                      "scope",
+                      "basis",
+                      "complete"
+                    ],
+                    "properties": {
+                      "subject": {
+                        "type": "string"
+                      },
+                      "claim": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "enum": [
+                          "holds",
+                          "fails",
+                          "unknown"
+                        ]
+                      },
+                      "scope": {
+                        "type": "object"
+                      },
+                      "basis": {
+                        "type": "string"
+                      },
+                      "complete": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "diagnostics": {
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "assessments": {
+            "type": "array"
+          },
+          "attestations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "ref",
+                "valid",
+                "invalid_reason"
+              ],
+              "properties": {
+                "ref": {
+                  "type": "string"
+                },
+                "valid": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "prerequisites": {
+            "type": "object",
+            "required": [
+              "required",
+              "recommended"
+            ],
+            "properties": {
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "capability",
+                    "status"
+                  ],
+                  "properties": {
+                    "capability": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "holds",
+                        "fails",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              },
+              "recommended": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "capability",
+                    "status"
+                  ],
+                  "properties": {
+                    "capability": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "holds",
+                        "fails",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "baseline": {
+            "type": "object",
+            "required": [
+              "tier",
+              "when_status"
+            ],
+            "properties": {
+              "tier": {
+                "enum": [
+                  "baseline",
+                  "advanced"
+                ]
+              },
+              "when_status": {
+                "enum": [
+                  "holds",
+                  "fails",
+                  "unknown"
+                ]
+              }
+            }
+          },
+          "diagnostics": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "scope",
+          "basis"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "holds",
+              "fails",
+              "unknown"
+            ]
+          },
+          "scope": {
+            "type": "object"
+          },
+          "basis": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "layer",
+          "scope",
+          "status",
+          "authoritative",
+          "missing_required",
+          "unknown_required",
+          "baseline_gaps",
+          "usage_signals"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "adopted",
+              "ready",
+              "blocked",
+              "not_applicable",
+              "in_use_unsupported",
+              "pending"
+            ]
+          },
+          "authoritative": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "protection_observations": {
+      "type": "array"
+    },
+    "diagnostics": {
+      "type": "array"
+    }
+  }
+}
