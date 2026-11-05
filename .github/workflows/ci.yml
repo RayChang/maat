@@ -16,3 +16,4 @@ jobs:
       - run: bun run typecheck
       - run: bun run build
       - run: bun dist/cli.js version --json
+      - run: node --test .github/claude-review/
