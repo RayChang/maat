@@ -36,6 +36,7 @@ test("Glob and Grep stay inside the checkout", () => {
   assert.ok(!allowed("Grep", { pattern: "x", path: "~" }));
   assert.ok(!allowed("Glob", { pattern: "~/**" }));
   assert.ok(!allowed("Glob", { pattern: "{..,x}/**" }));
+  assert.ok(!allowed("Glob", { pattern: "$HOME/**" }));
   assert.ok(!allowed("Grep", { pattern: "x", glob: "{..}/*" }));
   assert.ok(allowed("Grep", { pattern: "x", glob: "*.ts" }));
 });
