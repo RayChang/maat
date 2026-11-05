@@ -1,0 +1,21 @@
+import { test, expect } from "bun:test";
+import { loadCatalog } from "../../src/catalog/load";
+import { validateCatalog, assertAcyclic } from "../../src/catalog/validate";
+test("frozen catalog validates and corrupted references fail", async () => {
+  const c=await loadCatalog("catalog");
+  expect(()=>validateCatalog(c)).not.toThrow();
+  const duplicate=structuredClone(c); duplicate.items.push(duplicate.items[0]!);
+  expect(()=>validateCatalog(duplicate)).toThrow("duplicate_id");
+  const ref=structuredClone(c); ref.items[0]!.inspection.detectors.push("absent@1");
+  expect(()=>validateCatalog(ref)).toThrow("unknown_reference");
+  const missing=structuredClone(c); delete (missing.items[0] as unknown as Record<string,unknown>).sources;
+  expect(()=>validateCatalog(missing)).toThrow("missing_contract");
+  expect(()=>assertAcyclic({a:["b"],b:["a"]})).toThrow("dependency_cycle");
+  const cycle=structuredClone(c);
+  cycle.items.find(i=>i.id==="foundation.verify-entrypoints")!.prerequisites.required=["verify.entrypoint-declared@1"];
+  expect(()=>validateCatalog(cycle)).toThrow("dependency_cycle");
+  const malformed=structuredClone(c);(malformed.items[0]!.inspection as unknown as {detectors:unknown}).detectors=null;
+  expect(()=>validateCatalog(malformed)).toThrow("catalog_shape");
+  const run=Bun.spawnSync([process.execPath,"src/cli/index.ts","catalog","validate"]);
+  expect(run.exitCode).toBe(0);
+});
