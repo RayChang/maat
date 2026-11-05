@@ -24,8 +24,6 @@ test("only detectors without a producer are reported unsupported",async()=>{
   "loop.bounds@1",
   "loop.routing-declared@1",
   "loop.self-declared@1",
-  "loop.stop-gate.model@1",
-  "loop.stop-hook-active-checked@1",
   "loop.trigger@1",
   "policy.human-evaluation@1",
   "recovery.local-plan@1",
