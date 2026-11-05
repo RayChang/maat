@@ -1,0 +1,97 @@
+{
+  "id": "harness.agent-observability",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "agent 所需的診斷資料是否有可取用路徑、範圍與代表證據",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "問題可能難定位，但不強迫所有任務有 log、畫面、指標三者",
+    "alternative": "針對需求的最小日誌或截圖即可"
+  },
+  "applicability": {
+    "applicable": "任務需要觀察應用、服務或執行結果",
+    "not_applicable": "確認沒有這類診斷需求",
+    "unknown": "需要的訊號或 agent 可見範圍未定",
+    "questions": [
+      "要診斷什麼？需要哪些資料？agent 如何取得且避免讀到敏感內容？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "診斷需求",
+      "取用方法與權限宣告",
+      "使用者提供的去敏感樣本"
+    ],
+    "missing_input": "只有工具設定時只說有設定，不能說 agent 看得到",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐需求核對資料位置、查詢範圍、去敏感方式與目前版本的取用樣本",
+    "limits": "不啟動服務或自行抓監控資料，不保證未來可用"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；指定診斷訊號有取用路徑與同範圍樣本，已確認權限與去敏感限制",
+    "partial": "方法已宣告，但部分訊號的可取用樣本不足",
+    "missing": "完整範圍與有效確認均無必要訊號的取得方式",
+    "unknown": "僅 log 目錄／工具名稱或資料來源未明",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "instrumentation",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "優先暴露既有必要訊號與查詢方式",
+      "設計最小權限與去敏感樣本，不收集原始秘密或完整個資"
+    ],
+    "targets": "既有診斷取用說明與設定",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；各指定訊號的取得方式、樣本、範圍與限制相符",
+    "expected": "可定位去敏感診斷證據；不以 log 存在代表 agent 可讀",
+    "attestation": {
+      "question": "請提供一次必要訊號的取用紀錄與樣本，說明權限、版本及未涵蓋部分",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視第 8 節 Harness 可觀測性",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L345–357 Instrumentation",
+      "use": "規則卡沿用"
+    }
+  ]
+}

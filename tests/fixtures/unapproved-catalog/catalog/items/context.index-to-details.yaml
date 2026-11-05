@@ -1,0 +1,102 @@
+{
+  "id": "context.index-to-details",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "分散的必要專案知識是否有可用的導航與細節來源",
+  "layer": {
+    "primary": "context",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "必要知識分散且 agent 需要依導航取用",
+    "omission": "找不到任務需要的權威細節",
+    "alternative": "既有 README 連結或目錄足夠即可，不另造索引檔"
+  },
+  "applicability": {
+    "applicable": "必要規範、架構或操作知識分散於多處",
+    "not_applicable": "一份短指引已涵蓋必要內容且經確認",
+    "unknown": "不清楚哪些知識必要或外部知識無材料",
+    "questions": [
+      "agent 必須找到哪些細節？現有導航是否足夠？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "權威指引或指定入口",
+      "必要知識清單",
+      "連結目的地或提供的外部材料"
+    ],
+    "missing_input": "不自行抓外部 URL；目的地不可讀時保留位置與未知",
+    "detectors": [
+      "documents.local-links@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐必要主題核對入口、連結與目的地內容；概覽有定位用途時可保留",
+    "limits": "連結可解析不代表內容正確或 agent 已讀取"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；每個指定必要主題都有可定位細節，入口與主題對應經確認",
+    "partial": "部分主題可找到，其他必要主題缺路徑或目的地未知",
+    "missing": "完整範圍內沒有通往任何必要分散知識的導航且已確認",
+    "unknown": "只有索引標題、必要主題未定或遠端來源未提供",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "repo-discovery",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "在既有入口加入少量主題到細節的連結",
+      "修復失效路徑，保留有用途的概覽，不複製整份細節"
+    ],
+    "targets": "現有指引或 README",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [
+      "documents.local-links@1"
+    ],
+    "logic": "all；逐指定主題核對可定位來源與有效性",
+    "expected": "路徑可解析或有有效外部材料，不以檔案數量衡量完整性",
+    "attestation": {
+      "question": "請示範從入口找到各必要主題的來源，確認內容仍適用於目前版本",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 C1",
+      "use": "保留題目並限定適用性"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L548–565 Repository Discovery Playbook",
+      "use": "規則卡沿用"
+    }
+  ]
+}

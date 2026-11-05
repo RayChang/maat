@@ -1,0 +1,56 @@
+{
+  "report_schema": "1.0.0",
+  "versions": {
+    "tool_version": "0.1.0",
+    "report_schema": "1.0.0",
+    "policy_schema": "1.0.0",
+    "ledger_schema": "1.0.0",
+    "catalog_version": "0.1.0",
+    "adapters": [
+      {
+        "name": "claude-code",
+        "adapter_version": "1.0.0",
+        "verified_cli_range": "unverified",
+        "checked_at": "2026-11-04"
+      },
+      {
+        "name": "codex",
+        "adapter_version": "1.0.0",
+        "verified_cli_range": "unverified",
+        "checked_at": "2026-11-04"
+      },
+      {
+        "name": "copilot",
+        "adapter_version": "1.0.0",
+        "verified_cli_range": "unverified",
+        "checked_at": "2026-11-04"
+      }
+    ]
+  },
+  "repository": {
+    "path": "/maat-fixture/flow-target",
+    "repo_id": "9710a920ca9d5d3d"
+  },
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": [],
+    "limits": [],
+    "diagnostics": [],
+    "complete": true
+  },
+  "target_clis": [],
+  "materials": [
+    {
+      "path": "task.md",
+      "sha256": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4"
+    },
+    {
+      "path": "dirty.md",
+      "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
+    }
+  ],
+  "adapters": [],
+  "observations": []
+}

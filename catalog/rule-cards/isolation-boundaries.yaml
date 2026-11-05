@@ -1,0 +1,44 @@
+{
+  "id": "isolation-boundaries",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.isolation",
+      "item_version": 1,
+      "actions": [
+        "先描述既有共享與隔離範圍",
+        "依衝突風險提出最小隔離選項；不要把隔離當成復原"
+      ],
+      "targets": "工作區或執行環境政策",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；以兩件工作可能共享的資源逐項核對宣告",
+        "expected": "可說明彼此是否共享及未知，不宣稱技術隔離已實測",
+        "attestation": {
+          "question": "請列出兩個工作環境的共享項與隔離項；若主張強制隔離，附同範圍驗證紀錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H4",
+          "use": "保留題目並限定宣告主張"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 Harness；本文件 4.4 人工證據邊界",
+          "use": "隔離與復原分離"
+        }
+      ]
+    }
+  ]
+}

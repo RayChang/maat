@@ -1,0 +1,104 @@
+{
+  "id": "graph.human-gates",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "政策要求人決定時，核准位置、權責、版本與未回覆處置是否明確",
+  "layer": {
+    "primary": "graph",
+    "related": [
+      "harness"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "流程政策要求人工核准",
+    "omission": "不知道何時停下等誰決定，或把未回覆當同意",
+    "alternative": "既有 issue／PR 核准流程即可，不要求畫圖或新 UI"
+  },
+  "applicability": {
+    "applicable": "指定流程要求人的批准或選擇",
+    "not_applicable": "確認政策沒有人工決策點，附理由",
+    "unknown": "是否需人或誰被授權尚未確認",
+    "questions": [
+      "哪些點必須等人？誰有權核准？未回覆、拒絕與改版後怎麼辦？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "人工決策政策",
+      "流程位置",
+      "授權來源",
+      "決策紀錄格式"
+    ],
+    "missing_input": "有 reviewer 名稱不代表具接受權；外部核准需明確材料",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐核准點核對提出內容、成果版本、權責、回覆種類與有效期／變更後重審",
+    "limits": "有核准設定不代表人已看過或真的核准；不代替人作決定"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；所有要求人工決策點有位置、授權依據及拒絕／未回覆／版本變更處置",
+    "partial": "有核准位置與角色，但有效性或未回覆處置不足",
+    "missing": "人工核准需求已確認，完整流程卻無核准約定",
+    "unknown": "只有 approve 標籤或無授權依據的人名",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "human-approval",
+        "version": 1
+      },
+      {
+        "id": "high-risk-protocol",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "將已有人工決策要求對應到流程位置與成果版本",
+      "明示拒絕、未回覆與過期如何處理，不把沉默當核准"
+    ],
+    "targets": "既有流程的人工決策契約",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以接受、拒絕、未回覆與成果改版核對決策有效性",
+    "expected": "人工權責與流程對應可追溯；不主張任何實際核准已發生",
+    "attestation": {
+      "question": "請指出授權來源與版本綁定方式，說明不回覆或核准後改版時的下一步",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 G4",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L568–585 High-Risk Change Protocol",
+      "use": "政策改寫，並非 gist 要求所有變更人工核准"
+    }
+  ]
+}

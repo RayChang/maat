@@ -1,0 +1,25 @@
+{
+  "id": "stale",
+  "expected_seq": 0,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "plan_fingerprint": "e4eaa2228c8c29e03d6a964b49fed291fe1779a3846f48761b9af0a67c61bd4b",
+    "base_fingerprint": "de086e56320e93dbb0b140168d2580d5b07f4828842fbf26907c187191d2f959",
+    "actions": [
+      "a"
+    ],
+    "paths": [
+      "task.md"
+    ],
+    "mode": "plan",
+    "candidate_fingerprint": null,
+    "max_fixes": {
+      "a": 1
+    },
+    "role_approvals": [],
+    "expires_at": "2027-01-01",
+    "by": "ray",
+    "source": "user"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "loop-stop-policy",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "loop.stopping-policy",
+      "item_version": 1,
+      "actions": [
+        "分開寫停止原因、成果接受與可否恢復",
+        "指定取消權責與執行中效果查核，不無限阻擋退出"
+      ],
+      "targets": "迴圈控制政策",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；逐適用分支核對決策者、動作、結果紀錄與恢復條件",
+        "expected": "停止原因有依據，取消不被宣稱為外部操作一定未發生",
+        "attestation": {
+          "question": "請用取消、阻塞與既有額度耗盡例子說明處置；沒有某分支時附不適用理由",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L1",
+          "use": "拆分後保留停止問題"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D3、L-D5、L-D6",
+          "use": "停止與接受分離"
+        }
+      ]
+    }
+  ]
+}

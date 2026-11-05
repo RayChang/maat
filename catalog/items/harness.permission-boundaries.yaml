@@ -1,0 +1,109 @@
+{
+  "id": "harness.permission-boundaries",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "各選定 CLI 的讀寫、命令、網路與核准邊界是否有明確宣告",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "選定 CLI 接觸專案資源",
+    "omission": "無法知道可執行哪些操作及何時要詢問",
+    "alternative": "可引用已知版本的預設或組織政策，不要求每個 repo 複製設定"
+  },
+  "applicability": {
+    "applicable": "選定 CLI 會讀取或操作本機／外部資源",
+    "not_applicable": "確認範圍內沒有這類 agent 使用",
+    "unknown": "未選 CLI、版本或有效設定層次",
+    "questions": [
+      "哪些資源可讀寫？哪些命令或外部操作需核准？使用者／組織層是否覆蓋 repo？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "選定 CLI 與 adapter",
+      "repo 權限設定",
+      "明確提供的預設／外部政策"
+    ],
+    "missing_input": "repo 無設定時不推論沒有權限邊界，請確認外部政策或預設",
+    "detectors": [
+      "permissions.declarations@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user"
+    ],
+    "review": "逐資源核對允許、禁止、需核准與未列項目的處置；區分宣告與可強制範圍",
+    "limits": "不主張所有工具與子程序均受控，不嘗試繞過或實際寫入"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config"
+    ],
+    "verified": "all；每個選定 CLI／資源範圍有權限與核准宣告，來源和未知覆蓋已釐清",
+    "partial": "有已知權限設定，但部分資源或外部覆蓋未確認",
+    "missing": "完整範圍與確認均無權限宣告或適用預設",
+    "unknown": "未支援設定、只有提示詞斷言有隔離，或有效設定來源矛盾",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "permission-boundaries",
+        "version": 1
+      },
+      {
+        "id": "git-hygiene",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "依現有工作需求列出最小權限與需核准操作",
+      "提出選定 CLI 的設定位置與契約，避免擴權；改寫歷史等敏感操作另需明確授權"
+    ],
+    "targets": "已選 adapter 的權限設定或指定治理來源",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "permissions.declarations@1"
+    ],
+    "logic": "all；逐 CLI 核對權限範圍、核准及來源優先順序",
+    "expected": "可區分宣告與 runtime 未觀察，不因設定存在而保證隔離",
+    "attestation": {
+      "question": "請指出每類資源的允許／禁止／核准規則及來源；外部覆蓋需附去敏感片段",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H3",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L414–430 Least privilege；L457–480 Git Hygiene",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 第 7 節 CLI 支援契約",
+      "use": "adapter 範圍約束"
+    }
+  ]
+}

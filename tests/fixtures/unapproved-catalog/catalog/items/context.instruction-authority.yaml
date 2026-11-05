@@ -1,0 +1,126 @@
+{
+  "id": "context.instruction-authority",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "每個選定 CLI、每個範圍，哪個指引具權威、優先順序如何；已知衝突如何處理",
+  "layer": {
+    "primary": "context",
+    "related": [
+      "prompt"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "選定 CLI 的工作範圍已確認需要指引權威與優先順序約定；不以現有指引是否存在或已載入為條件",
+    "omission": "不清楚應遵從哪份規範，衝突可能被默默忽略",
+    "alternative": "一份已指定的短指引即可，不要求跨 CLI 同檔或額外索引"
+  },
+  "applicability": {
+    "applicable": "使用 agent 的專案",
+    "not_applicable": "使用者確認不使用 agent",
+    "unknown": "沒有選定 CLI 時，逐 CLI 的分析列為待確認",
+    "questions": [
+      "專案用哪些 CLI？是否有放在 repo 外的使用者或組織層級指引？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "選定的 CLI 與 adapter 版本",
+      "adapter 搜尋路徑內找到的指引檔",
+      "匯入與投影關係：@AGENTS.md、root 內的 symlink、產生的副本"
+    ],
+    "out_of_scope": "使用者與組織層級的設定（無法觀察）",
+    "missing_input": "repo 外來源僅收明確提供的材料；未選 CLI 不妨礙列出本機指引，但優先順序未知",
+    "detectors": [
+      "instruction-file-found@1",
+      "instructions.import-topology@1",
+      "instructions.precedence-model@1",
+      "context-size-reported@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "limits": "無法以靜態方式判定「任何地方都沒有矛盾」"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable"
+    ],
+    "claims": {
+      "authority": "每個選定 CLI 的權威來源與優先順序可由支援解析或有效確認辨識",
+      "conflicts": "agent 列出附引文的候選衝突；由使用者處理或確認"
+    },
+    "verified": "authority 對每個選定 CLI 成立，且候選衝突經使用者處理後沒有未解決的項目（附證據指紋）",
+    "partial": "authority 只對部分 CLI 成立，或有未解決的候選衝突",
+    "missing": "本次判定範圍內所有必要子主張均未成立，且完整搜尋與有效否定證據支持缺少；多 CLI 分別判定，有成立子主張的彙總依 8.0 為 partial",
+    "unknown": "必要權威主張無法由支援解析或有效確認成立；外部位置、不支援版本與解析失敗保留為診斷，不單獨否定允許的確認途徑",
+    "not_applicable": "有效的不適用確認",
+    "nonlocal": "使用者可以確認權威指引位於 repo 外，記錄為使用者確認並寫明範圍"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "agents-md-core",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "指定權威來源",
+      "依各 CLI 的 adapter 描述接法，例如在 CLAUDE.md 中匯入 AGENTS.md（工具研究 8.2）",
+      "列出候選衝突請使用者決定"
+    ],
+    "targets": "依 adapter",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [
+      "instruction-file-found@1",
+      "instructions.import-topology@1",
+      "instructions.precedence-model@1"
+    ],
+    "logic": "authority 對所有選定 CLI 成立，且沒有未解決的候選衝突",
+    "expected": "權威來源與優先順序有範圍依據；已知候選衝突已處理，不宣稱任何地方都沒有衝突",
+    "agent_review": "重新列出候選衝突，只當候選",
+    "attestation": {
+      "question": "哪份指引具權威？列出的候選衝突是否成立、如何處理？",
+      "requires": [
+        "檔案範圍與雜湊",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ],
+      "invalidated_by": "依據的檔案改變、catalog 或 adapter 改版、到期"
+    },
+    "conflicts": "機器觀察到的相反事實不會被確認覆寫；兩者並列並保持待確認"
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "P1（檢查表檢視 3.3）",
+      "use": "保留題目（改寫）"
+    },
+    {
+      "type": "review_finding",
+      "ref": "F-04",
+      "use": "移層理由"
+    },
+    {
+      "type": "vendor_doc",
+      "ref": "工具研究第 6 節、8.2（三家 CLI 的指引載入方式）",
+      "use": "adapter 假設"
+    },
+    {
+      "type": "research",
+      "ref": "Dos Santos et al. arXiv:2606.15828：Conflicting Instructions（工具研究 5.2）",
+      "use": "衝突評估的依據"
+    }
+  ]
+}

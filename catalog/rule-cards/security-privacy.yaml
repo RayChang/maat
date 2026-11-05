@@ -1,0 +1,46 @@
+{
+  "id": "security-privacy",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "foundation.security-signals",
+      "item_version": 1,
+      "actions": [
+        "先盤點既有控制與缺口，再提出專案需要的措施",
+        "記錄告警處理責任，不假設新增工具便完成安全治理"
+      ],
+      "targets": "指定安全政策與既有工具設定",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "security.config-signals@1"
+        ],
+        "logic": "all；只核對選定控制的宣告與責任",
+        "expected": "每項附範圍證據與未知；沒有安全總分或無漏洞保證",
+        "attestation": {
+          "question": "請提供去敏感的設定片段、涵蓋範圍與處理流程；平台控制需指明來源與有效時間",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L414–430 Security and Privacy",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "本文件 5.4 Factory Security 映射",
+          "use": "政策改寫為有限設定主張"
+        }
+      ]
+    }
+  ]
+}

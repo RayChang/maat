@@ -1,0 +1,101 @@
+{
+  "id": "prompt.output-contract",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "成果輸出與驗證回報的內容、使用者和未執行項目是否有約定",
+  "layer": {
+    "primary": "prompt",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "agent 需要交付成果或交接報告",
+    "omission": "接收者無法分辨完成事項與未驗證的聲明",
+    "alternative": "簡短文字即可，只有機器消費時才需要結構化格式"
+  },
+  "applicability": {
+    "applicable": "agent 有人或系統要接收的產出",
+    "not_applicable": "確認該範圍沒有交付需求",
+    "unknown": "接收者或交付用途不清楚",
+    "questions": [
+      "誰消費輸出？需要什麼格式？如何回報未跑的驗證與原因？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "輸出慣例或範本",
+      "接收者需求",
+      "明確提供的代表回報"
+    ],
+    "missing_input": "無機器 schema 不代表缺少；可審閱文字約定",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對成果摘要、定位、驗證範圍／結果、未執行項目與原因；需要時有後續驗證方式",
+    "limits": "格式符合不代表內容正確；不得從回報聲稱推論實際執行"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；接收方式與必要內容已宣告，明確區分已驗證與未驗證",
+    "partial": "輸出格式已定，但未執行或驗證範圍的回報規則不完整",
+    "missing": "完整指定範圍內沒有交付約定且經確認",
+    "unknown": "只有漂亮範例無來源／範圍，或只有 agent 斷言",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "verification-story",
+        "version": 1
+      },
+      {
+        "id": "git-hygiene",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "沿用接收者格式，加上變更與證據的位置",
+      "列出未跑項目、原因與適用的後續步驟；有風險或基線比較需求時附對應說明"
+    ],
+    "targets": "指引、PR／交接範本或輸出 schema",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；用成功與無法驗證兩種回報核對約定，不能把 skipped 當 pass",
+    "expected": "兩種回報皆能辨識範圍、來源與未完成驗證",
+    "attestation": {
+      "question": "請提供可接受與不可接受的回報例子，說明哪些欄位必須呈現、何時可省略",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 P4",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L94–110 No silent skips；L211–222 Verification Story；L457–480 Git Hygiene",
+      "use": "規則卡沿用"
+    }
+  ]
+}

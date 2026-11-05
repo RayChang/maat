@@ -1,0 +1,130 @@
+{
+  "id": "foundation.verify-entrypoints",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "驗證進入點（測試、lint、型別檢查、build）已宣告，並記錄在專案指引或指定來源",
+  "layer": {
+    "primary": "foundation",
+    "related": [
+      "harness"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "確認有需要驗證的產出，且所需驗證採用指令",
+    "omission": "無權威進入點會讓 agent 猜測驗證方式",
+    "alternative": "既有 manifest 加簡短指引即可；純人工驗收走對應人工題，不強迫新增指令"
+  },
+  "applicability": {
+    "applicable": "產出需要指令驗證；文件 repo 也可能有連結檢查、網站產生等驗證",
+    "not_applicable": "確認沒有指令驗證需求，或完全採人工評估並提供理由、範圍與期限",
+    "unknown": "搜尋範圍不完整或讀取失敗",
+    "questions": [
+      "哪個指令是權威的驗證進入點？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "repo 根目錄內已支援的 manifest：package.json scripts、Makefile／justfile／Taskfile target、pyproject 工具設定",
+      "各 adapter 已辨識的指引檔",
+      "政策檔中宣告的驗證進入點"
+    ],
+    "missing_input": "沒有選定 CLI 時，仍可讀 manifest 與共用指引；CLI 專屬指引列為待確認",
+    "detectors": [
+      "manifest.verify-entrypoint@1",
+      "instructions.verify-entrypoint@1",
+      "policy.verify-entrypoint@1"
+    ],
+    "methods": [
+      "static",
+      "attested_by_user"
+    ],
+    "limits": "不執行；無法證明可以執行或適合用來驗證"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "claims": {
+      "declared": "verify.entrypoint-declared@1",
+      "documented": "verify.entrypoint-documented@1"
+    },
+    "verified": "兩個主張都成立，且已記錄的指令對應到已宣告的進入點（或經使用者確認）",
+    "partial": "只有其中一個主張成立",
+    "missing": "在完整且明確的搜尋範圍內兩者都沒有，且使用者確認沒有其他宣告",
+    "unknown": "解析失敗、格式不支援、搜尋範圍不完整，或只有未對應的指令區塊",
+    "not_applicable": "有效的不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "repo-discovery",
+        "version": 1
+      },
+      {
+        "id": "verify-before-done",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先詢問權威的驗證進入點；不得猜測",
+      "計畫文字：在核心指引加一行，記錄驗證指令與回報方式"
+    ],
+    "targets": "依選定 CLI 的 adapter；位置未知時列為問題",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [
+      "manifest.verify-entrypoint@1",
+      "instructions.verify-entrypoint@1",
+      "policy.verify-entrypoint@1"
+    ],
+    "logic": "declared 與 documented 都要成立",
+    "expected": "兩個能力判定成立",
+    "attestation": {
+      "question": "哪個指令是權威的驗證進入點？記錄在哪裡？",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    },
+    "conflicts": "使用者確認與機器觀察矛盾時，兩者並列，保持待確認"
+  },
+  "sources": [
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 工程基礎「驗證指令」",
+      "use": "保留題目"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "工具研究 4.3 commands.verify-documented",
+      "use": "政策改寫（拆成兩個能力）"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa › Workflow Orchestration › 5. Verification Before \"Done\"（第 94 行）",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa › Repository Discovery Playbook 第 5 步（第 548 行）",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "practitioner",
+      "ref": "Factory Agent Readiness：Style & Validation、Testing（工具研究第 3 節）",
+      "use": "政策改寫"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+name: maat
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.0"
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun test
+      - run: bun run typecheck
+      - run: bun run build
+      - run: bun dist/cli.js version --json

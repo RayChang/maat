@@ -1,0 +1,20 @@
+{
+  "source": "Agent review",
+  "provided_by": "ray",
+  "check": "prompt.task-spec",
+  "claim": "goal",
+  "stance": "supports",
+  "citations": [
+    {
+      "path": "tasks/login.md",
+      "sha256": "e8bdbc3671e8e2055f910855565d12d30c90d7e32fed3d796e553a57b087ef81",
+      "lines": "1-1",
+      "quote": "Goal: Fix login feedback."
+    }
+  ],
+  "uncertainty": "Scope is unconfirmed",
+  "by": "agent",
+  "scope": {},
+  "catalog_version": "0.1.0",
+  "item_version": 1
+}

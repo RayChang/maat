@@ -1,0 +1,97 @@
+{
+  "id": "context.code-navigation",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "agent 是否有在指定程式範圍定位符號與關係的可用方法",
+  "layer": {
+    "primary": "context",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "可能反覆讀整檔才能找關係，但不強迫安裝 LSP 或索引服務",
+    "alternative": "小專案的精準搜尋與局部閱讀也可滿足目標"
+  },
+  "applicability": {
+    "applicable": "需要理解程式結構與關聯",
+    "not_applicable": "確認沒有程式結構查詢需求",
+    "unknown": "agent 可用工具或程式範圍未明",
+    "questions": [
+      "如何定位定義、使用處與相關測試？是否能提供代表查詢結果？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "可用查詢方式說明",
+      "指定符號與路徑",
+      "明確提供的查詢紀錄"
+    ],
+    "missing_input": "有工具設定但無結果時只保留設定訊號，不能說查得到",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對查詢方法、可見範圍、符號定位與關係結果是否對應目前版本",
+    "limits": "掃描器不啟動 LSP／MCP；一個樣本不保證所有符號都能查到"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；已指定方法與範圍，且有可對應版本的定義／使用或測試定位樣本",
+    "partial": "方法與範圍已確認，但沒有足夠結果樣本",
+    "missing": "完整詢問與材料確認無可用的導航方式",
+    "unknown": "只有安裝名稱、MCP 設定或無版本的示意圖",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "repo-discovery",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "先用既有搜尋與局部閱讀建立導航例子",
+      "只有無法滿足目標時才提出索引或其他工具選項"
+    ],
+    "targets": "工作流程說明與現有查詢工具；新增工具另行決定",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；核對指定查詢及樣本結果與目前符號位置",
+    "expected": "結果有精確定位、範圍與版本，保留未涵蓋部分",
+    "attestation": {
+      "question": "請提供查找一個定義與其使用處／測試的紀錄；說明 agent 能使用的方式與限制",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 C4",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L237–247 Read Before Write；L548–565 Discovery",
+      "use": "導航規則卡沿用"
+    }
+  ]
+}

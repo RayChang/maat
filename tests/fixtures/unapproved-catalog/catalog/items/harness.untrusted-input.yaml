@@ -1,0 +1,96 @@
+{
+  "id": "harness.untrusted-input",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "外部內容是否與可執行指令、權限變更和敏感資料分開處理",
+  "layer": {
+    "primary": "harness",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "外部內容可能被誤當授權；保持風險可見但不假裝已防住注入",
+    "alternative": "明確來源與信任界線的政策也可，不強迫特定過濾產品"
+  },
+  "applicability": {
+    "applicable": "agent 讀網頁、issue、檢索內容或其他低信任來源",
+    "not_applicable": "確認沒有此類輸入且範圍仍有效",
+    "unknown": "輸入來源或工具權限未盤點",
+    "questions": [
+      "哪些來源不可信？其中的指令能否改變任務或權限？哪些資料不得外傳？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "來源清單",
+      "信任與權限政策",
+      "明確提供的代表資料流"
+    ],
+    "missing_input": "只見網路工具不推論有防護；先確認實際使用來源",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對資料與指令區分、來源標記、權限擴張與秘密處置、衝突時的決定方式",
+    "limits": "不執行外部內容，不主張提示詞注入已被防止"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "config"
+    ],
+    "verified": "all；每類指定低信任輸入有明確處理界線與授權來源",
+    "partial": "已有來源區分，但權限或外傳處理未明",
+    "missing": "外部輸入適用，完整政策確認無信任界線",
+    "unknown": "只有安全字眼、未確認資料流或防護聲稱",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "untrusted-input-boundary",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "在既有工具使用政策中標記資料與指令的差異",
+      "外部文字不得自行授權擴權或傳出秘密；風險處置留給明確授權來源"
+    ],
+    "targets": "工具與外部資料處理政策",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以正常外部資料與內含越權要求的描述情境核對政策，不實際執行",
+    "expected": "能指出合法授權來源與拒絕／詢問方式，不聲稱攻防實測",
+    "attestation": {
+      "question": "請說明 issue／網頁若要求改權限或傳資料時，依哪條政策處理及如何記錄",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視 F-09 與第 8 節 Harness 外部內容不可信",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L414–430 Security and Privacy",
+      "use": "資料最小化指引；注入處理為本工具政策改寫"
+    }
+  ]
+}

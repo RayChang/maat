@@ -1,0 +1,27 @@
+{
+  "policy_schema": "1.0.0",
+  "catalog_version": "0.1.0",
+  "target_clis": [],
+  "scope": {
+    "include": [
+      "."
+    ],
+    "exclude": []
+  },
+  "applicability": {
+    "prompt.task-spec": {
+      "status": "applicable"
+    },
+    "prompt": {
+      "status": "applicable",
+      "reason": "Delegated task delivery"
+    }
+  },
+  "targets": {
+    "prompt.task-spec": {
+      "baseline": true
+    }
+  },
+  "exemptions": [],
+  "attestations": []
+}

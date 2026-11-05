@@ -1,0 +1,46 @@
+{
+  "id": "loop-trigger",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "loop.trigger",
+      "item_version": 1,
+      "actions": [
+        "寫明既有人工或事件觸發流程與授權",
+        "先選定範圍，不為了題庫引入常駐 runtime"
+      ],
+      "targets": "既有流程宣告或觸發設定",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "loop.trigger@1"
+        ],
+        "logic": "all；每個迴圈的觸發能對應到同範圍工作與授權者",
+        "expected": "可回答何時由誰啟動，不聲稱實際曾喚醒",
+        "attestation": {
+          "question": "請指出一次人工或事件觸發的規約；若主張已執行，附對應 run 與時間紀錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L5",
+          "use": "保留題目"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.5、12.9 I-B",
+          "use": "不新增持續健康檢查"
+        }
+      ]
+    }
+  ]
+}

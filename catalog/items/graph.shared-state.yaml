@@ -1,0 +1,98 @@
+{
+  "id": "graph.shared-state",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "共用狀態是否有權威、結構、版本、更新及各節點可見範圍的約定",
+  "layer": {
+    "primary": "graph",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "節點依賴共用狀態協作",
+    "omission": "多份狀態互相覆蓋或節點取得過多／過期資訊",
+    "alternative": "不變交接資料或有明確權威的分散儲存皆可，不要求單一實體檔案"
+  },
+  "applicability": {
+    "applicable": "節點之間讀取或更新共用狀態",
+    "not_applicable": "確認節點僅接收不相依的輸入，沒有共用狀態",
+    "unknown": "狀態來源、讀寫者或並行需求未定",
+    "questions": [
+      "哪個來源對哪部分狀態具權威？誰可讀寫？衝突與過期怎麼處理？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "狀態欄位與來源",
+      "節點讀寫權限／視圖",
+      "更新與版本約定",
+      "代表狀態"
+    ],
+    "missing_input": "無 schema 檔仍可讀結構化約定；無共享需求不得強制建立狀態",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對各欄位權威、必要資料視圖、寫入者、版本與並行／過期處置",
+    "limits": "單一檔案不證明一致性；不是所有節點都應看到全部狀態，不實測同步或權限"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；共用資訊有權威與結構，節點讀寫範圍、版本及衝突處置明確",
+    "partial": "有結構或權威來源，但可見範圍、更新或過期處置不足",
+    "missing": "共用狀態需求已確認，完整材料無權威或結構約定",
+    "unknown": "只有資料庫／JSON 檔名稱或未確認的同步保證",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "shared-state-contract",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "列出每類狀態的權威與必要欄位，讓各節點只取所需",
+      "為多寫入者定義更新／衝突方式，沒有並行時不強迫交易系統"
+    ],
+    "targets": "既有狀態或交接契約",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；核對兩個節點對同一狀態的讀寫視圖與一個過期／衝突情境",
+    "expected": "可追溯狀態權威與權限界線，不宣稱執行時一致性已證實",
+    "attestation": {
+      "question": "請示範各節點需要的資料視圖、誰能更新及如何辨識舊版本；說明共享與非共享部分",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 G3；F-08",
+      "use": "改寫為權威與最小可見範圍，不要求一個實體檔案"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.1 Graph；本文件 4.2 去重",
+      "use": "與接續及交接契約分開"
+    }
+  ]
+}

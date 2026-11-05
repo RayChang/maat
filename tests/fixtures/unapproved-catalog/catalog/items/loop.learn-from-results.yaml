@@ -1,0 +1,99 @@
+{
+  "id": "loop.learn-from-results",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "跨次結果如何產生改善提案、決定是否採用並回看效果",
+  "layer": {
+    "primary": "loop",
+    "related": [
+      "context"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "有紀錄卻未形成改善流程；不強制每次錯誤立即寫規則",
+    "alternative": "人工回顧、issue 或測試改善也可，不要求 autonomous loop 或 lessons 檔"
+  },
+  "applicability": {
+    "applicable": "有跨任務或跨 run 改進目標",
+    "not_applicable": "確認本次範圍無跨次改進需求",
+    "unknown": "只有經驗檔，無法確認是否採用改進流程",
+    "questions": [
+      "哪些結果會提出改善？誰採納或拒絕？如何判斷改善有用？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "改進流程",
+      "問題／提案／採納紀錄或新流程設計",
+      "效果核對方法"
+    ],
+    "missing_input": "沒有歷史採納不判定失敗；新流程可審閱完整約定與預定核對方式",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "追溯結果到提案、決定、變更及效果回看；拒絕提案可以是合法結果",
+    "limits": "指標或 lessons 存在不代表改進有效，不自動修改規範"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；提出、決策、採納／拒絕及效果回看方法有宣告；已有紀錄時能追溯，未開始時明示",
+    "partial": "已有結果與提案，但採納權責或回看方式未定",
+    "missing": "已確認改進目標，完整材料無改進流程",
+    "unknown": "只有 lessons 或聲稱進步，無過程依據",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "tripwires",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "由有證據的重複問題提出最小改善，經指定權責決定",
+      "選擇回看效果的方法，不把每次錯誤硬轉成永久規則"
+    ],
+    "targets": "既有回顧、issue 或經驗流程",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；追蹤代表提案或新流程的示例走完提出、決定與回看安排",
+    "expected": "能分辨保存經驗、採納改善與效果證明三件事",
+    "attestation": {
+      "question": "請說明一項提案如何採納或拒絕、由誰決定及之後如何核對成效；沒有實例時標示尚未運行",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視 F-09 與第 8 節 Loop 從錯誤改進",
+      "use": "政策改寫，不強制第二次即設規則"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L78–93 WO4",
+      "use": "規則卡沿用"
+    }
+  ]
+}

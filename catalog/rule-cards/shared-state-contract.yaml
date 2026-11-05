@@ -1,0 +1,44 @@
+{
+  "id": "shared-state-contract",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "graph.shared-state",
+      "item_version": 1,
+      "actions": [
+        "列出每類狀態的權威與必要欄位，讓各節點只取所需",
+        "為多寫入者定義更新／衝突方式，沒有並行時不強迫交易系統"
+      ],
+      "targets": "既有狀態或交接契約",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；核對兩個節點對同一狀態的讀寫視圖與一個過期／衝突情境",
+        "expected": "可追溯狀態權威與權限界線，不宣稱執行時一致性已證實",
+        "attestation": {
+          "question": "請示範各節點需要的資料視圖、誰能更新及如何辨識舊版本；說明共享與非共享部分",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 G3；F-08",
+          "use": "改寫為權威與最小可見範圍，不要求一個實體檔案"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 Graph；本文件 4.2 去重",
+          "use": "與接續及交接契約分開"
+        }
+      ]
+    }
+  ]
+}

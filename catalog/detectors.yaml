@@ -1,0 +1,254 @@
+[
+  {
+    "id": "manifest.verify-entrypoint@1",
+    "version": 1,
+    "contract": [
+      "已支援 manifest 中字面 script／target 與用途宣告；不展開或執行",
+      "名稱叫 test 但只是 echo；動態 target 或缺用途時只列候選",
+      "8.1；`verify.entrypoint-declared@1` 的結構輸入"
+    ]
+  },
+  {
+    "id": "instructions.verify-entrypoint@1",
+    "version": 1,
+    "contract": [
+      "指定指引中的命令區塊與已宣告入口對應",
+      "同名不同參數、只有未解析別名時 unknown",
+      "8.1；`verify.entrypoint-documented@1`"
+    ]
+  },
+  {
+    "id": "policy.verify-entrypoint@1",
+    "version": 1,
+    "contract": [
+      "使用者明確提供的結構化入口／用途／範圍宣告",
+      "未知政策版本或空白欄位不授予能力",
+      "8.1；入口宣告能力"
+    ]
+  },
+  {
+    "id": "ci-config-found@1",
+    "version": 1,
+    "contract": [
+      "支援 CI 設定的存在、工作與觸發種類",
+      "空檔、只發布的 CI 不代表驗證適用",
+      "8.2 的設定觀察"
+    ]
+  },
+  {
+    "id": "ci.step-invokes-entrypoint@1",
+    "version": 1,
+    "contract": [
+      "支援的字面步驟與指定驗證入口對應，逐義務記錄",
+      "遠端 action、可重用 workflow、動態參數無材料時 unknown；不因單一步驟通過算全部",
+      "8.2 invocation"
+    ]
+  },
+  {
+    "id": "ci.failure-consequence@1",
+    "version": 1,
+    "contract": [
+      "支援語法中的阻擋／advisory 宣告",
+      "continue-on-error 不等於沒設定；wrapper 吞錯或遠端 required check 未知",
+      "8.2、8.23 的 consequence"
+    ]
+  },
+  {
+    "id": "hooks.invokes-entrypoint@1",
+    "version": 1,
+    "contract": [
+      "adapter 認識的 hook 事件與字面 command 對應",
+      "trust／外部覆蓋未知；有 hook 不代表全路徑可用",
+      "8.3 的指令接線觀察"
+    ]
+  },
+  {
+    "id": "evaluation.model-gate@1",
+    "version": 1,
+    "contract": [
+      "adapter 確認支援的模型評估宣告及已知片段",
+      "不把一家支援語法套到另外兩家；只見模型名稱不授予能力",
+      "8.3；評估設定判斷式的部分輸入"
+    ]
+  },
+  {
+    "id": "policy.human-evaluation@1",
+    "version": 1,
+    "contract": [
+      "明確材料中結構化的審查者、輸入規準與結果位置",
+      "任意 prose 關鍵字不能當已配置；缺欄位保留片段",
+      "8.3；`evaluation.config-declared@1` 的輸入"
+    ]
+  },
+  {
+    "id": "loop.routing-declared@1",
+    "version": 1,
+    "contract": [
+      "結構化政策或有限語法的結果分支",
+      "只比對 DONE 或只有 pass 分支不能代表完整對應",
+      "8.4；`loop.feedback-routing-declared@1`"
+    ]
+  },
+  {
+    "id": "loop.stop-hook-active-checked@1",
+    "version": 1,
+    "contract": [
+      "是否讀取 stop_hook_active 的弱訊號",
+      "讀取不代表會阻擋／放行或控制預算；語義無法解析為 unknown",
+      "8.4 的輔助觀察，不授予能力"
+    ]
+  },
+  {
+    "id": "loop.stop-gate.command@1",
+    "version": 1,
+    "contract": [
+      "可辨識 command Stop／agentStop 事件及決策輸出",
+      "command 外殼內可能只解析自我宣告；不代表獨立驗證",
+      "8.4 的範圍線索"
+    ]
+  },
+  {
+    "id": "loop.stop-gate.model@1",
+    "version": 1,
+    "contract": [
+      "已核對 adapter 的模型停止評估宣告",
+      "不推論模型獨立、有效或所有 CLI 都支援",
+      "8.4 的範圍線索"
+    ]
+  },
+  {
+    "id": "loop.self-declared@1",
+    "version": 1,
+    "contract": [
+      "可辨識完成字串／聲明比對的設定",
+      "grep DONE 仍是自我宣告；未解析腳本為 unknown",
+      "8.4 輸入、8.31 的人工對照線索"
+    ]
+  },
+  {
+    "id": "instruction-file-found@1",
+    "version": 1,
+    "contract": [
+      "選定 adapter 的 repo 內指引來源與可讀性",
+      "repo 外無法觀察不是不存在；未選 CLI 不推論使用",
+      "8.5 authority"
+    ]
+  },
+  {
+    "id": "instructions.import-topology@1",
+    "version": 1,
+    "contract": [
+      "明確匯入、repo 內 symlink 與相同副本關係",
+      "路徑逃逸、循環、動態匯入標 unknown；不追越界連結",
+      "8.5 authority"
+    ]
+  },
+  {
+    "id": "instructions.precedence-model@1",
+    "version": 1,
+    "contract": [
+      "依已核對 adapter 版本推導候選優先順序",
+      "未知版本與外部覆蓋未確認時 unknown，不宣稱 runtime 已載入",
+      "8.5 authority"
+    ]
+  },
+  {
+    "id": "context-size-reported@1",
+    "version": 1,
+    "contract": [
+      "指定材料的位元組／行數與範圍",
+      "大不等於壞；不使用未核對的產品截斷常數",
+      "8.5、8.17 的資訊觀察"
+    ]
+  },
+  {
+    "id": "tests.structure@1",
+    "version": 1,
+    "contract": [
+      "支援語言的測試案例結構、框架／原生 runner 與入口",
+      "test 目錄或套件單獨不夠；未知語言保留人工途徑",
+      "8.6 的結構子主張"
+    ]
+  },
+  {
+    "id": "analysis.config@1",
+    "version": 1,
+    "contract": [
+      "已支援分析設定的工具、範圍與規則／預設引用",
+      "formatter 不算；動態程式設定不執行，無法解析為 unknown",
+      "8.7；8.23 對應輸入"
+    ]
+  },
+  {
+    "id": "environment.declarations@1",
+    "version": 1,
+    "contract": [
+      "工具版本、相依鎖定與環境設定的結構片段",
+      "lockfile 不代表可重現；秘密值不讀取／不輸出",
+      "8.8 的結構觀察"
+    ]
+  },
+  {
+    "id": "security.config-signals@1",
+    "version": 1,
+    "contract": [
+      "指定安全控制的已知設定與範圍",
+      "套件名稱、排程檔不代表安全；外部強制未知",
+      "8.9 的有限設定主張"
+    ]
+  },
+  {
+    "id": "documents.local-links@1",
+    "version": 1,
+    "contract": [
+      "指定 Markdown 本機連結與錨點的可解析性",
+      "外部 URL 不自動請求；可達不代表正確或足夠",
+      "8.13、8.18 的導航／維護輔助"
+    ]
+  },
+  {
+    "id": "instructions.scoping@1",
+    "version": 1,
+    "contract": [
+      "adapter 支援的路徑／情境選擇欄位",
+      "skill 檔存在不代表自動觸發；重疊或未知優先順序保留診斷",
+      "8.14 的選擇宣告"
+    ]
+  },
+  {
+    "id": "permissions.declarations@1",
+    "version": 1,
+    "contract": [
+      "adapter 支援的 allow／deny／approval 與範圍",
+      "repo 無設定不等於沒邊界；外部覆蓋或不支援鍵為 unknown",
+      "8.20；6.2 保護觀察重用"
+    ]
+  },
+  {
+    "id": "recovery.local-plan@1",
+    "version": 1,
+    "contract": [
+      "本機來源控制片段與明確復原宣告的可對應部分",
+      "Git 單獨不足；未追蹤／ignore 資料不能自動算涵蓋",
+      "8.21；本機復原宣告判斷式"
+    ]
+  },
+  {
+    "id": "loop.trigger@1",
+    "version": 1,
+    "contract": [
+      "CI／腳本的可辨識啟動關聯與指定流程",
+      "有 cron 不等於 agent 迴圈；不是健康監控",
+      "8.30 與 8.4 輸入"
+    ]
+  },
+  {
+    "id": "loop.bounds@1",
+    "version": 1,
+    "contract": [
+      "有限語法中上限設定、單位與明示作用範圍",
+      "一個 session 的 max 不等於 goal 上限；花費估計不是硬上限",
+      "8.33 的片段，不單獨授予停止政策能力"
+    ]
+  }
+]

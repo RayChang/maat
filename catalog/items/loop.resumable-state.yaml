@@ -1,0 +1,104 @@
+{
+  "id": "loop.resumable-state",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "跨 session 接續所需狀態、版本、下一步與不確定效果是否有保存契約",
+  "layer": {
+    "primary": "loop",
+    "related": [
+      "context"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "工作明確要求跨 session 接續",
+    "omission": "恢復者無法知道已做什麼或可能重複外部操作",
+    "alternative": "結構化 Markdown 或外部任務系統也可，不要求資料庫或固定 todo 檔"
+  },
+  "applicability": {
+    "applicable": "工作跨 session、跨人或需要中斷後接續",
+    "not_applicable": "確認工作為一次性且不需要接續",
+    "unknown": "生命週期、保存方式或外部副作用範圍未明",
+    "questions": [
+      "恢復者要知道什麼？狀態存哪裡？如何區分已完成、待查與尚未執行？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "狀態結構與保存政策",
+      "代表紀錄或新流程範本",
+      "成果／操作版本對應"
+    ],
+    "missing_input": "沒有本機狀態檔仍接受外部材料；只看到 ignore 或 commit 不足",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對目標、目前步驟、已驗證／未知結果、成果版本、下一步與恢復責任；有外部效果時保留查核識別",
+    "limits": "保存結構不證明可恢復或 exactly-once；不強制保留完整對話"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；接續必要資訊、保存／取用與版本關係已宣告，代表結構可表達未完成及未知結果",
+    "partial": "已有進度紀錄，但版本、下一步或未知效果資訊不足",
+    "missing": "接續需求已確認，完整材料無保存契約",
+    "unknown": "只有檔案、勾選清單或無法對應版本的歷史紀錄",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "todo-file",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "在選定保存機制加入必要進度與證據連結",
+      "精簡工作摘要並保留重要原始定位；未知外部結果恢復後先查核，別默認重做"
+    ],
+    "targets": "專案選定狀態紀錄；依 D5 決定 commit／ignore",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以一筆中斷情境核對結構是否能描述完成、待查與下一步",
+    "expected": "接續資訊可定位；若沒有實際恢復紀錄，不標示已驗證可恢復",
+    "attestation": {
+      "question": "請用代表狀態說明新 session 如何辨認成果版本、已執行操作與下一步；明示哪些仍需對帳",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 L4",
+      "use": "改寫為接續資訊契約"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L143–170 Task Management；L249–260 Working Memory",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "user_decision",
+      "ref": "spec D5；Loop 研究 L-D6",
+      "use": "保存方式與恢復界線"
+    }
+  ]
+}

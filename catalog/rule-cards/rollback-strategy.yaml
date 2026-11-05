@@ -1,0 +1,51 @@
+{
+  "id": "rollback-strategy",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.recovery",
+      "item_version": 1,
+      "actions": [
+        "列出每種效果的基準、處置與排除",
+        "遠端結果不明先對帳再決定重試；不可逆者明示限制與授權，不假造回滾步驟"
+      ],
+      "targets": "指定恢復文件、任務風險區塊或外部處置程序引用",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "recovery.local-plan@1"
+        ],
+        "logic": "all；逐效果核對第 7.1 節的相應判斷式，不能由一個本機計畫替其他效果成立",
+        "expected": "所有選定效果都有可追溯處置或明示的不可逆限制；無 runtime 成功保證",
+        "attestation": {
+          "question": "請用失敗及回應遺失兩種情境說明基準、查核、授權與恢復；若宣稱演練成功，另附同範圍紀錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H6",
+          "use": "保留題目並改為效果範圍"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L159–170 Risk & Rollback；L318–344 Safe Fallbacks／Rollback",
+          "use": "規則卡沿用"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D6",
+          "use": "取消不等於外部效果消失"
+        }
+      ]
+    }
+  ]
+}

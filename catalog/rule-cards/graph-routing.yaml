@@ -1,0 +1,44 @@
+{
+  "id": "graph-routing",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "graph.declared-routes",
+      "item_version": 1,
+      "actions": [
+        "以現有流程寫最小路由表，保留允許的人／模型選路",
+        "補無法選路時的等待或交人，不自行新增循環"
+      ],
+      "targets": "流程文件或既有路由宣告",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；核對節點引用、正常路徑與未匹配／衝突情境",
+        "expected": "允許路徑與決策責任可追溯；關卡是否阻擋另由 edge-gates 限定",
+        "attestation": {
+          "question": "請說明一條正常路徑及一次無法選路的處置，指出決策者與依據",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 G2；F-07",
+          "use": "政策改寫，不強制程式選路"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 Graph",
+          "use": "路由與關卡分離"
+        }
+      ]
+    }
+  ]
+}

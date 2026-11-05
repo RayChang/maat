@@ -1,0 +1,103 @@
+{
+  "id": "harness.high-risk-controls",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "宣告的高風險變更是否有對應驗證、資料安全與風險處置安排",
+  "layer": {
+    "primary": "harness",
+    "related": [
+      "graph"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "高風險工作可能缺乏明確控制；本題維持可見且不自動變成全域 gate",
+    "alternative": "沿用專案既有風險程序，不強迫所有專案加入同一套措施"
+  },
+  "applicability": {
+    "applicable": "使用者／專案政策確認有高風險工作",
+    "not_applicable": "本次目標範圍沒有高風險變更，附理由與期限",
+    "unknown": "只看到 auth／migrations 等名稱，尚未確認風險",
+    "questions": [
+      "哪些變更被視為高風險？要哪些額外驗證、資料保護與授權？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "風險分類與範圍",
+      "對應處置政策",
+      "去敏感的代表計畫"
+    ],
+    "missing_input": "目錄訊號只產生詢問；沒有近期高風險任務可核對政策而非要求執行",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對每種風險的驗證、資料邊界、復原／補償、發布與必要核准；不適用措施附理由",
+    "limits": "不做漏洞評估，不把政策存在視為已降低風險"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；宣告的風險目標都有對應控制、責任及例外處置",
+    "partial": "已有部分措施，但某風險或責任未覆蓋",
+    "missing": "高風險需求已確認，完整材料中無對應安排",
+    "unknown": "風險分類未定或只有通用安全提醒",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "high-risk-protocol",
+        "version": 1
+      },
+      {
+        "id": "data-migration",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "依已宣告風險補驗證、資料範圍與回復／補償步驟",
+      "遷移情境提出分階段及核對方式；是否需人核准由政策決定"
+    ],
+    "targets": "既有風險政策、遷移或發布計畫",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；逐風險核對措施與責任，不要求不相關控制",
+    "expected": "高風險目標有可追溯安排；治理與 runtime 強制分開",
+    "attestation": {
+      "question": "請用代表風險說明驗證、資料安全、復原或不可逆限制與授權方式",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L568–600 High-Risk Change／Data Migration；L159–170 Task Management",
+      "use": "規則卡沿用"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "本文件 5.3 高風險映射；spec 5.2",
+      "use": "不把 gist 改寫的控制誤稱來源原意"
+    }
+  ]
+}

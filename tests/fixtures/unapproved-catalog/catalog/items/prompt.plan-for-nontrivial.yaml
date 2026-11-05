@@ -1,0 +1,102 @@
+{
+  "id": "prompt.plan-for-nontrivial",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "非小型任務是否有先規劃、驗證與依新資訊重規劃的約定",
+  "layer": {
+    "primary": "prompt",
+    "related": [
+      "loop"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "複雜工作可能缺乏順序與驗證規劃，不強迫所有小修改寫計畫",
+    "alternative": "現有 issue 清單或短計畫可取代固定 plan mode"
+  },
+  "applicability": {
+    "applicable": "專案確認有跨範圍、多步驟或高影響任務",
+    "not_applicable": "評估範圍僅含簡單且無需預先規劃的工作，附理由",
+    "unknown": "未定義何時需要規劃",
+    "questions": [
+      "哪些任務必須先規劃？計畫失效時如何停下調整？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "規劃慣例",
+      "已填寫的計畫或代表案例",
+      "任務驗收條件"
+    ],
+    "missing_input": "沒有範本時可讀既有計畫與約定；空範本只作候選",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對啟用條件、工作切分、驗證步驟與改變假設後的處置",
+    "limits": "不要求固定三步或特定 CLI 模式；計畫存在不代表遵從"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable"
+    ],
+    "verified": "all；適用條件、切分、驗證與重規劃約定均明確並有代表材料",
+    "partial": "已有具體步驟但缺驗證或失效處置",
+    "missing": "確認有非小型任務，且完整材料中無規劃約定",
+    "unknown": "只有範本標題或未確認的適用條件",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "plan-before-act",
+        "version": 1
+      },
+      {
+        "id": "plan-template",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "依專案風險定義何時先計畫",
+      "將驗證安排進步驟；必要時加風險與復原說明，不普遍擴大流程"
+    ],
+    "targets": "既有任務追蹤、規劃慣例或範本",
+    "risk": "low",
+    "needs_approval": false
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；對一個非小型任務核對步驟、驗證、假設失效後的更新方法",
+    "expected": "計畫可對應任務目標；小任務不被無理由套用",
+    "attestation": {
+      "question": "請用代表任務說明何時啟用計畫、如何驗證、什麼情況要改計畫",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視第 8 節 Prompt 大任務拆解",
+      "use": "保留題目"
+    },
+    {
+      "type": "practitioner",
+      "ref": "gist 83e12fa:L27–46 WO1；L505–522 Plan Template",
+      "use": "規則卡沿用"
+    }
+  ]
+}

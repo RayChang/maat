@@ -1,0 +1,46 @@
+{
+  "id": "testing-strategy",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "foundation.automated-tests",
+      "item_version": 1,
+      "actions": [
+        "沿用原生或既有 runner，為一個代表行為規劃最小測試",
+        "指認預期失敗與成功訊號，避免只測常數或工具本身"
+      ],
+      "targets": "專案既有測試位置；未知時先詢問",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "tests.structure@1"
+        ],
+        "logic": "all；案例與入口都可定位，對應同一行為範圍",
+        "expected": "案例有實質斷言及可追溯入口；未執行仍標示未執行",
+        "attestation": {
+          "question": "請指出哪個案例覆蓋哪個行為、如何執行；若宣稱改善有效，附修改前後紀錄及版本",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "tool_policy",
+          "ref": "spec 5.1 測試；本文件 5.4 Factory Testing 映射",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L375–389 Testing Strategy",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

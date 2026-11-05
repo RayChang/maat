@@ -1,0 +1,46 @@
+{
+  "id": "contextual-rules",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.just-in-time",
+      "item_version": 1,
+      "actions": [
+        "為不同情境寫明何時取用哪份規範",
+        "依已選 CLI 提出設定建議；未知格式先列待確認，不自動安裝"
+      ],
+      "targets": "指定指引、skill 或 adapter 支援的規則來源",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [
+          "instructions.scoping@1"
+        ],
+        "logic": "all；取一個命中與一個不命中的情境，核對宣告的選用結果",
+        "expected": "能說明應選哪份規範及衝突處理，不宣稱 runtime 已載入",
+        "attestation": {
+          "question": "請指出兩種情境的選用依據；若主張已自動載入，另附同 CLI 版本的紀錄",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 C2",
+          "use": "政策改寫為可觀察的選擇宣告"
+        },
+        {
+          "type": "tool_policy",
+          "ref": "spec 第 7 節 CLI 支援契約",
+          "use": "產品與版本邊界"
+        }
+      ]
+    }
+  ]
+}

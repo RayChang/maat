@@ -1,0 +1,44 @@
+{
+  "id": "cost-recording",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "harness.cost-visibility",
+      "item_version": 1,
+      "actions": [
+        "選少量可得指標，記錄單位、時間與來源",
+        "區分實際、估算及延後回報，不要求所有供應商有同精度"
+      ],
+      "targets": "專案選定的觀測紀錄或回報格式",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；依樣本追溯各指標來源與涵蓋，無法取得者須明示",
+        "expected": "可核對耗時／用量或花費的計算依據，不延伸為全域成本保證",
+        "attestation": {
+          "question": "請提供一筆去敏感紀錄，說明是否含重試與子任務，哪些金額只是估算",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 H7",
+          "use": "保留題目"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D6",
+          "use": "估算與硬上限分開"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "id": "definition-of-done",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "prompt.task-spec",
+      "item_version": 1,
+      "actions": [
+        "在既有任務入口補上目標、範圍與驗收條件",
+        "只有歧義會影響實作時才要求釐清或範例，不一律加長提示詞"
+      ],
+      "targets": "任務入口、工作慣例或既有範本",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；人工逐項核對四項約定與一個代表用例，沒有未解決的關鍵歧義",
+        "expected": "每項都能指向具體文字，不宣稱所有未來任務會遵從",
+        "attestation": {
+          "question": "請指出代表任務的目標、不能改的部分與可驗收結果；沒有的項目會如何澄清？",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-04、F-09 與第 8 節 Prompt 提案",
+          "use": "保留題目"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L27–46 WO1；L143–170 Task Management；L202–210 State Assumptions；L483–502 DoD",
+          "use": "規則卡沿用"
+        }
+      ]
+    },
+    {
+      "check": "loop.acceptance-policy",
+      "item_version": 1,
+      "actions": [
+        "引用 Prompt 的驗收條件，另寫誰如何接受哪個成果版本",
+        "錯誤／逾時不得改寫成 pass；例外接受另記授權與證據缺漏"
+      ],
+      "targets": "迴圈驗收宣告與既有任務規準",
+      "risk": "high",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；核對登錄表主張，使用成果 A 的證據不得默認驗收 B",
+        "expected": "任務條件、驗證結果、接受決策與停止原因分開",
+        "attestation": {
+          "question": "請說明通過、證據不足與例外接受各由誰判斷，如何綁定成果版本及必要驗證輸入",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 L1",
+          "use": "拆分為驗收與停止"
+        },
+        {
+          "type": "user_decision",
+          "ref": "Loop 研究 12.3 L-D1、L-D2、L-D5",
+          "use": "權責與證據分開"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L94–110 WO5；L483–502 DoD；L624–646 Review Checklist",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}

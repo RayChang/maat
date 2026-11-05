@@ -1,0 +1,33 @@
+{
+  "id": "timeout",
+  "expected_seq": 4,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "action": "a",
+    "candidate_fingerprint": "ccaee5656a0d88405c4fbbb1aff6c9e2d4be4d2becb405b3e915b6bb498f6e96",
+    "method": {
+      "kind": "manual",
+      "id": "task-review",
+      "version": "1"
+    },
+    "result": "timeout",
+    "report": null,
+    "execution": null,
+    "evidence": [
+      {
+        "path": "task.md",
+        "sha256": "acca5eac05d380c57dd2b40c6bf2e37eb4d8961f0e0deb855182e496e9c0600e"
+      },
+      {
+        "path": "dirty.md",
+        "sha256": "5d177ad97a600ae8134d20790524a982e4e958d541120a4fb625b740a65b2b46"
+      }
+    ],
+    "by": "ray",
+    "source": "user confirmation",
+    "unknown_effects": [
+      "Remote result uncertain"
+    ]
+  }
+}

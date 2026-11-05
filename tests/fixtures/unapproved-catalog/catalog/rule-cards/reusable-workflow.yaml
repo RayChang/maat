@@ -1,0 +1,44 @@
+{
+  "id": "reusable-workflow",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "context.reusable-workflows",
+      "item_version": 1,
+      "actions": [
+        "挑一個有證據的重複工作，沿用成功步驟整理短流程",
+        "寫明何時適用及如何驗證，不為湊數新增 skill"
+      ],
+      "targets": "專案已選的 skill、腳本或流程文件位置",
+      "risk": "low",
+      "needs_approval": false,
+      "verification": {
+        "rerun": [],
+        "logic": "all；對照代表任務，逐項確認作法與輸入輸出及驗證相關",
+        "expected": "可指出可重用部分與例外，不聲稱已提升成功率",
+        "attestation": {
+          "question": "請用一個代表任務說明如何選用流程、哪些步驟可重用、何時不適合",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "original_item",
+          "ref": "檢視 3.3 P2；F-04",
+          "use": "保留題目並移層"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L123–140 WO7；L523–545 Bugfix Template",
+          "use": "可選規則卡，不強制採用"
+        }
+      ]
+    }
+  ]
+}

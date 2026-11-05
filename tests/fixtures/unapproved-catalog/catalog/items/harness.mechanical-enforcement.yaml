@@ -1,0 +1,106 @@
+{
+  "id": "harness.mechanical-enforcement",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "宣告為可機械檢查的規範是否有對應檢查、邊界與失敗後果",
+  "layer": {
+    "primary": "harness",
+    "related": [
+      "foundation"
+    ]
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "不清楚規範在哪裡檢查以及是否阻擋；本題不強制每條文字規範自動化",
+    "alternative": "既有 lint、腳本或 CI 可重用，不重複建立檢查"
+  },
+  "applicability": {
+    "applicable": "有被指定為可機械檢查的規範",
+    "not_applicable": "確認只有需語意判斷的規範或沒有此目標",
+    "unknown": "規範範圍或可機械判斷性未確認",
+    "questions": [
+      "哪些規範可由機器判定？在哪個邊界檢查？失敗是提示還是阻擋？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "指定規範",
+      "既有分析／驗證設定",
+      "邊界與後果宣告"
+    ],
+    "missing_input": "無完整解析時保留已知工具設定，對應關係請確認",
+    "detectors": [
+      "analysis.config@1",
+      "ci.failure-consequence@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "逐規範核對判斷條件、檢查引用、發生邊界及後果；agent 映射只當候選",
+    "limits": "題目目標是對應宣告，不是證明不可繞過；advisory 合法但不能標為 blocking"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；選定規範的對應、邊界、後果明確，advisory 與 blocking 不混用",
+    "partial": "有有效規範到檢查對應，但部分邊界或後果未知",
+    "missing": "完整範圍內沒有對應，且已確認沒有外部措施",
+    "unknown": "只有 tests 存在就推論保護所有規範，或僅 agent 候選映射",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "norm-check-mapping",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "為選定規範列出既有檢查與失敗後果",
+      "需改為阻擋時提出另行核准的變更，不能把提示自動升級為 gate"
+    ],
+    "targets": "規範對應表與既有檢查設定",
+    "risk": "medium",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "analysis.config@1",
+      "ci.failure-consequence@1"
+    ],
+    "logic": "all；每條指定規範有可追溯對應與後果，範圍相同",
+    "expected": "如實標示 advisory／blocking／unknown；沒有 runtime 強制保證",
+    "attestation": {
+      "question": "請指出每條規範由什麼條件檢查、在何處、失敗後會怎樣；語意規範改交審查",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 H1",
+      "use": "政策改寫為對應與後果，不等同實際硬擋"
+    },
+    {
+      "type": "tool_policy",
+      "ref": "spec 5.2 證據；本文件 4.2 去重",
+      "use": "與分析工具設定分開"
+    }
+  ]
+}

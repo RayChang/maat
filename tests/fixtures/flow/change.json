@@ -1,0 +1,16 @@
+{
+  "id": "change",
+  "expected_seq": 3,
+  "expires_at": "2027-01-01",
+  "by": "ray",
+  "payload": {
+    "action": "a",
+    "candidate_fingerprint": "ccaee5656a0d88405c4fbbb1aff6c9e2d4be4d2becb405b3e915b6bb498f6e96",
+    "paths": [
+      "task.md"
+    ],
+    "executed_by": "host",
+    "source": "fixture host",
+    "unknown_effects": []
+  }
+}

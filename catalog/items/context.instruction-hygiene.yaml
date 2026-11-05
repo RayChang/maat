@@ -1,0 +1,101 @@
+{
+  "id": "context.instruction-hygiene",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "指引內容是否與工作相關，重複、概覽與規則提醒是否有明確用途",
+  "layer": {
+    "primary": "context",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "advanced",
+    "when": false,
+    "omission": "無關或冗餘文字增加理解負擔，但不能按字數認定無效",
+    "alternative": "保留必要的短概覽或重點提醒，不一律刪標準規則"
+  },
+  "applicability": {
+    "applicable": "有專案提供的指引內容",
+    "not_applicable": "確認沒有此範圍的指引；是否需要指引由 authority 題處理",
+    "unknown": "指引來源不全或用途不明",
+    "questions": [
+      "哪些內容影響工作？哪些與工具已檢查規則重複？重複是否刻意？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "指定指引集合",
+      "任務類型",
+      "可供對照的工具規則"
+    ],
+    "missing_input": "沒有工具規則時不推論 lint 重複；僅評估已提供內容",
+    "detectors": [
+      "context-size-reported@1"
+    ],
+    "methods": [
+      "static",
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "對候選冗餘或無關段落逐一引文，請使用者確認保留、改寫或刪除理由",
+    "limits": "大小是資訊，不設字數門檻；研究關聯不是每個專案的因果保證"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable"
+    ],
+    "verified": "all；選定範圍的候選問題經逐項處理，保留內容有任務或治理用途",
+    "partial": "有已確認的處理，但仍有未解候選問題",
+    "missing": "完整評估中沒有任何內容符合選定用途，且有效確認支持此結論",
+    "unknown": "無用途對照或只有長度／agent 主觀評語",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "instruction-curation",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "逐段刪改經確認無用的內容，不全面移除概覽",
+      "將長細節移至可定位來源，保留必要提醒與出處"
+    ],
+    "targets": "被評估的指引段落",
+    "risk": "low",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [
+      "context-size-reported@1"
+    ],
+    "logic": "all；重新核對候選問題清單及保留理由，長度變短不是驗收條件",
+    "expected": "無未處理的已確認冗餘，重要約束與來源未被刪失",
+    "attestation": {
+      "question": "請確認哪些段落要保留及用途，哪些問題已處理；不作全域無冗餘保證",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "review_finding",
+      "ref": "檢視第 8 節 Context 精簡提案",
+      "use": "政策改寫為相關性而非禁止概覽"
+    },
+    {
+      "type": "research",
+      "ref": "工具研究 5.2 Gloaguen、Dos Santos：Lint Leakage／Context Bloat",
+      "use": "評估理由，不當通用門檻"
+    }
+  ]
+}

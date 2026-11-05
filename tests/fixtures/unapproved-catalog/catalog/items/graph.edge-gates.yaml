@@ -1,0 +1,97 @@
+{
+  "id": "graph.edge-gates",
+  "item_version": 1,
+  "catalog_version": "0.1.0",
+  "question": "被政策要求受控的轉移是否定義檢查條件、證據與結果處置",
+  "layer": {
+    "primary": "graph",
+    "related": []
+  },
+  "baseline": {
+    "proposed_tier": "baseline",
+    "when": "政策要求特定轉移通過檢查或授權",
+    "omission": "即使知道路徑，也不知道何時可走該路徑",
+    "alternative": "人工或模型的明確決策條件也可，不要求每條邊都有自動 gate"
+  },
+  "applicability": {
+    "applicable": "存在被要求檢查或授權的轉移",
+    "not_applicable": "確認流程沒有受控轉移需求，附理由",
+    "unknown": "轉移風險或政策需求尚未確認",
+    "questions": [
+      "哪幾條轉移受控？要求什麼證據？無法檢查時能否繼續？"
+    ]
+  },
+  "inspection": {
+    "inputs": [
+      "受控邊清單",
+      "條件與證據契約",
+      "決策者與例外規則"
+    ],
+    "missing_input": "有路由但無 gate 政策時先確認需求；不以路由存在當有檢查",
+    "detectors": [],
+    "methods": [
+      "assessed_by_agent",
+      "attested_by_user"
+    ],
+    "review": "核對每條指定邊的成果版本、通過／拒絕／未知條件與授權例外",
+    "limits": "宣告條件不證明不可跳過或 runtime 會強制"
+  },
+  "evidence_requirements": {
+    "accepted_forms": [
+      "text",
+      "reusable",
+      "config"
+    ],
+    "verified": "all；每條要求受控的邊都有條件、證據、權責及未知處置",
+    "partial": "部分 gate 完整，其他邊或例外處理未定",
+    "missing": "受控需求已確認，完整材料無關卡定義",
+    "unknown": "只有 approved／passed 標籤，或條件／證據／權責／未知處置無法確認；runtime 可跳過性另列未知，不影響完整宣告的判定",
+    "not_applicable": "有效不適用確認"
+  },
+  "prerequisites": {
+    "required": [],
+    "recommended": []
+  },
+  "remediation": {
+    "rule_cards": [
+      {
+        "id": "graph-edge-gates",
+        "version": 1
+      }
+    ],
+    "actions": [
+      "為政策要求的轉移列條件與證據，重用既有驗收規準",
+      "明示拒絕、未知與例外接受，不把錯誤改寫成 pass"
+    ],
+    "targets": "指定路徑的條件契約",
+    "risk": "high",
+    "needs_approval": true
+  },
+  "verification": {
+    "rerun": [],
+    "logic": "all；以通過、拒絕與無證據三種情境核對每條受控邊",
+    "expected": "有可追溯的條件及處置；非受控邊不強加 gate",
+    "attestation": {
+      "question": "請指出每條 gate 的證據來源、版本與授權者；若主張不可繞過，另提供強制邊界證據",
+      "requires": [
+        "範圍",
+        "證據指紋",
+        "catalog 與 adapter 版本",
+        "確認者",
+        "有效期限"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "type": "original_item",
+      "ref": "檢視 3.3 G5",
+      "use": "保留題目，與 G2 分開"
+    },
+    {
+      "type": "user_decision",
+      "ref": "Loop 研究 12.3 L-D1、L-D3",
+      "use": "證據、接受與退出分開"
+    }
+  ]
+}

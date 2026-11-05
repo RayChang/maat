@@ -1,0 +1,44 @@
+{
+  "id": "tripwires",
+  "version": 1,
+  "contracts": [
+    {
+      "check": "loop.learn-from-results",
+      "item_version": 1,
+      "actions": [
+        "由有證據的重複問題提出最小改善，經指定權責決定",
+        "選擇回看效果的方法，不把每次錯誤硬轉成永久規則"
+      ],
+      "targets": "既有回顧、issue 或經驗流程",
+      "risk": "medium",
+      "needs_approval": true,
+      "verification": {
+        "rerun": [],
+        "logic": "all；追蹤代表提案或新流程的示例走完提出、決定與回看安排",
+        "expected": "能分辨保存經驗、採納改善與效果證明三件事",
+        "attestation": {
+          "question": "請說明一項提案如何採納或拒絕、由誰決定及之後如何核對成效；沒有實例時標示尚未運行",
+          "requires": [
+            "範圍",
+            "證據指紋",
+            "catalog 與 adapter 版本",
+            "確認者",
+            "有效期限"
+          ]
+        }
+      },
+      "derived_from": [
+        {
+          "type": "review_finding",
+          "ref": "檢視 F-09 與第 8 節 Loop 從錯誤改進",
+          "use": "政策改寫，不強制第二次即設規則"
+        },
+        {
+          "type": "practitioner",
+          "ref": "gist 83e12fa:L78–93 WO4",
+          "use": "規則卡沿用"
+        }
+      ]
+    }
+  ]
+}
