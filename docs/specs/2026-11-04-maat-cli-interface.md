@@ -56,7 +56,7 @@ maat help                         列出每個命令、位置參數與旗標；�
 
 CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github/workflows/*.yml`、GitLab CI 的 `.gitlab-ci.yml`（discovery 另讀 `.gitlab/` 目錄，供引用）、Bitbucket Pipelines 的 `bitbucket-pipelines.yml`。每個步驟的指令與失敗後果逐一記錄，並計入專案範圍 `{}`，不另列評估範圍；持續整合這題要每個已宣告的驗證指令都有 CI 步驟字面呼叫才成立，只對上部分時為 `unknown` 並列出已對上與未對上的指令；catalog 的 partial 需要逐項子主張，目前未支援（2026-11-06 修訂，依 catalog `foundation.ci-verification` 的 invocation 規定）；`include`、`extends`、`rules`、遠端 action 與包裝指令（例如 `dagger call`）不追蹤，對應主張為 `unknown`。
 
-驗證進入點的宣告形式（2026-11-06 補充）：任一 Markdown 檔的 `Verification command: <指令>` 與 `Verification purpose: <用途>` 兩行；或在 `AGENTS.md`、`CLAUDE.md` 的某一節寫一個 `nx run <專案>:<target>` 指令範本（例如 `` `bun nx run workspace:<target>` ``），後面接一張第一欄標題為 `Target` 的表格，每列是 `` `目標名` `` 與用途。表格裡的目標要在同名 Nx 專案的 `project.json` 明列，叫用才成立；外掛自動產生的目標不推斷，維持 `unknown`。表格列多於兩格時整列略過。這些讀法沿用 `policy.verify-entrypoint@1` 與 `instructions.verify-entrypoint@1` 的版本號（catalog 0.1.0 已凍結），所以同一個 repository 用這次前後的 `maat` 掃描，結果可能不同。
+驗證進入點的宣告形式（2026-11-06 補充）：任一 Markdown 檔的 `Verification command: <指令>` 與 `Verification purpose: <用途>` 兩行；或在 `AGENTS.md`、`CLAUDE.md` 的某一節寫一個 `nx run <專案>:<target>` 指令範本（例如 `` `bun nx run workspace:<target>` ``），後面接一張第一欄標題為 `Target` 的表格，每列是 `` `目標名` `` 與用途。表格裡的目標要在同名 Nx 專案的 `project.json` 明列，叫用才成立；外掛自動產生的目標不推斷，維持 `unknown`。表格列多於兩格時整列略過。程式碼區塊裡以 `#` 開頭的行不算章節標題；有兩個以上 `project.json` 使用同一個 `name` 時，該專案的目標一律不核對，維持 `unknown`，觀察附上說明。這些讀法沿用 `policy.verify-entrypoint@1` 與 `instructions.verify-entrypoint@1` 的版本號（catalog 0.1.0 已凍結），所以同一個 repository 用這次前後的 `maat` 掃描，結果可能不同。
 
 ### 3.2 `maat evaluate`
 
