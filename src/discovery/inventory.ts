@@ -12,7 +12,7 @@ export async function discover(input:string,scope:Policy["scope"]):Promise<Inven
  limits:["10000 files","1 MiB/file","32 MiB total","UTF-8 only","symlinks not followed"],
  include:scope.include,exclude:[...scope.exclude,"node_modules/**","vendor/**","dist/**","build/**","credential paths","unlisted hidden directories"]};
  let total=0,count=0;
- const hidden=new Set([".claude",".codex",".github",".agents",".maat",".git"]);
+ const hidden=new Set([".claude",".codex",".github",".agents",".maat",".git",".gitlab"]);
  const denied=new Set(["node_modules","vendor","dist","build"]);
  const credential=/(^\.env($|\.)|credentials?|secrets?|^id_(rsa|ed25519)$|\.pem$|\.key$|^\.npmrc$|^\.netrc$)/i;
  const pattern=(p:string,g:string)=>g==="." || new Bun.Glob(g).match(p) || p.startsWith(g.replace(/\/$/,"")+"/");
@@ -33,7 +33,7 @@ export async function discover(input:string,scope:Policy["scope"]):Promise<Inven
     await walk(p);continue;
    }
    if(!st.isFile() || (p.startsWith(".git/") && p!==".git/HEAD")) continue;
-   if(name.startsWith(".") && ![".gitignore",".tool-versions"].includes(name) && !hidden.has(rel.split("/")[0]!)) continue;
+   if(name.startsWith(".") && ![".gitignore",".tool-versions"].includes(name) && p!==".gitlab-ci.yml" && !hidden.has(rel.split("/")[0]!)) continue;
    if(!scope.include.some(g=>pattern(p,g))) continue;
    if(++count>10000 || st.size>1048576 || total+st.size>33554432){diagnostic("scan_limit: "+p);continue;}
    try{
