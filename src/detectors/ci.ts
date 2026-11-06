@@ -1,4 +1,4 @@
-import type { ScanData,Policy,Observation,Fact } from "../models";
+import type { ScanData,Policy,Observation,Fact,Material } from "../models";
 import { observe,parseConfig,signal } from "../adapters/common";
 import { detectedEntrypoints } from "./entrypoints";
 type Consequence="blocking"|"advisory"|"unknown";
@@ -64,10 +64,11 @@ function bitbucketSteps(data:Record<string,unknown>):CiStep[] {
 const providers:[RegExp,(data:Record<string,unknown>)=>CiStep[]][]=[
  [/^\.github\/workflows\/[^/]+\.ya?ml$/,githubSteps],[/^\.gitlab-ci\.yml$/,gitlabSteps],[/^bitbucket-pipelines\.yml$/,bitbucketSteps]];
 export function ciObservations(s:ScanData,_p:Policy):Observation[] {
- const out:Observation[]=[],entries=detectedEntrypoints(s);
+ const out:Observation[]=[],entries=detectedEntrypoints(s),ci:Material[]=[],matched=new Set<string>();
  for(const m of s.materials) {
   const provider=providers.find(([pattern])=>pattern.test(m.path));
   if(!provider)continue;
+  ci.push(m);
   const parsed=parseConfig(m,"yaml");
   out.push(observe("ci-config-found@1",[m],{},[signal("ci","configuration",m.path)],
    ["Configuration does not establish an agent loop"],parsed.diagnostics));
@@ -77,12 +78,21 @@ export function ciObservations(s:ScanData,_p:Policy):Observation[] {
    const entry=entries.find(e=>e.command===step.command);
    const literal=!!step.command&&!/[\n\r;&|$<>`]/.test(step.command)&&!step.remote;
    const status:Fact["status"]=literal&&entry?"holds":"unknown";
+   if(status==="holds")matched.add(step.command!);
    out.push(observe("ci.step-invokes-entrypoint@1",[m,...s.materials.filter(x=>x.path===entry?.document)],scope,
-    [{subject:"foundation.ci-verification",claim:"invocation",status,scope,basis:step.command??"Unrecognized step",complete:status==="holds"}],
+    [{subject:"foundation.ci-verification",claim:"invocation",status,scope,basis:step.command??"Unrecognized step",complete:status==="holds",signal:true}],
     ["Exact declared invocation only; execution and remote gating unobserved"]));
    out.push(observe("ci.failure-consequence@1",[m],scope,[signal("foundation.ci-verification","consequence",step.consequence,scope)],
     ["Configured failure consequence only"]));
   }
+ }
+ if(ci.length) {
+  const missing=entries.filter(e=>!matched.has(e.command)).map(e=>e.command);
+  const status:Fact["status"]=entries.length&&!missing.length?"holds":"unknown";
+  const basis=entries.length?"matched: "+([...matched].join(", ")||"none")+"; unmatched: "+(missing.join(", ")||"none"):"No declared verification entrypoint";
+  out.push(observe("ci.step-invokes-entrypoint@1",[...ci,...s.materials.filter(x=>entries.some(e=>e.document===x.path))],{},
+   [{subject:"foundation.ci-verification",claim:"invocation",status,scope:{},basis,complete:status==="holds"}],
+   ["Every declared verification entrypoint needs a literal CI step; a partial match stays unknown"]));
  }
  return out;
 }
