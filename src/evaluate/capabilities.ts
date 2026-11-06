@@ -109,5 +109,7 @@ export function evaluateCapabilities(c:Catalog,scopes:Scope[],s:Snapshot,p:Polic
    out.push({id:entry.id,scope,status:allTruth(claims.map(x=>x.status)),claims,basis:claims.flatMap(x=>x.basis)});
   }
  }
- return out;
+ const project=(id:string)=>out.find(x=>x.id===id&&!Object.keys(x.scope).length);
+ return out.map(x=>{const base=project(x.id);
+  return Object.keys(x.scope).length&&x.status==="unknown"&&base&&base.status!=="unknown"?{...x,status:base.status,basis:[...base.basis,"inherited_from_project_scope"]}:x;});
 }
