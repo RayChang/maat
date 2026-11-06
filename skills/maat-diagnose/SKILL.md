@@ -10,6 +10,7 @@ If the report lists scan_limit diagnostics, the scan was cut short and is not au
 Without a selection, retain CLI-specific unknowns. Request explicit external evidence rather than reading home settings.
 Store reports and snapshots only at an explicit location outside the target repository.
 Run maat help for every command and flag. maat catalog list lists the item ids.
+maat finds verification entrypoints in two forms: the lines "Verification command: ..." and "Verification purpose: ..." in a Markdown file, or, in AGENTS.md or CLAUDE.md, one `nx run <project>:<target>` template in a section followed by a table whose first column is Target. If the project declares its checks another way, attest them.
 Read the summary first, then use maat explain for the specific check, capability, rule card, or template; ids other than items carry their version, such as verify.entrypoint-declared@1.
 Follow inspection.review, evidence_requirements, and verification; titles and keywords do not prove content.
 Keep machine observations, agent assessments with citations/uncertainty, and user attestations separate.

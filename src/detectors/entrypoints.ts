@@ -10,6 +10,27 @@ export function detectedEntrypoints(s:ScanData):Entrypoint[] {
   out.push({name:script??command,command,purpose,scope:{},document:m.path,
    ...(script?{manifest:"package.json",script}:{})});
  }
+ const projects=new Map<string,string>();
+ for(const m of s.materials.filter(x=>/(^|\/)project\.json$/.test(x.path))) {
+  const name=parseConfig(m,"json").data.name;
+  if(typeof name==="string")projects.set(name,m.path);
+ }
+ for(const m of s.materials.filter(x=>/(^|\/)(AGENTS|CLAUDE)\.md$/.test(x.path))) {
+  const lines=m.text.split("\n");
+  for(let i=0;i<lines.length;i++) {
+   if(!/^\|\s*Target\s*\|[^|]+\|\s*$/.test(lines[i]!)||!/^\|[-\s|:]+\|\s*$/.test(lines[i+1]??""))continue;
+   let j=i-1;while(j>=0&&!lines[j]!.startsWith("#"))j--;
+   const templates=[...lines.slice(j+1,i).join("\n").matchAll(/`((?:bun |npx |pnpm |yarn )?nx run ([A-Za-z0-9_.@\/-]+):<target>)`/g)];
+   if(templates.length!==1)continue;
+   const [,template,project]=templates[0]!,manifest=projects.get(project!);
+   for(let k=i+2;k<lines.length&&lines[k]!.startsWith("|");k++) {
+    const row=/^\|\s*`([A-Za-z0-9:_.-]+)`\s*\|(.+)\|\s*$/.exec(lines[k]!);
+    if(!row||!row[2]!.trim())continue;
+    out.push({name:project+":"+row[1],command:template!.replace("<target>",row[1]!),purpose:row[2]!.trim(),scope:{},document:m.path,
+     target:row[1]!,...(manifest?{manifest}:{})});
+   }
+  }
+ }
  return out;
 }
 export function entrypointObservations(s:ScanData,_p:Policy):Observation[] {
@@ -29,6 +50,10 @@ export function entrypointObservations(s:ScanData,_p:Policy):Observation[] {
     const parsed=parseConfig(manifest,"json"),scripts=parsed.data.scripts as Record<string,unknown>|undefined;
     invocation=parsed.diagnostics.length?"unknown":typeof scripts?.[e.script]==="string"?"holds":s.scope.complete?"fails":"unknown";
    }
+  }
+  else if(e.target) {
+   const targets=manifest?parseConfig(manifest,"json").data.targets as Record<string,unknown>|undefined:undefined;
+   invocation=targets&&typeof targets==="object"&&Object.hasOwn(targets,e.target)?"holds":"unknown";
   }
   const refs=manifest?[doc,manifest]:[doc];
   const facts:Fact[]=[{subject:"verify.entrypoint-declared@1",claim:"name",status:"holds",scope:e.scope,basis:e.name,complete:true},
