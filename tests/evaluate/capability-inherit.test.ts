@@ -19,6 +19,7 @@ test("a capability shown for the whole project also counts for each CLI",async()
  const declared=r.capabilities.find(x=>x.id==="verify.entrypoint-declared@1"&&x.scope.cli==="claude-code")!;
  expect(declared.status).toBe("holds");
  expect(declared.basis).toContain("inherited_from_project_scope");
+ expect(r.capabilities.find(x=>x.id==="verify.entrypoint-documented@1"&&x.scope.cli==="claude-code")!.basis).toContain("inherited_from_project_scope");
  expect(r.layers.find(l=>l.layer==="harness"&&l.scope.cli==="claude-code")!.unknown_required).toEqual([]);
  expect(r.capabilities.find(x=>x.id==="verify.entrypoint-declared@1"&&x.scope.cli==="codex")!.status).toBe("unknown");
 });
