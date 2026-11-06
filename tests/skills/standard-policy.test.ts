@@ -1,12 +1,14 @@
 import { test, expect } from "bun:test";
 import { parsePolicy } from "../../src/policy/load";
 import { loadCatalog } from "../../src/catalog/load";
-test("the standard policy requires exactly the foundation baseline items",async()=>{
+test("the standard policy requires exactly the baseline items of its applicable layers",async()=>{
  const c=await loadCatalog("catalog");
  const p=parsePolicy(await Bun.file("skills/maat-diagnose/standard-policy.yaml").text(),c.catalog_version);
  expect(p.catalog_version).toBe(c.catalog_version);
- expect(p.applicability).toEqual({foundation:{status:"applicable"}});
- const baseline=c.items.filter(i=>i.layer.primary==="foundation"&&i.baseline.proposed_tier==="baseline").map(i=>i.id).sort();
+ const layers=["foundation","prompt","context","harness"];
+ expect(p.applicability).toEqual(Object.fromEntries(layers.map(l=>[l,{status:"applicable"}])));
+ const baseline=c.items.filter(i=>layers.includes(i.layer.primary)&&i.baseline.proposed_tier==="baseline").map(i=>i.id).sort();
+ expect(baseline.length).toBe(11);
  expect(Object.keys(p.targets).sort()).toEqual(baseline);
  for(const id of baseline)expect(p.targets[id]).toEqual({baseline:true});
  expect(p.target_clis).toEqual([]);
