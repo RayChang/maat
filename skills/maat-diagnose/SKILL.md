@@ -13,8 +13,8 @@ Follow inspection.review, evidence_requirements, and verification; titles and ke
 Keep machine observations, agent assessments with citations/uncertainty, and user attestations separate.
 Use maat attest template --check prompt.task-spec as the concrete format example.
 Collect the substantive human answer, quoted line ranges, exact material digests, scope, versions, owner, and expiry.
-Before asking for confirmation, write one batch review document in the user's language, in plain words, outside the target repository: per item the question, the drafted answer, each citation as path, line range and a short quote, the claims it supports and those it does not, and what the user must confirm.
-Ask for one confirmation of the whole batch. Record drafts as the user's attestations only after that confirmation; a correction makes a new draft for the next batch.
+Before asking for confirmation, write one batch review document in the user's language, in plain words, outside the target repository: per item the question, the drafted answer, each citation as path, line range and a short quote (never quote secrets), the claims it supports and those it does not, and what the user must confirm.
+Ask for one confirmation of the whole batch. Record drafts as the user's attestations only after that confirmation. When the user corrects some items, record the confirmed items now and redraft only the corrected ones for the next batch.
 Submit only explicitly provided, sanitized evidence with --evidence.
 Use maat evaluate with the saved snapshot; it must not reread repository files.
 A rewritten candidate on identical evidence is not progress. Stop with the supported conclusion or remaining unknowns.
