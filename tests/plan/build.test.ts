@@ -27,5 +27,14 @@ test("without targets the plan covers the policy's required items that did not p
  expect(plan.actions.map(a=>a.check)).toEqual(["foundation.automated-tests","foundation.static-analysis"]);
  expect(plan.actions.every(a=>a.necessity==="required")).toBe(true);
  expect(buildPlan(report,["prompt.task-spec"],c).actions.map(a=>a.check)).toEqual(["prompt.task-spec"]);
- expect(await Bun.file("docs/specs/2026-11-04-maat-cli-interface.md").text()).toContain("適用性或必備條件仍未知的 baseline 題");
+});
+test("the default plan skips a scope whose applicability is unknown",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ p.applicability={foundation:{status:"applicable"}};
+ p.targets={"foundation.automated-tests":{baseline:true}};
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const report=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ const item=report.items.find(i=>i.id==="foundation.automated-tests")!;
+ report.items.push({...item,scope:{cli:"codex"},applicability:{...item.applicability,status:"unknown"}});
+ expect(buildPlan(report,[],c).actions.map(a=>[a.check,a.scope])).toEqual([["foundation.automated-tests",{}]]);
 });
