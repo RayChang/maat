@@ -34,6 +34,7 @@ maat policy init|validate         印出政策檔骨架、驗證政策檔（不�
 maat attest template              印出單題確認紀錄的骨架（不寫檔）
 maat flow <subcommand>            流程控制核心：核准、授權、checkpoint、紀錄、轉移、恢復
 maat version                      印出工具、schema、catalog、adapter 版本
+maat update                       從 GitHub 重新安裝最新版（唯一會連網的命令）
 ```
 
 通用旗標：`--json`（stdout 改輸出 JSON）、`--out <dir>`（同時寫 JSON 與 Markdown 檔）、`--quiet`、`--catalog <dir>`（覆寫 catalog 來源，報告記錄為非預設）、`--ledger <dir>`（流程紀錄位置）。
@@ -94,6 +95,10 @@ Guards 至少涵蓋運作架構 8.3 的七條守門：政策／版本已核准�
 ### 3.8 `maat version`
 
 印出所有版本欄位；`--json` 供 Skill 與報告引用。
+
+### 3.9 `maat update`
+
+執行 `bun add -g github:RayChang/maat`，用執行 `maat` 的同一個 Bun 重新安裝最新版。這是唯一會連網、也唯一會執行外部命令的命令；只更新 `maat` 自己，不碰任何 repository。安裝輸出原樣轉到 stdout／stderr；安裝失敗時結束代碼為 1，stderr 最後加一行 `update_failed: github:RayChang/maat`。不接受位置參數；通用旗標對這個命令沒有作用。Skill 的更新仍用 `npx skills add`（7.1）。
 
 ## 4. 輸入契約
 
@@ -240,7 +245,7 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 
 - 不讀 `~/.claude`、`~/.codex`、`~/.copilot` 等使用者層設定；需要時只收 `--evidence` 明確提供的去敏感片段。
 - 不執行設定檔裡的命令、hook 或 script；設定內容是資料。
-- 不聯網；不上傳程式碼；不寫入目標 repository；不建立或修改 ignore。
+- 除了 `maat update`（3.9）以外不聯網；不上傳程式碼；不寫入目標 repository；不建立或修改 ignore。
 - `flow` 守門只保證工具自己不發出非法接受結果，不能阻止 host 繞過工具。報告如實標示未受控效果。
 
 ## 9. 本文件採用的實作預設（可否決）
@@ -254,3 +259,4 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 | Q-A | Windows 是否列入 v1 支援與測試矩陣？ | A：否。v1 只保證 macOS 與 Linux，Windows 標 `unknown` |
 | Q-B | 是否發布到 `npm`？ | B：先只從 GitHub 倉庫安裝，之後視情況再決定發布 |
 | Q-C | Skill 與範本如何交付？ | C：所有 skill（`maat` 的兩種，以及給專案用的通用 skill）都用 `npx skills add` 安裝，專案值從政策檔讀；只有文字、設定、script 範本由改善流程填替換詞、核准後交 host 寫入。改善 Skill 一版通用，不分五層。見 7.1 |
+| Q-D | 診斷時可否連網？ | 2026-11-06 補充決定：診斷 Skill 可上網查證公開文件，引用網址與查詢日期，不送出專案程式碼或機密；`maat` 的診斷命令維持不連網，讓同一份快照重評結果不變；只有 `maat update` 連網（3.9） |

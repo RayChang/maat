@@ -2,7 +2,7 @@
 
 `maat` 是一個唯讀的診斷命令列工具，用來檢查一個 repository 為 coding agent（Claude Code、Codex、GitHub Copilot CLI）做了多少準備。它依五個層面逐題檢查，產出把證據分開記錄的審核報告與改善計畫，並提供流程控制（`maat flow`）：以守門規則與外部的只增不改紀錄檔，管控改善過程的核准、授權與狀態轉移。
 
-`maat` 不會做的事：不呼叫模型、不執行專案裡的程式、不連網、不寫入被檢查的 repository、不讀 `~/.claude`、`~/.codex`、`~/.copilot`。報告不給總分、百分比或等級。
+`maat` 不會做的事：不呼叫模型、不執行專案裡的程式、不寫入被檢查的 repository、不讀 `~/.claude`、`~/.codex`、`~/.copilot`。除了 `maat update` 以外的命令都不連網。報告不給總分、百分比或等級。
 
 ## 需求
 

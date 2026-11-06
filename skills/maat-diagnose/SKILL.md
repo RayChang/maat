@@ -15,7 +15,8 @@ Collect the substantive human answer, quoted line ranges, exact material digests
 Submit only explicitly provided, sanitized evidence with --evidence.
 Use maat evaluate with the saved snapshot; it must not reread repository files.
 A rewritten candidate on identical evidence is not progress. Stop with the supported conclusion or remaining unknowns.
-Do not edit the diagnosed project, run its programs/hooks/tests, start an agent, or network.
+Do not edit the diagnosed project, run its programs/hooks/tests, or start an agent.
+You may look up public documentation on the web to verify facts and advice. Cite the URL and the date checked, treat findings as agent assessments, and never send project code or secrets.
 Do not claim runtime enforcement from configuration. Do not grant capabilities from an agent assessment.
 Hand off the report, snapshot, versions, material fingerprints, selected targets, and limitations to improvement.
 For a new project, request a minimal startup plan. For a Loop target, inspect required capabilities before suggesting changes.
