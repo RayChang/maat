@@ -10,19 +10,20 @@ export function detectedEntrypoints(s:ScanData):Entrypoint[] {
   out.push({name:script??command,command,purpose,scope:{},document:m.path,
    ...(script?{manifest:"package.json",script}:{})});
  }
- const projects=new Map<string,string>();
+ const projects=new Map<string,string>(),shared=new Set<string>();
  for(const m of s.materials.filter(x=>/(^|\/)project\.json$/.test(x.path))) {
   const name=parseConfig(m,"json").data.name;
-  if(typeof name==="string")projects.set(name,m.path);
+  if(typeof name==="string"){if(projects.has(name))shared.add(name);projects.set(name,m.path);}
  }
  for(const m of s.materials.filter(x=>/(^|\/)(AGENTS|CLAUDE)\.md$/.test(x.path))) {
   const lines=m.text.split("\n");
+  let open=false;const fenced=lines.map(l=>{const edge=/^\s*(```|~~~)/.test(l),inside=open||edge;if(edge)open=!open;return inside;});
   for(let i=0;i<lines.length;i++) {
    if(!/^\|\s*Target\s*\|[^|]+\|\s*$/.test(lines[i]!)||!/^\|[-\s|:]+\|\s*$/.test(lines[i+1]??""))continue;
-   let j=i-1;while(j>=0&&!lines[j]!.startsWith("#"))j--;
+   let j=i-1;while(j>=0&&!(lines[j]!.startsWith("#")&&!fenced[j]))j--;
    const templates=[...lines.slice(j+1,i).join("\n").matchAll(/`((?:bun |npx |pnpm |yarn )?nx run ([A-Za-z0-9_.@\/-]+):<target>)`/g)];
    if(templates.length!==1)continue;
-   const [,template,project]=templates[0]!,manifest=projects.get(project!);
+   const [,template,project]=templates[0]!,manifest=shared.has(project!)?undefined:projects.get(project!);
    for(let k=i+2;k<lines.length&&lines[k]!.startsWith("|");k++) {
     const row=/^\|\s*`([A-Za-z0-9:_.-]+)`\s*\|([^|]+)\|\s*$/.exec(lines[k]!);
     if(!row||!row[2]!.trim())continue;
@@ -59,7 +60,8 @@ export function entrypointObservations(s:ScanData,_p:Policy):Observation[] {
   const facts:Fact[]=[{subject:"verify.entrypoint-declared@1",claim:"name",status:"holds",scope:e.scope,basis:e.name,complete:true},
    {subject:"verify.entrypoint-declared@1",claim:"invocation",status:invocation,scope:e.scope,basis:e.command,complete:invocation!=="unknown"},
    {subject:"verify.entrypoint-declared@1",claim:"purpose",status:"holds",scope:e.scope,basis:e.purpose,complete:true}];
-  out.push(observe("policy.verify-entrypoint@1",refs,e.scope,facts,["Explicit document declaration; never executed"]));
+  out.push(observe("policy.verify-entrypoint@1",refs,e.scope,facts,["Explicit document declaration; never executed",
+   ...(e.target&&!manifest?["No unique project.json declares this Nx project; target not checked"]:[])]));
   out.push(observe("instructions.verify-entrypoint@1",refs,e.scope,["invocation","purpose","correspondence"].map(claim=>({
    subject:"verify.entrypoint-documented@1",claim,status:claim==="correspondence"?invocation:"holds",
    scope:e.scope,basis:claim==="purpose"?e.purpose:e.command,complete:invocation!=="unknown"})),

@@ -35,3 +35,11 @@ test("a template from another section or a row with extra cells declares nothing
  const extra=guide.replace("| `missing-one` | not declared in project.json |","| `missing-one` | first | second |");
  expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:extra},project])).map(e=>e.name)).toEqual(["workspace:check-decks"]);
 });
+test("a code-block comment is not a heading, and a shared project name checks nothing",()=>{
+ const fencedGuide=guide.replace("| Target |","```sh\n# run a gate\n```\n\n| Target |");
+ expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:fencedGuide},project])).map(e=>e.name)).toEqual(["workspace:check-decks","workspace:missing-one"]);
+ const twin={path:"apps/other/project.json",text:project.text};
+ const obs=entrypointObservations(scan([{path:"AGENTS.md",text:guide},project,twin]),emptyPolicy()).filter(o=>o.detector==="policy.verify-entrypoint@1");
+ expect(obs.map(o=>o.facts.find(f=>f.claim==="invocation")!.status)).toEqual(["unknown","unknown"]);
+ expect(obs[0]!.limits).toContain("No unique project.json declares this Nx project; target not checked");
+});
