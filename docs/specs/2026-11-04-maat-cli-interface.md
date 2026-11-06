@@ -185,7 +185,7 @@ diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 
 `layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。掃描因容量上限截斷（有 `scan_limit` 診斷）時，每一層的 `authoritative` 都為 false，報告附 `scan_truncated` 診斷；未讀的 symlink 或二進位檔是刻意略過，不影響這個欄位（2026-11-06 補充）。沒有總分、百分比或等級欄位。
 `items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 或 `verification.rerun` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
-`items[]` 在專案範圍 `{}` 列出每一題；較窄的範圍（代理工具、迴圈或確認所用的範圍；CI 步驟不算，見 3.1）只列與該範圍有關的題目：該題的觀察出現在那個範圍、該題的確認使用那個範圍，或政策在該題或其所屬層宣告了那個迴圈範圍。`layers[]` 只在該層於某範圍有題目時列出那個範圍（2026-11-06 補充）。選了目標 CLI，但沒有該 CLI 的觀察或確認時，不另列該 CLI 的範圍，題目只出現在 `{}`。題目的豁免所用的範圍也算與該題有關；代理評估只顯示在該題已列出的範圍。
+`items[]` 在專案範圍 `{}` 列出每一題；較窄的範圍（代理工具、迴圈或確認所用的範圍；CI 步驟不算，見 3.1）只列與該範圍有關的題目：該題的觀察出現在那個範圍、該題的確認使用那個範圍，或政策在該題或其所屬層宣告了那個迴圈範圍。`layers[]` 只在該層於某範圍有題目時列出那個範圍（2026-11-06 補充）。選了目標 CLI，但沒有該 CLI 的觀察或確認時，不另列該 CLI 的範圍，題目只出現在 `{}`。題目的豁免所用的範圍也算與該題有關；代理評估只顯示在該題已列出的範圍。驗證入口兩項能力（`verify.entrypoint-declared@1`、`verify.entrypoint-documented@1`）是專案範圍的主張：在較窄範圍沒有自己的證據（`basis` 為空）、結果為 `unknown` 時，沿用專案範圍 `{}` 的結果與各主張，`basis` 附 `inherited_from_project_scope`；較窄範圍有自己的證據（含 `unknown`）時以它為準。其他能力綁定各自的評估範圍、迴圈或邊界，不沿用（catalog §7.3）（2026-11-06 補充）。
 
 ### 5.2 審核報告 Markdown
 
