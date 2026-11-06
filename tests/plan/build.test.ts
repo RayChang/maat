@@ -27,4 +27,5 @@ test("without targets the plan covers the policy's required items that did not p
  expect(plan.actions.map(a=>a.check)).toEqual(["foundation.automated-tests","foundation.static-analysis"]);
  expect(plan.actions.every(a=>a.necessity==="required")).toBe(true);
  expect(buildPlan(report,["prompt.task-spec"],c).actions.map(a=>a.check)).toEqual(["prompt.task-spec"]);
+ expect(await Bun.file("docs/specs/2026-11-04-maat-cli-interface.md").text()).toContain("適用性或必備條件仍未知的 baseline 題");
 });
