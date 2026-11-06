@@ -1,4 +1,4 @@
-import { parseArgs,one } from "./args";
+import { parseArgs,one,usage } from "./args";
 import { runAuditCommand } from "./audit";
 import { runInspectCommand } from "./inspect";
 import { runFlowCommand } from "./flow";
@@ -9,6 +9,7 @@ export async function main(argv:string[],now=new Date().toISOString(),cwd=proces
  try{
   const a=parseArgs(argv);
   if(a.command==="update")return runUpdate();
+  if(a.command==="help")return {code:0,stdout:usage(),stderr:""};
   const result=["scan","evaluate","plan"].includes(a.command)?await runAuditCommand(a,now):
    a.command.startsWith("flow ")?await runFlowCommand(a,now,cwd):await runInspectCommand(a,now,cwd);
   if(a.command==="scan"&&one(a,"snapshot")) {

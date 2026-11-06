@@ -15,7 +15,7 @@ const grammar: Record<string, { flags: string[]; required?: string[]; min?: numb
   "flow record": { flags: ["flow","kind","file"], required: ["flow","kind","file"] },
   "flow decide": { flags: ["flow","event","by"], required: ["flow","event"] },
   "flow status": { flags: ["flow"], required: ["flow"] },
-  "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }
+  "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }, help: { flags: [] }
 };
 const global = ["json","out","quiet","catalog","ledger"];
 const boolean = new Set(["json","quiet"]);
@@ -27,11 +27,17 @@ const enums: Record<string,string[]> = {
   event: ["accept","continue-fix","stop","handoff","resume"]
 };
 export function one(a: Args, key: string): string | undefined { return a.flags[key]?.[0]; }
+export function usage(): string {
+  const arg = (s: { min?: number; max?: number }) => (s.max ?? 0) === 0 ? "" : (s.min ?? 0) > 0 ? " <arg>" : " [<arg>]";
+  const flag = (k: string, required: boolean) => { const f = "--" + k + (boolean.has(k) ? "" : " <" + (enums[k]?.join("|") ?? "value") + ">") + (repeat.has(k) ? " ..." : ""); return required ? " " + f : " [" + f + "]"; };
+  return Object.entries(grammar).map(([c, s]) => "maat " + c + arg(s) + s.flags.map(k => flag(k, !!s.required?.includes(k))).join("")).join("\n")
+    + "\nGlobal flags:" + global.map(k => flag(k, false)).join("") + "\n";
+}
 export function parseArgs(argv: string[]): Args {
   const words = [...argv]; let command = words.shift() ?? "";
   if (["catalog","policy","attest","flow"].includes(command)) command += " " + (words.shift() ?? "");
   const spec = grammar[command];
-  const bad = (m: string): never => { throw new MaatError(2, "usage_error: " + m); };
+  const bad = (m: string): never => { throw new MaatError(2, "usage_error: " + m + " (run maat help)"); };
   if (!spec) bad("unknown command");
   const a: Args = { command, positionals: [], flags: {} };
   while (words.length) {
