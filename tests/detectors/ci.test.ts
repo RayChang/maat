@@ -27,4 +27,6 @@ test("GitLab and Bitbucket steps are read like GitHub steps",()=>{
   ["invocation","bitbucket-pipelines.yml","default/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/0/0","blocking"],
   ["invocation","bitbucket-pipelines.yml","default/1/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/1/0/0","advisory"],
   ["invocation","bitbucket-pipelines.yml","branches/main/0/0/0","unknown"],["consequence","bitbucket-pipelines.yml","branches/main/0/0/0","blocking"]]);
+ s.materials[1]!.text="include: [{local: .gitlab/ci/base.yml}]\n"+s.materials[1]!.text;
+ expect(ciObservations(s,p).flatMap(o=>o.facts).filter(f=>f.claim==="consequence"&&f.scope.workflow===".gitlab-ci.yml").map(f=>f.basis)).toEqual(["unknown","unknown","unknown"]);
 });

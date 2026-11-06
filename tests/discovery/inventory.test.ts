@@ -26,6 +26,8 @@ test("reads GitLab and Bitbucket CI files but no other dot files",async()=>{
   await writeFile(join(root,".gitlab/ci/verify.yml"),"verify:\n  script: [bun test]\n");
   await writeFile(join(root,"bitbucket-pipelines.yml"),"pipelines: {}\n");
   await writeFile(join(root,".other.yml"),"skip: true\n");
+  await mkdir(join(root,"sub"));
+  await writeFile(join(root,"sub/.gitlab-ci.yml"),"test:\n  script: [bun test]\n");
   const r=await discover(root,{include:["."],exclude:[]});
   expect(r.materials.map(m=>m.path)).toEqual([".gitlab/ci/verify.yml",".gitlab-ci.yml","bitbucket-pipelines.yml"]);
  }finally{await rm(root,{recursive:true,force:true});}

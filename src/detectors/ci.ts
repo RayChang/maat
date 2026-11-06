@@ -26,7 +26,7 @@ function gitlabSteps(data:Record<string,unknown>):CiStep[] {
   if(!job||name.startsWith(".")||gitlabGlobal.has(name))continue;
   const script:unknown[]=typeof job.script==="string"?[job.script]:Array.isArray(job.script)?job.script.flat():[];
   const allow=job.allow_failure;
-  const consequence:Consequence=job.rules!==undefined||job.extends!==undefined||(allow!==undefined&&typeof allow!=="boolean")?"unknown":
+  const consequence:Consequence=data.include!==undefined||job.rules!==undefined||job.extends!==undefined||(allow!==undefined&&typeof allow!=="boolean")?"unknown":
    allow===true||(allow===undefined&&job.when==="manual")?"advisory":"blocking";
   for(const [index,line] of script.entries())
    out.push({boundary:name+"/"+index,command:typeof line==="string"?line.trim():null,remote:false,consequence});

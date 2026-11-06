@@ -4,9 +4,9 @@ Diagnosing alibi and fvg showed that `foundation.ci-verification` (a required it
 
 What changes:
 
-- Discovery reads the root file `.gitlab-ci.yml` and the hidden directory `.gitlab/` (common home of included CI files; read so they can be cited). `bitbucket-pipelines.yml` is not a dot file and is already read.
+- Discovery reads the root file `.gitlab-ci.yml` (only at the repository root) and the hidden directory `.gitlab/` (common home of included CI files; read so they can be cited). `bitbucket-pipelines.yml` is not a dot file and is already read.
 - `src/detectors/ci.ts` keeps the GitHub logic unchanged and adds two readers that produce the same per-step observations (`ci.step-invokes-entrypoint@1`, `ci.failure-consequence@1`, scope `{workflow, boundary, evaluator:"command"}`).
-  - GitLab (docs.gitlab.com/ci/yaml, checked 2026-11-06): every top-level mapping is a job except global keywords (`default include stages variables workflow spec` and the deprecated globals `image services cache before_script after_script`) and hidden jobs whose name starts with `.`. Each `script` line is a step. Consequence: `allow_failure: true` is advisory; `when: manual` without `allow_failure` defaults to advisory; a job with `rules`, `extends` or a non-boolean `allow_failure` is unknown (those can change the result and are not followed); otherwise blocking.
+  - GitLab (docs.gitlab.com/ci/yaml, checked 2026-11-06): every top-level mapping is a job except global keywords (`default include stages variables workflow spec` and the deprecated globals `image services cache before_script after_script`) and hidden jobs whose name starts with `.`. Each `script` line is a step. Consequence: a file with a top-level `include` makes every job unknown (included files deep-merge into jobs and can add `allow_failure` or `rules`; docs.gitlab.com/ci/yaml/includes, checked 2026-11-06); `allow_failure: true` is advisory; `when: manual` without `allow_failure` defaults to advisory; a job with `rules`, `extends` or a non-boolean `allow_failure` is unknown (those can change the result and are not followed); otherwise blocking.
   - Bitbucket (support.atlassian.com/bitbucket-cloud/docs/step-options, checked 2026-11-06): `pipelines.default` is a list; `branches`, `pull-requests`, `tags` and `custom` map names to lists. Items are `step`, `parallel` (a list, or a mapping with `steps`) and `stage` (with `steps`). Each string `script` line is a step; pipes are unrecognized. Consequence: `on-fail.strategy` on the step, or inherited from its parallel group or stage: absent or `fail` is blocking, `ignore` is advisory, anything else (`retry`) is unknown.
 - Detector ids and versions stay `@1`: their catalog contracts are provider-neutral, and catalog 0.1.0 is not changed.
 
@@ -59,6 +59,8 @@ test("GitLab and Bitbucket steps are read like GitHub steps",()=>{
   ["invocation","bitbucket-pipelines.yml","default/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/0/0","blocking"],
   ["invocation","bitbucket-pipelines.yml","default/1/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/1/0/0","advisory"],
   ["invocation","bitbucket-pipelines.yml","branches/main/0/0/0","unknown"],["consequence","bitbucket-pipelines.yml","branches/main/0/0/0","blocking"]]);
+ s.materials[1]!.text="include: [{local: .gitlab/ci/base.yml}]\n"+s.materials[1]!.text;
+ expect(ciObservations(s,p).flatMap(o=>o.facts).filter(f=>f.claim==="consequence"&&f.scope.workflow===".gitlab-ci.yml").map(f=>f.basis)).toEqual(["unknown","unknown","unknown"]);
 });
 ```
 
@@ -73,6 +75,8 @@ test("reads GitLab and Bitbucket CI files but no other dot files",async()=>{
   await writeFile(join(root,".gitlab/ci/verify.yml"),"verify:\n  script: [bun test]\n");
   await writeFile(join(root,"bitbucket-pipelines.yml"),"pipelines: {}\n");
   await writeFile(join(root,".other.yml"),"skip: true\n");
+  await mkdir(join(root,"sub"));
+  await writeFile(join(root,"sub/.gitlab-ci.yml"),"test:\n  script: [bun test]\n");
   const r=await discover(root,{include:["."],exclude:[]});
   expect(r.materials.map(m=>m.path)).toEqual([".gitlab/ci/verify.yml",".gitlab-ci.yml","bitbucket-pipelines.yml"]);
  }finally{await rm(root,{recursive:true,force:true});}
@@ -118,7 +122,7 @@ function gitlabSteps(data:Record<string,unknown>):CiStep[] {
   if(!job||name.startsWith(".")||gitlabGlobal.has(name))continue;
   const script:unknown[]=typeof job.script==="string"?[job.script]:Array.isArray(job.script)?job.script.flat():[];
   const allow=job.allow_failure;
-  const consequence:Consequence=job.rules!==undefined||job.extends!==undefined||(allow!==undefined&&typeof allow!=="boolean")?"unknown":
+  const consequence:Consequence=data.include!==undefined||job.rules!==undefined||job.extends!==undefined||(allow!==undefined&&typeof allow!=="boolean")?"unknown":
    allow===true||(allow===undefined&&job.when==="manual")?"advisory":"blocking";
   for(const [index,line] of script.entries())
    out.push({boundary:name+"/"+index,command:typeof line==="string"?line.trim():null,remote:false,consequence});
@@ -200,7 +204,7 @@ export function ciObservations(s:ScanData,_p:Policy):Observation[] {
   with
 
 ```ts
-   if(name.startsWith(".") && ![".gitignore",".tool-versions",".gitlab-ci.yml"].includes(name) && !hidden.has(rel.split("/")[0]!)) continue;
+   if(name.startsWith(".") && ![".gitignore",".tool-versions"].includes(name) && p!==".gitlab-ci.yml" && !hidden.has(rel.split("/")[0]!)) continue;
 ```
 
   c. In `docs/specs/2026-11-04-maat-cli-interface.md`, replace the line

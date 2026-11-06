@@ -33,7 +33,7 @@ export async function discover(input:string,scope:Policy["scope"]):Promise<Inven
     await walk(p);continue;
    }
    if(!st.isFile() || (p.startsWith(".git/") && p!==".git/HEAD")) continue;
-   if(name.startsWith(".") && ![".gitignore",".tool-versions",".gitlab-ci.yml"].includes(name) && !hidden.has(rel.split("/")[0]!)) continue;
+   if(name.startsWith(".") && ![".gitignore",".tool-versions"].includes(name) && p!==".gitlab-ci.yml" && !hidden.has(rel.split("/")[0]!)) continue;
    if(!scope.include.some(g=>pattern(p,g))) continue;
    if(++count>10000 || st.size>1048576 || total+st.size>33554432){diagnostic("scan_limit: "+p);continue;}
    try{
