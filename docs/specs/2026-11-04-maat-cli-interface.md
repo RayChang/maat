@@ -54,7 +54,7 @@ maat help                         列出每個命令、位置參數與旗標；�
 
 行為：有範圍的 discovery（不追蹤越出 `<path>` 的 symlink、不讀 `.git` 以外的隱藏憑證目錄、不聯網、不執行任何東西）→ adapter 辨識設定面 → deterministic detectors → 合併政策與證據 → 依 catalog 判定單題結果、能力、逐層狀態 → 報告。讀取或解析失敗寫入 `diagnostics`，對應主張為 `unknown`，不是 `missing`。
 
-CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github/workflows/*.yml`、GitLab CI 的 `.gitlab-ci.yml`（discovery 另讀 `.gitlab/` 目錄，供引用）、Bitbucket Pipelines 的 `bitbucket-pipelines.yml`。每個步驟的指令與失敗後果逐一記錄，並計入專案範圍 `{}`，不另列評估範圍；持續整合這題只要有一個步驟字面呼叫已宣告的驗證指令即成立（2026-11-06 補充）；`include`、`extends`、`rules`、遠端 action 與包裝指令（例如 `dagger call`）不追蹤，對應主張為 `unknown`。
+CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github/workflows/*.yml`、GitLab CI 的 `.gitlab-ci.yml`（discovery 另讀 `.gitlab/` 目錄，供引用）、Bitbucket Pipelines 的 `bitbucket-pipelines.yml`。每個步驟的指令與失敗後果逐一記錄，並計入專案範圍 `{}`，不另列評估範圍；持續整合這題要每個已宣告的驗證指令都有 CI 步驟字面呼叫才成立，只對上部分時為 `unknown` 並列出已對上與未對上的指令；catalog 的 partial 需要逐項子主張，目前未支援（2026-11-06 修訂，依 catalog `foundation.ci-verification` 的 invocation 規定）；`include`、`extends`、`rules`、遠端 action 與包裝指令（例如 `dagger call`）不追蹤，對應主張為 `unknown`。
 
 ### 3.2 `maat evaluate`
 
