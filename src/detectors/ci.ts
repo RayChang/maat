@@ -72,6 +72,7 @@ export function ciObservations(s:ScanData,_p:Policy):Observation[] {
   out.push(observe("ci-config-found@1",[m],{},[signal("ci","configuration",m.path)],
    ["Configuration does not establish an agent loop"],parsed.diagnostics));
   for(const step of provider[1](parsed.data)) {
+   // evaluator "command" marks a CI step scope; countsFor() in src/canonical.ts counts it for the project scope {}.
    const scope={workflow:m.path,boundary:step.boundary,evaluator:"command"};
    const entry=entries.find(e=>e.command===step.command);
    const literal=!!step.command&&!/[\n\r;&|$<>`]/.test(step.command)&&!step.remote;
