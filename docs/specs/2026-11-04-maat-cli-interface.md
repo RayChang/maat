@@ -243,7 +243,7 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 
 範本資源庫只剩文字、設定、script 三種形式（例如指引段落、hook 設定、CI 步驟）。流程是：`maat plan` 依報告與政策把替換詞填好，填不出來的列「先詢問」；改善 Skill 展示後取得核准，由既有 agent（host）寫入專案。`maat` 本身不寫入專案。
 
-**標準政策檔**（使用者 2026-11-06 補充決定）：`skills/maat-diagnose/standard-policy.yaml` 存放各專案共用的選擇：基礎層適用、基礎層四題 baseline 題列為必備、預設排除圖片字型影片與 PDF（lockfile 不排除，環境題要讀）。專案沒有 `.maat/policy.yaml` 時，診斷 Skill 先複製這份當草稿，只補專案專屬的部分（目標 CLI、專案排除路徑、迴圈、確認），草稿放在目標 repository 之外並以 `--policy` 傳入。`maat` 本身不讀這份檔案；標準檔更新後，已起草的專案政策檔不會自動跟著改。
+**標準政策檔**（使用者 2026-11-06 補充決定）：`skills/maat-diagnose/standard-policy.yaml` 存放各專案共用的選擇：基礎、提示詞、情境、執行框架四層適用，這四層的 11 題 baseline 題列為必備，預設排除圖片字型影片與 PDF（lockfile 不排除，環境題要讀）。迴圈與協作圖兩層是否適用由各專案決定，標準檔不寫。專案沒有 `.maat/policy.yaml` 時，診斷 Skill 先複製這份當草稿，只補專案專屬的部分（目標 CLI、專案排除路徑、迴圈、確認），草稿放在目標 repository 之外並以 `--policy` 傳入。`maat` 本身不讀這份檔案；標準檔更新後，已起草的專案政策檔不會自動跟著改。
 
 ## 8. 安全與不做的事
 
