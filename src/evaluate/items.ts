@@ -1,5 +1,5 @@
-import type { Catalog } from "../catalog/types";
-import type { Snapshot,Policy,Scope,ItemResult,Claim,CapabilityResult,Layer,Truth,Assessment } from "../models";
+import type { Catalog,CatalogItem } from "../catalog/types";
+import type { Snapshot,Policy,Scope,ItemResult,Claim,CapabilityResult,Layer,Truth,Assessment,Observation } from "../models";
 import { MaatError } from "../errors";
 import { canonical,sameScope } from "../canonical";
 import { resolveClaim } from "./truth";
@@ -13,9 +13,13 @@ import { loopClaims } from "./contracts/loop";
 import { graphClaims } from "./contracts/graph";
 export const itemClaims:Record<string,string[]>={...foundationClaims,...promptClaims,...contextClaims,...harnessClaims,...loopClaims,...graphClaims};
 export function evaluationScopes(s:Snapshot,p:Policy):Scope[] {
- const scopes:Scope[]=[...s.observations.map(o=>o.scope),...p.attestations.filter(x=>x.scope).map(x=>x.scope),...Object.values(p.applicability).flatMap(d=>(d.loops??[]).map(l=>({workflow:l.scope})))];
- if(!scopes.length) scopes.push(...(s.target_clis.length?s.target_clis.map(cli=>({cli})):[{}]));
+ const scopes:Scope[]=[{},...s.observations.map(o=>o.scope),...p.attestations.filter(x=>x.scope).map(x=>x.scope),...Object.values(p.applicability).flatMap(d=>(d.loops??[]).map(l=>({workflow:l.scope})))];
  return [...new Map(scopes.map(x=>[canonical(x),x])).values()].sort((a,b)=>canonical(a).localeCompare(canonical(b)));
+}
+export function itemScopes(i:CatalogItem,s:Snapshot,p:Policy):Set<string> {
+ const own=(o:Observation)=>i.inspection.detectors.includes(o.detector)||i.verification.rerun.includes(o.detector)||o.facts.some(f=>f.subject===i.id);
+ const loops=Object.entries(p.applicability).filter(([key])=>key===i.id||key===i.layer.primary).flatMap(([,d])=>(d.loops??[]).map(l=>({workflow:l.scope})));
+ return new Set([{},...s.observations.filter(own).map(o=>o.scope),...p.attestations.flatMap(a=>a.check===i.id&&a.scope?[a.scope]:[]),...p.exemptions.flatMap(e=>e.check===i.id&&e.scope?[e.scope]:[]),...loops].map(x=>canonical(x)));
 }
 export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResult[],now:string,assessments:Assessment[]=[]):ItemResult[] {
  const ids=new Set(c.items.map(i=>i.id));
@@ -28,7 +32,9 @@ export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResul
  for(const key of [...Object.keys(p.targets),...p.exemptions.map(e=>e.check)])
   if(!ids.has(key)) throw new MaatError(3,"unknown_check: "+key);
  const out:ItemResult[]=[];
+ const relevant=new Map(c.items.map(i=>[i.id,itemScopes(i,s,p)]));
  for(const scope of evaluationScopes(s,p)) for(const i of c.items) {
+  if(!relevant.get(i.id)!.has(canonical(scope))) continue;
   const selected=p.applicability[i.id]??p.applicability[i.layer.primary];
   const decision=selected??{status:"unknown" as const};
   const usage=p.attestations.some(a=>a.check===i.id&&a.claims?.includes("in_use")&&a.scope&&sameScope(a.scope,scope)&&!attestationIssues(a,s.materials,s.versions,scope,now).length);
