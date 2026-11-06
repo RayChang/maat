@@ -97,7 +97,7 @@ maat update                       從 GitHub 重新安裝最新版（唯一會�
   b4. In §10, append this row directly after the `| Q-C |` row (the last line of the table):
 
 ```text
-| Q-D | 診斷時可否連網？ | 2026-11-06 補充決定：診斷 Skill 可上網查證公開文件，引用網址與查詢日期，不送出專案程式碼或機密；`maat` 的診斷命令維持不連網，讓同一份快照重評結果不變；只有 `maat update` 連網（3.9） |
+| Q-D | 診斷時可否連網？ | 2026-11-06 補充決定：診斷 Skill 可上網查證公開文件，引用網址與查詢日期，不送出專案程式碼或機密；`maat` 的診斷命令維持不連網，讓同一份快照重評結果不變；只有 `maat update` 連網（3.9）。本決定覆蓋工具規格 §11 第 8 條裡 Skill 不聯網的部分 |
 ```
 
   c. In `.github/claude-review/system-prompt.md`, replace the line

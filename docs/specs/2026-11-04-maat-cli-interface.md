@@ -259,4 +259,4 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 | Q-A | Windows 是否列入 v1 支援與測試矩陣？ | A：否。v1 只保證 macOS 與 Linux，Windows 標 `unknown` |
 | Q-B | 是否發布到 `npm`？ | B：先只從 GitHub 倉庫安裝，之後視情況再決定發布 |
 | Q-C | Skill 與範本如何交付？ | C：所有 skill（`maat` 的兩種，以及給專案用的通用 skill）都用 `npx skills add` 安裝，專案值從政策檔讀；只有文字、設定、script 範本由改善流程填替換詞、核准後交 host 寫入。改善 Skill 一版通用，不分五層。見 7.1 |
-| Q-D | 診斷時可否連網？ | 2026-11-06 補充決定：診斷 Skill 可上網查證公開文件，引用網址與查詢日期，不送出專案程式碼或機密；`maat` 的診斷命令維持不連網，讓同一份快照重評結果不變；只有 `maat update` 連網（3.9） |
+| Q-D | 診斷時可否連網？ | 2026-11-06 補充決定：診斷 Skill 可上網查證公開文件，引用網址與查詢日期，不送出專案程式碼或機密；`maat` 的診斷命令維持不連網，讓同一份快照重評結果不變；只有 `maat update` 連網（3.9）。本決定覆蓋工具規格 §11 第 8 條裡 Skill 不聯網的部分 |
