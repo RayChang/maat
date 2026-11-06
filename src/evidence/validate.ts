@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import type { Attestation, Assessment, Material, Scope, Fingerprint } from "../models";
 import type { Versions } from "../versions";
-import { sameScope } from "../canonical";
+import { sameScope,sha256,lineHashes } from "../canonical";
 import { checkShape } from "../schema";
 import { MaatError } from "../errors";
 export interface EvidenceBundle { attestations:Attestation[];assessments:Assessment[]; }
@@ -29,7 +29,9 @@ export function attestationIssues(a:Attestation,m:Fingerprint[],v:Versions,scope
   const range=/^([1-9][0-9]*)-([1-9][0-9]*)$/.exec(e.lines??"");
   if(!range){out.push("invalid_lines");continue;}
   const start=Number(range[1]),stop=Number(range[2]);
-  if(stop<start || typeof e.quote!=="string" || !e.quote.trim())
+  const text=(found as {text?:unknown}).text,hashes=found.line_hashes??(typeof text==="string"?lineHashes(text):""),lines=new Set(Array.from({length:Math.max(0,stop-start+1)},(_,k)=>hashes.slice((start-1+k)*8,(start+k)*8)));
+  const quoted=typeof e.quote==="string"?e.quote.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>sha256(l).slice(0,8)):[];
+  if(stop<start || stop*8>hashes.length || !quoted.length || !quoted.every(h=>lines.has(h)))
    out.push("citation_mismatch");
  }
  return [...new Set(out)];

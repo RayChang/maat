@@ -4,7 +4,7 @@ export type Truth = "holds"|"fails"|"unknown";
 export type ItemStatus = "verified"|"partial"|"missing"|"not_applicable"|"unknown";
 export type LayerStatus = "adopted"|"ready"|"blocked"|"not_applicable"|"in_use_unsupported"|"pending";
 export type Scope = { cli?: string; workflow?: string; boundary?: string; artifact?: string; evaluator?: string; effect?: string };
-export interface Fingerprint { path: string; sha256: string; }
+export interface Fingerprint { path: string; sha256: string; line_hashes?: string; }
 export interface Evidence extends Fingerprint { lines: string; quote?: string; }
 export interface Material extends Fingerprint { text: string; }
 export interface Fact { subject: string; claim: string; status: Truth; scope: Scope; basis: string; complete: boolean; signal?: boolean; }
