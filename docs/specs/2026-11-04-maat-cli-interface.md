@@ -53,6 +53,8 @@ maat update                       從 GitHub 重新安裝最新版（唯一會�
 
 行為：有範圍的 discovery（不追蹤越出 `<path>` 的 symlink、不讀 `.git` 以外的隱藏憑證目錄、不聯網、不執行任何東西）→ adapter 辨識設定面 → deterministic detectors → 合併政策與證據 → 依 catalog 判定單題結果、能力、逐層狀態 → 報告。讀取或解析失敗寫入 `diagnostics`，對應主張為 `unknown`，不是 `missing`。
 
+CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github/workflows/*.yml`、GitLab CI 的 `.gitlab-ci.yml`（discovery 另讀 `.gitlab/` 目錄，供引用）、Bitbucket Pipelines 的 `bitbucket-pipelines.yml`。每個步驟的指令與失敗後果逐一記錄；`include`、`extends`、`rules`、遠端 action 與包裝指令（例如 `dagger call`）不追蹤，對應主張為 `unknown`。
+
 ### 3.2 `maat evaluate`
 
 輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。
