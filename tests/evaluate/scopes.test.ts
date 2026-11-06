@@ -24,3 +24,14 @@ test("attestation and loop scopes hold only their own items",async()=>{
  expect(r.items.filter(i=>i.scope.cli==="codex").map(i=>i.id)).toEqual(["prompt.task-spec"]);
  expect(r.items.filter(i=>i.scope.workflow===".claude/hooks/stop.sh").map(i=>i.id)).toEqual(c.items.filter(i=>i.layer.primary==="loop").map(i=>i.id));
 });
+test("an exemption scope holds its item, and an unobserved target CLI gets no scope",async()=>{
+ const c=await loadCatalog("catalog"),p=emptyPolicy();
+ p.target_clis=["claude-code"];
+ p.attestations=[{check:"foundation.verify-entrypoints",claims:["declared"],answer:"draft",scope:{cli:"codex"}} as never];
+ p.exemptions=[{check:"prompt.task-spec",reason:"owner decision",owner:"ray",expires_at:"2027-01-01T00:00:00Z",fingerprints:[{path:"AGENTS.md",sha256:"0".repeat(64)}],scope:{cli:"codex"}}];
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const r=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ expect(r.items.filter(i=>i.scope.cli==="codex").map(i=>i.id)).toEqual(["foundation.verify-entrypoints","prompt.task-spec"]);
+ expect(r.items.find(i=>i.id==="prompt.task-spec"&&i.scope.cli==="codex")!.diagnostics).toContain("exemption_recorded_separately");
+ expect(r.items.some(i=>i.scope.cli==="claude-code")).toBe(false);
+});
