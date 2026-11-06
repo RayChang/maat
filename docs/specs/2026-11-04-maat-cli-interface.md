@@ -56,6 +56,8 @@ maat help                         列出每個命令、位置參數與旗標；�
 
 CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github/workflows/*.yml`、GitLab CI 的 `.gitlab-ci.yml`（discovery 另讀 `.gitlab/` 目錄，供引用）、Bitbucket Pipelines 的 `bitbucket-pipelines.yml`。每個步驟的指令與失敗後果逐一記錄，並計入專案範圍 `{}`，不另列評估範圍；持續整合這題要每個已宣告的驗證指令都有 CI 步驟字面呼叫才成立，只對上部分時為 `unknown` 並列出已對上與未對上的指令；catalog 的 partial 需要逐項子主張，目前未支援（2026-11-06 修訂，依 catalog `foundation.ci-verification` 的 invocation 規定）；`include`、`extends`、`rules`、遠端 action 與包裝指令（例如 `dagger call`）不追蹤，對應主張為 `unknown`。
 
+驗證進入點的宣告形式（2026-11-06 補充）：任一 Markdown 檔的 `Verification command: <指令>` 與 `Verification purpose: <用途>` 兩行；或在 `AGENTS.md`、`CLAUDE.md` 的某一節寫一個 `nx run <專案>:<target>` 指令範本（例如 `` `bun nx run workspace:<target>` ``），後面接一張第一欄標題為 `Target` 的表格，每列是 `` `目標名` `` 與用途。表格裡的目標要在同名 Nx 專案的 `project.json` 明列，叫用才成立；外掛自動產生的目標不推斷，維持 `unknown`。
+
 ### 3.2 `maat evaluate`
 
 輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。`line_hashes` 只是每行雜湊的前 8 碼，短而好猜的行（例如 `PORT=3000`）可以被比對出來，所以快照仍屬敏感材料，和報告一樣存放在目標 repository 之外並由使用者保管。

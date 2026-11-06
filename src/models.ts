@@ -12,7 +12,7 @@ export interface Observation { detector: string; version: number; scope: Scope; 
 export interface Assessment { check: string; claim: string; stance: "supports"|"refutes"|"insufficient"; citations: Evidence[]; uncertainty: string; by: string; scope: Scope; catalog_version: string; item_version: number; }
 export interface Attestation { check: string; claims: string[]; answer: string; materials: Evidence[]; scope: Scope; attested_by: string; attested_at: string; expires_at: string; catalog_version: string; adapter_version: Record<string,string>; source?: string; provided_by?: string; }
 export interface Decision { status: "applicable"|"not_applicable"|"unknown"; reason?: string; owner?: string; expires_at?: string; loops?: {id:string;kind:"execution-feedback"|"event-driven"|"cross-run-improvement";scope:string}[]; }
-export interface Entrypoint { name:string; command:string; purpose:string; scope:Scope; manifest?:string; script?:string; document?:string; }
+export interface Entrypoint { name:string; command:string; purpose:string; scope:Scope; manifest?:string; script?:string; target?:string; document?:string; }
 export interface Policy {
  policy_schema:string; catalog_version:string; target_clis:string[];
  scope:{include:string[];exclude:string[]};
