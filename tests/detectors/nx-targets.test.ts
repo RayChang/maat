@@ -20,3 +20,12 @@ test("the table form is read only from AGENTS.md or CLAUDE.md with exactly one t
  const two=guide.replace("Workspace gates","Use `nx run other:<target>` or");
  expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:two},project]))).toEqual([]);
 });
+test("a built-in property name or a missing project file is never a declared target",()=>{
+ const rows=guide.replace("| `missing-one` |","| `constructor` | built-in name |\n| `missing-one` |");
+ const invocations=(s:ReturnType<typeof scan>)=>entrypointObservations(s,emptyPolicy()).filter(o=>o.detector==="policy.verify-entrypoint@1")
+  .map(o=>o.facts.find(f=>f.claim==="invocation")!.status);
+ expect(invocations(scan([{path:"CLAUDE.md",text:rows},project]))).toEqual(["holds","unknown","unknown"]);
+ const alone=scan([{path:"AGENTS.md",text:guide}]);
+ expect(detectedEntrypoints(alone).map(e=>e.manifest??null)).toEqual([null,null]);
+ expect(invocations(alone)).toEqual(["unknown","unknown"]);
+});

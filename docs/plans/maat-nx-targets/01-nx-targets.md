@@ -6,6 +6,8 @@ Rule: in `AGENTS.md` or `CLAUDE.md`, a table whose header row starts with a `Tar
 
 Measured on fvg: `foundation.verify-entrypoints` becomes verified at `{}` from four rows (`workspace:audit`, `check-architecture`, `check-decks`, `check-initial-bundle`), all explicit in `tools/workspace/project.json`. Other foundation items stay `unknown` (tests and analysis are option 2). With O01, CI verification now requires a literal CI step for each of these four commands; fvg calls them through Dagger, so it stays `unknown`.
 
+Cloud review of PR #52 (applied): a target counts only as an own key of `targets` (`Object.hasOwn`), so a row named `constructor` or `toString` is never a declared target; tests also cover `CLAUDE.md` and a missing `project.json`. Accepted limits, not fixed: a `#` comment inside a code block above the table is taken as a heading (the template is then missed, so the result only gets more conservative), and the same table in both `AGENTS.md` and `CLAUDE.md` yields duplicate entrypoints, as the two-line form already did.
+
 Owner rule: over-design is forbidden. No other Nx syntax, no JSONC, no plugin inference.
 
 ## Files
@@ -60,6 +62,15 @@ test("the table form is read only from AGENTS.md or CLAUDE.md with exactly one t
  const two=guide.replace("Workspace gates","Use `nx run other:<target>` or");
  expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:two},project]))).toEqual([]);
 });
+test("a built-in property name or a missing project file is never a declared target",()=>{
+ const rows=guide.replace("| `missing-one` |","| `constructor` | built-in name |\n| `missing-one` |");
+ const invocations=(s:ReturnType<typeof scan>)=>entrypointObservations(s,emptyPolicy()).filter(o=>o.detector==="policy.verify-entrypoint@1")
+  .map(o=>o.facts.find(f=>f.claim==="invocation")!.status);
+ expect(invocations(scan([{path:"CLAUDE.md",text:rows},project]))).toEqual(["holds","unknown","unknown"]);
+ const alone=scan([{path:"AGENTS.md",text:guide}]);
+ expect(detectedEntrypoints(alone).map(e=>e.manifest??null)).toEqual([null,null]);
+ expect(invocations(alone)).toEqual(["unknown","unknown"]);
+});
 ```
 
   b. In `tests/skills/contracts.test.ts`, replace
@@ -87,7 +98,7 @@ test("the table form is read only from AGENTS.md or CLAUDE.md with exactly one t
  expect(ci.observations.filter(o=>o.detector==="ci.step-invokes-entrypoint@1"&&o.scope.boundary).map(o=>o.scope.boundary)).toStrictEqual(["publish/0","test/0"]);
 ```
 
-- [ ] 2. Run the focused tests; expect exit 1: the first test in `nx-targets.test.ts` fails (no entrypoint is detected yet; the second test already passes) and the new `toContain` in `contracts.test.ts` fails.
+- [ ] 2. Run the focused tests; expect exit 1: the first and third tests in `nx-targets.test.ts` fail (no entrypoint is detected yet; the second test already passes) and the new `toContain` in `contracts.test.ts` fails.
 
 ```sh
 bun test tests/detectors/nx-targets.test.ts tests/skills/contracts.test.ts
@@ -162,7 +173,7 @@ export interface Entrypoint { name:string; command:string; purpose:string; scope
   }
   else if(e.target) {
    const targets=manifest?parseConfig(manifest,"json").data.targets as Record<string,unknown>|undefined:undefined;
-   invocation=targets?.[e.target]?"holds":"unknown";
+   invocation=targets&&typeof targets==="object"&&Object.hasOwn(targets,e.target)?"holds":"unknown";
   }
 ```
 
@@ -193,7 +204,7 @@ Run maat help for every command and flag. maat catalog list lists the item ids.
 maat finds verification entrypoints in two forms: the lines "Verification command: ..." and "Verification purpose: ..." in a Markdown file, or, in AGENTS.md or CLAUDE.md, one `nx run <project>:<target>` template in a section followed by a table whose first column is Target. If the project declares its checks another way, attest them.
 ```
 
-- [ ] 4. Run the focused tests; expect exit 0. Then run the whole suite; expect 0 failures (104 tests).
+- [ ] 4. Run the focused tests; expect exit 0. Then run the whole suite; expect 0 failures (105 tests).
 
 ```sh
 bun test tests/detectors/nx-targets.test.ts tests/skills/contracts.test.ts

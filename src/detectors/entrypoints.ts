@@ -53,7 +53,7 @@ export function entrypointObservations(s:ScanData,_p:Policy):Observation[] {
   }
   else if(e.target) {
    const targets=manifest?parseConfig(manifest,"json").data.targets as Record<string,unknown>|undefined:undefined;
-   invocation=targets?.[e.target]?"holds":"unknown";
+   invocation=targets&&typeof targets==="object"&&Object.hasOwn(targets,e.target)?"holds":"unknown";
   }
   const refs=manifest?[doc,manifest]:[doc];
   const facts:Fact[]=[{subject:"verify.entrypoint-declared@1",claim:"name",status:"holds",scope:e.scope,basis:e.name,complete:true},
