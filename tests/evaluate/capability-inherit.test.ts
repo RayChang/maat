@@ -8,6 +8,7 @@ import { entrypointObservations } from "../../src/detectors/entrypoints";
 test("a capability shown for the whole project also counts for each CLI",async()=>{
  const c=await loadCatalog("catalog"),p=emptyPolicy();
  p.target_clis=["claude-code"];
+ p.attestations=[{check:"prompt.task-spec",claims:["goal"],answer:"draft",scope:{cli:"codex"}} as never];
  const materials=[{path:"AGENTS.md",text:"Verification command: bun run test\nVerification purpose: regression\n"},
   {path:"package.json",text:"{\"scripts\":{\"test\":\"bun test\"}}\n"}].map(m=>({...m,sha256:sha256(m.text)}));
  const inv={root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials};
@@ -18,4 +19,5 @@ test("a capability shown for the whole project also counts for each CLI",async()
  expect(declared.status).toBe("holds");
  expect(declared.basis).toContain("inherited_from_project_scope");
  expect(r.layers.find(l=>l.layer==="harness"&&l.scope.cli==="claude-code")!.unknown_required).toEqual([]);
+ expect(r.capabilities.find(x=>x.id==="verify.entrypoint-declared@1"&&x.scope.cli==="codex")!.status).toBe("unknown");
 });
