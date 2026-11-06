@@ -1,5 +1,5 @@
 import type { Truth,Claim,Scope,Snapshot,Policy } from "../models";
-import { sameScope } from "../canonical";
+import { sameScope,countsFor } from "../canonical";
 import { attestationIssues } from "../evidence/validate";
 export function allTruth(v:Truth[]):Truth {
  return !v.length?"unknown":v.includes("fails")?"fails":v.includes("unknown")?"unknown":"holds";
@@ -11,7 +11,7 @@ export function resolveClaim(subject:string,claim:string,scope:Scope,s:Snapshot,
  if(scope.cli&&!s.target_clis.includes(scope.cli))return {name:claim,status:"unknown",basis:["cli_not_selected"]};
  const basis:string[]=[],values:Truth[]=[];
  for(const o of s.observations) for(const f of o.facts)
-  if(f.subject===subject && f.claim===claim && sameScope(f.scope,scope) && !f.signal) {
+  if(f.subject===subject && f.claim===claim && countsFor(f.scope,scope) && !f.signal) {
    const status=f.status==="fails"&&(!f.complete||!s.scope.complete)?"unknown":f.status;
    values.push(status);basis.push("static: "+f.basis);
   }

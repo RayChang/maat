@@ -10,10 +10,12 @@ import { MaatError } from "../errors";
 export function buildReport(s:Snapshot,p:Policy,c:Catalog,now:string,policyPath:string|null=null,overridden=false,policyDiagnostics:string[]=[],assessments:Assessment[]=[]):Report {
  const capabilities=evaluateCapabilities(c,evaluationScopes(s,p),s,p,now);
  const items=evaluateItems(c,s,p,capabilities,now,assessments);
- const authoritative=c.approved&&!overridden&&s.versions.catalog_version===c.catalog_version;
+ const truncated=s.scope.diagnostics.some(d=>d.startsWith("scan_limit:"));
+ const authoritative=c.approved&&!overridden&&s.versions.catalog_version===c.catalog_version&&!truncated;
  const layers=evaluateLayers(c,s,p,items,capabilities,now,authoritative);
  const diagnostics=[...s.scope.diagnostics,...policyDiagnostics,...s.observations.flatMap(o=>o.diagnostics)];
  if(overridden)diagnostics.push("catalog_overridden");
+ if(truncated)diagnostics.push("scan_truncated");
  if(!c.approved)diagnostics.push("policy_unapproved");
  if(s.versions.catalog_version!==c.catalog_version)diagnostics.push("catalog_version_mismatch");
  const invalid=items.flatMap(i=>i.attestations.filter(a=>!a.valid).map(a=>a.invalid_reason!));

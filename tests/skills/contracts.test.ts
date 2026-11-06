@@ -19,6 +19,11 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("Record drafts as the user's attestations only after that confirmation");
  expect(diagnose).toContain("record the confirmed items now and redraft only the corrected ones");
  expect(diagnose).toContain("never quote secrets");
+ expect(diagnose).toContain("Each attestation quote must be whole lines copied from its cited range");
+ expect(diagnose).toContain("If the report lists scan_limit diagnostics");
+ expect(diagnose).toContain("Run maat help for every command and flag");
+ expect(diagnose).toContain("declared under applicability.loop as status: applicable plus loops");
+ expect(diagnose).toContain("plus source and provided_by");
  expect(improve).toContain("Modification approval does not authorize tests");
  expect(improve).toContain("Preserve unrelated dirty work");
  expect(improve).toContain("cannot prevent host bypass");
