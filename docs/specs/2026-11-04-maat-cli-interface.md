@@ -181,6 +181,7 @@ diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 ```
 
 `layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。沒有總分、百分比或等級欄位。
+`items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
 
 ### 5.2 審核報告 Markdown
 
