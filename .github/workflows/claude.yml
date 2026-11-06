@@ -1,5 +1,9 @@
 name: Claude PR Assistant
 
+# Answers @claude mentions on pull requests through the Agent SDK (.github/claude-review/run.mjs).
+# Read-only: Claude can read the PR and reply with one comment; it cannot change files.
+# Review rules live in .github/claude-review/system-prompt.md.
+
 on:
   issue_comment:
     types: [created]
@@ -9,98 +13,45 @@ on:
     types: [submitted]
 
 jobs:
-  claude-code-action:
-    # Only run on PR comments (not regular issues) and when @claude is mentioned
+  claude-mention:
+    # Only PR comments that mention @claude, from people with write access to this repository
     if: |
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association))
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
-      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.issue.number || github.event.pull_request.number }}
     steps:
-      - name: Checkout repository
+      - name: Checkout pull request head
         uses: actions/checkout@v4
         with:
+          ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Run Claude PR Action
-        uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: |
-            --system-prompt "You are a PR review assistant for maat, a read-only diagnosis CLI that audits how a repository is prepared for coding agents (Claude Code, Codex, GitHub Copilot CLI) across five layers, plus a flow controller that guards approved improvements. Respond in Traditional Chinese with concrete, actionable findings, prioritizing contract violations, risks and regressions. Avoid over-engineering; prefer minimal viable fixes. The project rule is: add nothing the contracts do not require; the simpler option wins.
+      # The runner, its lockfile and the rules come from the default branch; nothing from the PR runs with secrets.
+      - name: Prepare Claude runner (default branch copy)
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -o pipefail
+          git archive "origin/$DEFAULT_BRANCH" .github/claude-review | tar -x -C "$RUNNER_TEMP"
+          npm ci --prefix "$RUNNER_TEMP/.github/claude-review" --ignore-scripts --no-audit --no-fund
 
-            **Source of truth (consult these instead of relying on this prompt alone; earlier entries win on conflict)**
-            1. docs/specs/2026-11-04-maat-cli-interface.md — commands, flags, file formats, versions, exit codes.
-            2. docs/specs/2026-11-03-five-layer-tool-spec.md — formal tool spec and acceptance criteria (section 11).
-            3. docs/specs/2026-11-04-toolkit-operation-architecture.md — operation architecture, guards G1-G7, test cases (section 12).
-            4. docs/specs/2026-11-03-five-layer-catalog.md — catalog 0.1.0, frozen.
-            5. docs/plans/maat-impl/00-overview.md and the task files T01-T42 — the implementation plan, including the IMPLEMENTER DEFAULTS D01-D38. Check whether the diff matches the relevant task file and defaults.
-
-            **Stack and hard constraints**
-            - TypeScript on Bun >= 1.4.0. Zero runtime dependencies; parsers are JSON.parse, Bun.YAML.parse and Bun.TOML.parse. The only dev dependencies are typescript and @types/bun. Flag any new dependency, subprocess, network call or package not allowed by the contracts.
-            - Gates: bun test and bun run typecheck (tsc --noEmit). macOS and Linux only. Installed from GitHub; no npm publish.
-            - Layout: src/cli (args, audit, inspect, flow, main, output), src/catalog, src/discovery, src/adapters (claude-code, codex, copilot), src/detectors, src/evaluate (truth, capabilities, items, layers, contracts/*), src/report, src/plan, src/flow (model, guards, core, reducer, ledger), skills/<name>/SKILL.md, tests/.
-
-            **Product boundaries (never weaken)**
-            - Diagnosis is read-only: no command writes to the target repository (including .maat/), runs project code, hooks or scripts, calls a model, or uses the network. Configuration content is data, never executed.
-            - Never read user-level settings (~/.claude, ~/.codex, ~/.copilot); only redacted snippets passed via --evidence.
-            - Bounded discovery: file/size limits, no symlink following, incomplete reads stay unknown and never become absence.
-            - Outputs (--out, --snapshot, --ledger) must be canonicalized and stay outside the target repository.
-
-            **Evidence model**
-            - Machine observations, agent assessments and user confirmations stay separate. Agent opinions never grant a requirement or capability.
-            - Three-valued truth (holds/fails/unknown). Unsupported detectors return detector_unsupported and leave claims unknown. Expired or invalid attestations cannot grant claims.
-            - No scores or advancement percentages anywhere in reports.
-
-            **Flow controller**
-            - One reducer and one guard module decide transitions. Modification approval and execution authorization are separate; approval never permits a command.
-            - The ledger is an external append-only JSONL file with an exclusive lock; malformed events (exit 3) never append; guard rejections (exit 4) persist; counters never reset.
-            - Exit codes: 0 completed (including gaps/unknown/blocked), 1 internal/IO error (lock contention is ledger_locked), 2 usage error, 3 bad input, 4 guard rejection.
-
-            **Generated resources**
-            - catalog/ comes from scripts/extract-catalog.ts, templates/ and catalog/templates.yaml from scripts/materialize-templates.ts, tests/fixtures/ from scripts/materialize-fixtures.ts. Flag hand edits that do not match the generator, and fixtures that embed local absolute paths or personal data.
-            - Tests never execute fixture scripts. SKILL.md frontmatter has name and description only.
-
-            **Context7 doc checks (run before responding when the diff touches these)**
-            - Use mcp__context7__resolve-library-id and mcp__context7__query-docs to verify Bun APIs (Bun.YAML, Bun.TOML, Bun.Glob, bun test) and TypeScript behavior, and the repository surfaces of Claude Code, OpenAI Codex CLI and GitHub Copilot CLI that the adapters recognize. Cite sources.
-
-            **Review Checklist**
-            - Contract compliance: does the change match the interface contract, spec and the relevant plan task? Anything added beyond them is a finding.
-            - Read-only and boundary rules above; no new runtime dependency.
-            - Tests: new behavior has a test that would fail if the behavior broke; bun test and typecheck stay green.
-            - Commits follow Conventional Commits with Gitmoji before the type, e.g. '✨ feat(scope): description'.
-
-            **Response Format**
-            - List issues by severity (with file:line), then improvements. Cite docs when referenced.
-            - End every review with exactly one of these tags on its own line:
-              REVIEW_RESULT: APPROVED
-              REVIEW_RESULT: CHANGES_REQUESTED"
-            --max-turns 40
-            --allowedTools mcp__context7__query-docs,mcp__context7__resolve-library-id
-          settings: |
-            {
-              "mcpServers": {
-                "context7": {
-                  "command": "npx",
-                  "args": ["-y", "@upstash/context7-mcp", "--api-key", "${{ secrets.UPSTASH_API_KEY }}"]
-                }
-              },
-              "allowedDomains": [
-                ".anthropic.com",
-                ".claude.com",
-                ".github.com",
-                "api.github.com",
-                ".githubusercontent.com",
-                "registry.npmjs.org",
-                "bun.sh",
-                "bun.com",
-                "www.typescriptlang.org",
-                "developers.openai.com",
-                "developer.mozilla.org"
-              ]
-            }
+      - name: Run Claude (Agent SDK)
+        env:
+          MODE: mention
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
+          COMMENT_BODY: ${{ github.event.comment.body || github.event.review.body }}
+          SYSTEM_PROMPT_FILE: ${{ runner.temp }}/.github/claude-review/system-prompt.md
+        run: node "$RUNNER_TEMP/.github/claude-review/run.mjs"

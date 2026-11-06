@@ -1,7 +1,7 @@
 {
   "report_schema": "1.0.0",
   "versions": {
-    "tool_version": "0.1.0",
+    "tool_version": "0.2.0",
     "report_schema": "1.0.0",
     "policy_schema": "1.0.0",
     "ledger_schema": "1.0.0",
