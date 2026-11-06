@@ -57,7 +57,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 
 ### 3.2 `maat evaluate`
 
-輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。
+輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。
 
 ### 3.3 `maat plan`
 
@@ -182,7 +182,7 @@ protection_observations[]{measure, protects, threat, boundary, evidence[], unkno
 diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 ```
 
-`layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。沒有總分、百分比或等級欄位。
+`layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。掃描因容量上限截斷（有 `scan_limit` 診斷）時，每一層的 `authoritative` 都為 false，報告附 `scan_truncated` 診斷；未讀的 symlink 或二進位檔是刻意略過，不影響這個欄位（2026-11-06 補充）。沒有總分、百分比或等級欄位。
 `items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 或 `verification.rerun` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
 `items[]` 在專案範圍 `{}` 列出每一題；較窄的範圍（代理工具、CI 步驟、迴圈或確認所用的範圍）只列與該範圍有關的題目：該題的觀察出現在那個範圍、該題的確認使用那個範圍，或政策在該題或其所屬層宣告了那個迴圈範圍。`layers[]` 只在該層於某範圍有題目時列出那個範圍（2026-11-06 補充）。選了目標 CLI，但沒有該 CLI 的觀察或確認時，不另列該 CLI 的範圍，題目只出現在 `{}`。題目的豁免所用的範圍也算與該題有關；代理評估只顯示在該題已列出的範圍。
 
