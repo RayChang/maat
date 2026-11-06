@@ -13,6 +13,7 @@ test("the standard policy requires exactly the baseline items of its applicable 
  for(const id of baseline)expect(p.targets[id]).toEqual({baseline:true});
  expect(p.target_clis).toEqual([]);
  expect(p.scope.include).toEqual(["."]);
+ expect(p.scope.exclude.length).toBeGreaterThan(0);
  for(const glob of p.scope.exclude)expect(glob).toMatch(/^\*\*\/\*\.[a-z0-9]+$/);
  expect(p.exemptions).toEqual([]);
  expect(p.attestations).toEqual([]);

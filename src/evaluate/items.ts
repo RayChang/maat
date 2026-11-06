@@ -65,7 +65,7 @@ export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResul
   const when_status:Truth=i.baseline.proposed_tier==="advanced"?"fails":condition===true?"holds":condition===false?"fails":"unknown";
   out.push({id:i.id,item_version:i.item_version,layer:i.layer.primary as Layer,scope,
    applicability:{status:app,reason:decision.reason??"",questions:i.applicability.questions},
-   result,claims,observations:s.observations.filter(o=>sameScope(o.scope,scope)&&(i.inspection.detectors.includes(o.detector)||o.facts.some(f=>f.subject===i.id))),
+   result,claims,observations:s.observations.filter(o=>sameScope(o.scope,scope)&&(i.inspection.detectors.includes(o.detector)||i.verification.rerun.includes(o.detector)||o.facts.some(f=>f.subject===i.id))),
    assessments:assessments.filter(a=>a.check===i.id&&sameScope(a.scope,scope)),
    attestations:p.attestations.flatMap((a,n)=>{
     if(a.check!==i.id||!a.scope||!sameScope(a.scope,scope)) return [];

@@ -33,3 +33,10 @@ test("an item lists only observations from its own detectors or about itself",as
  expect(items.find(i=>i.id==="foundation.ci-verification")!.observations.map(o=>o.detector)).toEqual(["ci-config-found@1","fixture"]);
  expect(items.find(i=>i.id==="prompt.task-spec")!.observations).toEqual([]);
 });
+test("an item also lists observations from its rerun detectors",async()=>{
+ const c=await loadCatalog("catalog"),p=emptyPolicy();
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ s.observations=[{detector:"loop.stop-gate.command@1",version:1,scope:{},evidence:[],limits:[],diagnostics:[],facts:[]}];
+ const items=evaluateItems(c,s,p,[],"2026-11-04");
+ expect(items.find(i=>i.id==="loop.feedback-routing")!.observations.map(o=>o.detector)).toEqual(["loop.stop-gate.command@1"]);
+});

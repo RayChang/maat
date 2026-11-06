@@ -59,7 +59,7 @@ maat update                       從 GitHub 重新安裝最新版（唯一會�
 
 ### 3.3 `maat plan`
 
-輸入 `--report <file>`，`--target <layer|check-id>` 可重複。輸出改善計畫（JSON／Markdown），每項含 check、item／rule card／template 版本、目前結果與目標、動作、目標路徑或「位置待確認」、`depends_on`、必要／建議、風險、`needs_approval`、驗收（detector 或人工）、產生時的證據指紋。遇到未知指令、路徑或格式，輸出「先詢問」步驟而不是猜測。計畫是文字與資料，不套用。沒有 `--target` 時，計畫涵蓋報告裡政策列為必備（baseline 題、條件成立且適用）但尚未成立的每一題；沒有這類題目時，用新專案起點三題 `foundation.verify-entrypoints`、`prompt.task-spec`、`context.instruction-authority`（2026-11-06 補充）。
+輸入 `--report <file>`，`--target <layer|check-id>` 可重複。輸出改善計畫（JSON／Markdown），每項含 check、item／rule card／template 版本、目前結果與目標、動作、目標路徑或「位置待確認」、`depends_on`、必要／建議、風險、`needs_approval`、驗收（detector 或人工）、產生時的證據指紋。遇到未知指令、路徑或格式，輸出「先詢問」步驟而不是猜測。計畫是文字與資料，不套用。沒有 `--target` 時，計畫涵蓋報告裡政策列為必備（baseline 題、條件成立且適用）但尚未成立的每一題；沒有這類題目時，用新專案起點三題 `foundation.verify-entrypoints`、`prompt.task-spec`、`context.instruction-authority`（2026-11-06 補充）。適用性仍未知的 baseline 題會列在報告的缺口清單，但不納入預設計畫；要先在政策檔決定該層是否適用。
 
 ### 3.4 `maat explain <id>`
 
@@ -181,7 +181,7 @@ diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 ```
 
 `layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。沒有總分、百分比或等級欄位。
-`items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
+`items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 或 `verification.rerun` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
 
 ### 5.2 審核報告 Markdown
 
