@@ -219,6 +219,7 @@ catalog/capabilities.yaml  能力登錄表
 catalog/rule-cards/*.yaml  規則卡
 templates/<layer>/      範本資源庫：文字、設定、script 範本（不含 skill）
 skills/maat-diagnose/SKILL.md   診斷 Skill（單一來源，三家共用）
+skills/maat-diagnose/standard-policy.yaml  擁有者的標準政策，診斷 Skill 起草專案政策檔的起點（7.1）
 skills/maat-improve/SKILL.md    改善 Skill（單一來源，三家共用）
 skills/<name>/SKILL.md          給專案用的通用 skill（規則卡的 skill 形式），同樣用 npx skills add 安裝
 tests/                  bun test；正反 fixtures、unknown、不適用、衝突、設定存在但未生效
@@ -241,6 +242,8 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 `maat plan` 遇到 skill 形式的改善動作時，輸出的是安裝指令，例如 `npx skills add RayChang/maat --skill verify-before-done -a claude-code`，並標示這是命令執行，需另取得執行授權或由使用者自己執行；不由 `maat` 代跑。
 
 範本資源庫只剩文字、設定、script 三種形式（例如指引段落、hook 設定、CI 步驟）。流程是：`maat plan` 依報告與政策把替換詞填好，填不出來的列「先詢問」；改善 Skill 展示後取得核准，由既有 agent（host）寫入專案。`maat` 本身不寫入專案。
+
+**標準政策檔**（使用者 2026-11-06 補充決定）：`skills/maat-diagnose/standard-policy.yaml` 存放各專案共用的選擇：基礎層適用、基礎層四題 baseline 題列為必備、預設排除圖片字型影片與 PDF（lockfile 不排除，環境題要讀）。專案沒有 `.maat/policy.yaml` 時，診斷 Skill 先複製這份當草稿，只補專案專屬的部分（目標 CLI、專案排除路徑、迴圈、確認），草稿放在目標 repository 之外並以 `--policy` 傳入。`maat` 本身不讀這份檔案；標準檔更新後，已起草的專案政策檔不會自動跟著改。
 
 ## 8. 安全與不做的事
 

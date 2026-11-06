@@ -4,6 +4,7 @@ description: Audit a project with maat and collect scoped, cited evidence withou
 ---
 
 Confirm the repository boundary and target CLI from the user's request or .maat/policy.yaml.
+Without .maat/policy.yaml, start the draft policy from standard-policy.yaml next to this skill and fill only project parts: target_clis, project exclusions, loops, and attestations. Keep the draft outside the target repository and pass it with --policy.
 Use maat scan, selecting --cli claude-code, --cli codex, or --cli copilot only when selected by the user.
 Without a selection, retain CLI-specific unknowns. Request explicit external evidence rather than reading home settings.
 Store reports and snapshots only at an explicit location outside the target repository.
