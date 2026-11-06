@@ -47,5 +47,5 @@ test("CI steps are evidence for the project scope, not scopes of their own",asyn
  expect(r.items.every(i=>Object.keys(i.scope).length===0)).toBe(true);
  const ci=r.items.find(i=>i.id==="foundation.ci-verification")!;
  expect(ci.result).toBe("verified");
- expect(ci.observations.filter(o=>o.detector==="ci.step-invokes-entrypoint@1").map(o=>o.scope.boundary)).toEqual(["publish/0","test/0"]);
+ expect(ci.observations.filter(o=>o.detector==="ci.step-invokes-entrypoint@1"&&o.scope.boundary).map(o=>o.scope.boundary)).toStrictEqual(["publish/0","test/0"]);
 });

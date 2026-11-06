@@ -26,7 +26,8 @@ test("GitLab and Bitbucket steps are read like GitHub steps",()=>{
   ["invocation",".gitlab-ci.yml","manual/0","holds"],["consequence",".gitlab-ci.yml","manual/0","advisory"],
   ["invocation","bitbucket-pipelines.yml","default/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/0/0","blocking"],
   ["invocation","bitbucket-pipelines.yml","default/1/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/1/0/0","advisory"],
-  ["invocation","bitbucket-pipelines.yml","branches/main/0/0/0","unknown"],["consequence","bitbucket-pipelines.yml","branches/main/0/0/0","blocking"]]);
+  ["invocation","bitbucket-pipelines.yml","branches/main/0/0/0","unknown"],["consequence","bitbucket-pipelines.yml","branches/main/0/0/0","blocking"],
+  ["invocation",undefined,undefined,"holds"]]);
  s.materials[1]!.text="include: [{local: .gitlab/ci/base.yml}]\n"+s.materials[1]!.text;
  expect(ciObservations(s,p).flatMap(o=>o.facts).filter(f=>f.claim==="consequence"&&f.scope.workflow===".gitlab-ci.yml").map(f=>f.basis)).toEqual(["unknown","unknown","unknown"]);
 });
@@ -42,5 +43,17 @@ test("unrecognized GitLab and Bitbucket shapes stay unknown",()=>{
   ["invocation",".gitlab-ci.yml","codes/0","holds"],["consequence",".gitlab-ci.yml","codes/0","unknown"],
   ["invocation","bitbucket-pipelines.yml","default/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/0/0","unknown"],
   ["invocation","bitbucket-pipelines.yml","default/1/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/1/0/0","advisory"],
-  ["invocation","bitbucket-pipelines.yml","default/2/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/2/0/0","advisory"]]);
+  ["invocation","bitbucket-pipelines.yml","default/2/0/0","holds"],["consequence","bitbucket-pipelines.yml","default/2/0/0","advisory"],
+  ["invocation",undefined,undefined,"holds"]]);
+});
+test("CI holds only when every declared verification entrypoint has a literal step",()=>{
+ const p=emptyPolicy(),materials=[{path:"AGENTS.md",text:"Verification command: bun test\nVerification purpose: regression\n"},
+ {path:"docs/lint.md",text:"Verification command: biome check\nVerification purpose: static analysis\n"},
+ {path:".gitlab-ci.yml",text:"test:\n  script: [bun test]\n"}].map(m=>({...m,sha256:sha256(m.text)}));
+ const s=makeScan({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials},p);
+ const summary=()=>ciObservations(s,p).flatMap(o=>o.facts).find(f=>f.claim==="invocation"&&!f.scope.workflow)!;
+ expect(summary().status).toBe("unknown");
+ expect(summary().basis).toBe("matched: bun test; unmatched: biome check");
+ s.materials[2]!.text+="lint:\n  script: [biome check]\n";
+ expect(summary().status).toBe("holds");
 });

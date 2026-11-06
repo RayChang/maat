@@ -30,4 +30,6 @@ test("a quote must be whole lines found inside the cited range",()=>{
  expect(quote("1-1","fix login")).toContain("citation_mismatch");
  expect(quote("3-9","Done when the error shows.")).toContain("citation_mismatch");
  expect(attestationIssues(base,[{path:m.path,sha256:m.sha256}],versions,{},"2026-11-05")).toContain("citation_mismatch");
+ const scanned={path:m.path,sha256:m.sha256,text};
+ expect(attestationIssues(base,[scanned],versions,{},"2026-11-05")).toEqual([]);
 });
