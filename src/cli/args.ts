@@ -15,7 +15,7 @@ const grammar: Record<string, { flags: string[]; required?: string[]; min?: numb
   "flow record": { flags: ["flow","kind","file"], required: ["flow","kind","file"] },
   "flow decide": { flags: ["flow","event","by"], required: ["flow","event"] },
   "flow status": { flags: ["flow"], required: ["flow"] },
-  "flow list": { flags: [] }, version: { flags: [] }
+  "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }
 };
 const global = ["json","out","quiet","catalog","ledger"];
 const boolean = new Set(["json","quiet"]);

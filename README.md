@@ -15,7 +15,10 @@
 此 repository 是私有的，安裝的人需要有存取權限。
 
 ```sh
-# 命令列工具
+# 命令列工具：全域安裝，之後用 maat update 更新
+bun add -g github:RayChang/maat
+
+# 或不安裝，直接執行一次
 bunx github:RayChang/maat
 
 # Skill（maat-diagnose、maat-improve、verify-before-done）
@@ -64,6 +67,7 @@ maat plan --report <輸出資料夾>/report.json --target context --out <輸出�
 | `maat flow status` | 顯示 flow 目前狀態 |
 | `maat flow list` | 列出 flows 與狀態 |
 | `maat version` | 印出工具、schema、catalog、adapter 版本 |
+| `maat update` | 從 GitHub 重新安裝最新版（唯一會連網的命令） |
 
 通用旗標：`--json`、`--out <dir>`、`--quiet`、`--catalog <dir>`、`--ledger <dir>`。`flow` 的紀錄預設放在使用者狀態目錄，不在被檢查的 repository 內，可用 `--ledger` 或 `MAAT_STATE_DIR` 改位置。各命令完整旗標見 `docs/specs/2026-11-04-maat-cli-interface.md`。
 

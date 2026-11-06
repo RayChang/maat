@@ -2,11 +2,13 @@ import { parseArgs,one } from "./args";
 import { runAuditCommand } from "./audit";
 import { runInspectCommand } from "./inspect";
 import { runFlowCommand } from "./flow";
+import { runUpdate } from "./update";
 import { emitOutput,writeOutside,outsidePath } from "./output";
 import { MaatError } from "../errors";
 export async function main(argv:string[],now=new Date().toISOString(),cwd=process.cwd()):Promise<{code:number;stdout:string;stderr:string}> {
  try{
   const a=parseArgs(argv);
+  if(a.command==="update")return runUpdate();
   const result=["scan","evaluate","plan"].includes(a.command)?await runAuditCommand(a,now):
    a.command.startsWith("flow ")?await runFlowCommand(a,now,cwd):await runInspectCommand(a,now,cwd);
   if(a.command==="scan"&&one(a,"snapshot")) {
