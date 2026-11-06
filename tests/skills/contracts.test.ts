@@ -22,7 +22,7 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("Each attestation quote must be whole lines copied from its cited range");
  expect(diagnose).toContain("If the report lists scan_limit diagnostics");
  expect(diagnose).toContain("Run maat help for every command and flag");
- expect(diagnose).toContain("declared under applicability.loop.loops");
+ expect(diagnose).toContain("declared under applicability.loop as status: applicable plus loops");
  expect(diagnose).toContain("plus source and provided_by");
  expect(improve).toContain("Modification approval does not authorize tests");
  expect(improve).toContain("Preserve unrelated dirty work");
