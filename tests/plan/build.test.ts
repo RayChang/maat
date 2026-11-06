@@ -17,3 +17,24 @@ test("new project plan asks before guessing and binds its exact content",async()
  expect(()=>parsePlan(JSON.stringify(changed))).toThrow("plan_fingerprint");
  expect(()=>buildPlan(report,["absent"],c)).toThrow("unknown_target");
 });
+test("without targets the plan covers the policy's required items that did not pass",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ p.applicability={foundation:{status:"applicable"}};
+ p.targets={"foundation.automated-tests":{baseline:true},"foundation.static-analysis":{baseline:true}};
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const report=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ const plan=buildPlan(report,[],c);
+ expect(plan.actions.map(a=>a.check)).toEqual(["foundation.automated-tests","foundation.static-analysis"]);
+ expect(plan.actions.every(a=>a.necessity==="required")).toBe(true);
+ expect(buildPlan(report,["prompt.task-spec"],c).actions.map(a=>a.check)).toEqual(["prompt.task-spec"]);
+});
+test("the default plan skips a scope whose applicability is unknown",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ p.applicability={foundation:{status:"applicable"}};
+ p.targets={"foundation.automated-tests":{baseline:true}};
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const report=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ const item=report.items.find(i=>i.id==="foundation.automated-tests")!;
+ report.items.push({...item,scope:{cli:"codex"},applicability:{...item.applicability,status:"unknown"}});
+ expect(buildPlan(report,[],c).actions.map(a=>[a.check,a.scope])).toEqual([["foundation.automated-tests",{}]]);
+});

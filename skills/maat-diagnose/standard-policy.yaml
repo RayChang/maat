@@ -1,0 +1,45 @@
+# Owner standard policy (2026-11-06). The maat-diagnose skill copies this file
+# as the draft for a project without .maat/policy.yaml, then fills only the
+# project parts: target_clis, project exclusions, loops, and attestations.
+# Loop and graph applicability is decided per project.
+policy_schema: 1.0.0
+catalog_version: 0.1.0
+target_clis: []
+scope:
+  include: ["."]
+  exclude:
+    - "**/*.png"
+    - "**/*.jpg"
+    - "**/*.jpeg"
+    - "**/*.gif"
+    - "**/*.webp"
+    - "**/*.ico"
+    - "**/*.woff"
+    - "**/*.woff2"
+    - "**/*.mp4"
+    - "**/*.mov"
+    - "**/*.webm"
+    - "**/*.pdf"
+applicability:
+  foundation:
+    status: applicable
+  prompt:
+    status: applicable
+  context:
+    status: applicable
+  harness:
+    status: applicable
+targets:
+  foundation.verify-entrypoints: { baseline: true }
+  foundation.automated-tests: { baseline: true }
+  foundation.static-analysis: { baseline: true }
+  foundation.ci-verification: { baseline: true }
+  prompt.task-spec: { baseline: true }
+  prompt.output-contract: { baseline: true }
+  context.index-to-details: { baseline: true }
+  context.instruction-authority: { baseline: true }
+  harness.permission-boundaries: { baseline: true }
+  harness.recovery: { baseline: true }
+  harness.verification-wiring: { baseline: true }
+exemptions: []
+attestations: []

@@ -59,7 +59,7 @@ maat update                       從 GitHub 重新安裝最新版（唯一會�
 
 ### 3.3 `maat plan`
 
-輸入 `--report <file>`，`--target <layer|check-id>` 可重複。輸出改善計畫（JSON／Markdown），每項含 check、item／rule card／template 版本、目前結果與目標、動作、目標路徑或「位置待確認」、`depends_on`、必要／建議、風險、`needs_approval`、驗收（detector 或人工）、產生時的證據指紋。遇到未知指令、路徑或格式，輸出「先詢問」步驟而不是猜測。計畫是文字與資料，不套用。
+輸入 `--report <file>`，`--target <layer|check-id>` 可重複。輸出改善計畫（JSON／Markdown），每項含 check、item／rule card／template 版本、目前結果與目標、動作、目標路徑或「位置待確認」、`depends_on`、必要／建議、風險、`needs_approval`、驗收（detector 或人工）、產生時的證據指紋。遇到未知指令、路徑或格式，輸出「先詢問」步驟而不是猜測。計畫是文字與資料，不套用。沒有 `--target` 時，計畫涵蓋報告裡政策列為必備（baseline 題、條件成立且適用）但尚未成立的每一題；沒有這類題目時，用新專案起點三題 `foundation.verify-entrypoints`、`prompt.task-spec`、`context.instruction-authority`（2026-11-06 補充）。適用性或必備條件仍未知的 baseline 題會列在報告的缺口清單，但不納入預設計畫；要先在政策檔決定該層是否適用、該題是否必備（`targets.<id>.baseline`）。
 
 ### 3.4 `maat explain <id>`
 
@@ -181,6 +181,7 @@ diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 ```
 
 `layers[].status` 在適用性未知時用 `pending`，這是「待確認」的呈現值，不是新的 D2 枚舉；`authoritative` 為 false 時整份報告不得稱為正式符合性聲明。沒有總分、百分比或等級欄位。
+`items[].observations` 只列同一範圍內、由該題 `inspection.detectors` 或 `verification.rerun` 所列 detector 產生的觀察，以及含有以該題為主體之事實的觀察（2026-11-06 補充）。
 
 ### 5.2 審核報告 Markdown
 
@@ -218,6 +219,7 @@ catalog/capabilities.yaml  能力登錄表
 catalog/rule-cards/*.yaml  規則卡
 templates/<layer>/      範本資源庫：文字、設定、script 範本（不含 skill）
 skills/maat-diagnose/SKILL.md   診斷 Skill（單一來源，三家共用）
+skills/maat-diagnose/standard-policy.yaml  擁有者的標準政策，診斷 Skill 起草專案政策檔的起點（7.1）
 skills/maat-improve/SKILL.md    改善 Skill（單一來源，三家共用）
 skills/<name>/SKILL.md          給專案用的通用 skill（規則卡的 skill 形式），同樣用 npx skills add 安裝
 tests/                  bun test；正反 fixtures、unknown、不適用、衝突、設定存在但未生效
@@ -240,6 +242,8 @@ npx skills add RayChang/maat -a claude-code|codex|github-copilot
 `maat plan` 遇到 skill 形式的改善動作時，輸出的是安裝指令，例如 `npx skills add RayChang/maat --skill verify-before-done -a claude-code`，並標示這是命令執行，需另取得執行授權或由使用者自己執行；不由 `maat` 代跑。
 
 範本資源庫只剩文字、設定、script 三種形式（例如指引段落、hook 設定、CI 步驟）。流程是：`maat plan` 依報告與政策把替換詞填好，填不出來的列「先詢問」；改善 Skill 展示後取得核准，由既有 agent（host）寫入專案。`maat` 本身不寫入專案。
+
+**標準政策檔**（使用者 2026-11-06 補充決定）：`skills/maat-diagnose/standard-policy.yaml` 存放各專案共用的選擇：基礎、提示詞、情境、執行框架四層適用，這四層的 11 題 baseline 題列為必備，預設排除圖片字型影片與 PDF（lockfile 不排除，環境題要讀）。迴圈與協作圖兩層是否適用由各專案決定，標準檔不寫。專案沒有 `.maat/policy.yaml` 時，診斷 Skill 先複製這份當草稿，只補專案專屬的部分（目標 CLI、專案排除路徑、迴圈、確認），草稿放在目標 repository 之外並以 `--policy` 傳入。`maat` 本身不讀這份檔案；標準檔更新後，已起草的專案政策檔不會自動跟著改。
 
 ## 8. 安全與不做的事
 
