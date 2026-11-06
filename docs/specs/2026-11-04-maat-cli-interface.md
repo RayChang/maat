@@ -35,6 +35,7 @@ maat attest template              印出單題確認紀錄的骨架（不寫檔�
 maat flow <subcommand>            流程控制核心：核准、授權、checkpoint、紀錄、轉移、恢復
 maat version                      印出工具、schema、catalog、adapter 版本
 maat update                       從 GitHub 重新安裝最新版（唯一會連網的命令）
+maat help                         列出每個命令、位置參數與旗標；用法錯誤的訊息也會提示執行它（2026-11-06 補充）
 ```
 
 通用旗標：`--json`（stdout 改輸出 JSON）、`--out <dir>`（同時寫 JSON 與 Markdown 檔）、`--quiet`、`--catalog <dir>`（覆寫 catalog 來源，報告記錄為非預設）、`--ledger <dir>`（流程紀錄位置）。
