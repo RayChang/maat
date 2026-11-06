@@ -23,6 +23,7 @@ export function evaluateLayers(c:Catalog,s:Snapshot,p:Policy,items:ItemResult[],
    if(status==="fails")missing.push(id);else if(status==="unknown")unknown.push(id);
   }
   const selected=items.filter(i=>i.layer===layer&&sameScope(i.scope,scope));
+  if(!selected.length&&Object.keys(scope).length)continue;
   const gaps=selected.filter(i=>i.baseline.tier==="baseline" &&
    (i.applicability.status==="unknown"||i.baseline.when_status==="unknown"||
     (i.applicability.status==="applicable"&&i.baseline.when_status==="holds"&&i.result!=="verified"))).map(i=>i.id);
