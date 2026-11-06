@@ -10,11 +10,11 @@ import { capabilityRules } from "../evaluate/capabilities";
 import { templateDefinitions,renderTemplate } from "./templates";
 import { policySkeleton } from "../policy/load";
 export function buildPlan(r:Report,targets:string[],c:Catalog):Plan {
- const required=[...new Set(r.items.filter(i=>i.baseline.tier==="baseline"&&i.baseline.when_status==="holds"&&i.applicability.status==="applicable"&&i.result!=="verified"&&i.result!=="not_applicable").map(i=>i.id))];
- const requested=targets.length?targets:required.length?required:["foundation.verify-entrypoints","prompt.task-spec","context.instruction-authority"];
+ const required=r.items.filter(i=>i.baseline.tier==="baseline"&&i.baseline.when_status==="holds"&&i.applicability.status==="applicable"&&i.result!=="verified");
+ const requested=targets.length?targets:required.length?[...new Set(required.map(i=>i.id))]:["foundation.verify-entrypoints","prompt.task-spec","context.instruction-authority"];
  const layers=["foundation","prompt","context","harness","loop","graph"];
  for(const t of requested) if(!layers.includes(t)&&!c.items.some(i=>i.id===t))throw new MaatError(3,"unknown_target: "+t);
- const selected=r.items.filter(i=>requested.includes(i.id)||requested.includes(i.layer));
+ const selected=!targets.length&&required.length?required:r.items.filter(i=>requested.includes(i.id)||requested.includes(i.layer));
  const queue=[...selected],actions:PlanAction[]=[],seen=new Set<string>();
  const id=(check:string,scope:Scope)=>check+"-"+sha256(canonical(scope)).slice(0,8);
  while(queue.length) {
