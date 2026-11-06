@@ -1,7 +1,7 @@
 import type { Catalog,CatalogItem } from "../catalog/types";
 import type { Snapshot,Policy,Scope,ItemResult,Claim,CapabilityResult,Layer,Truth,Assessment,Observation } from "../models";
 import { MaatError } from "../errors";
-import { canonical,sameScope } from "../canonical";
+import { canonical,sameScope,countsFor } from "../canonical";
 import { resolveClaim } from "./truth";
 import { decisionValid,attestationIssues } from "../evidence/validate";
 import { capabilityRules } from "./capabilities";
@@ -13,7 +13,7 @@ import { loopClaims } from "./contracts/loop";
 import { graphClaims } from "./contracts/graph";
 export const itemClaims:Record<string,string[]>={...foundationClaims,...promptClaims,...contextClaims,...harnessClaims,...loopClaims,...graphClaims};
 export function evaluationScopes(s:Snapshot,p:Policy):Scope[] {
- const scopes:Scope[]=[{},...s.observations.map(o=>o.scope),...p.attestations.filter(x=>x.scope).map(x=>x.scope),...Object.values(p.applicability).flatMap(d=>(d.loops??[]).map(l=>({workflow:l.scope})))];
+ const scopes:Scope[]=[{},...s.observations.map(o=>o.scope).filter(x=>x.evaluator!=="command"),...p.attestations.filter(x=>x.scope).map(x=>x.scope),...Object.values(p.applicability).flatMap(d=>(d.loops??[]).map(l=>({workflow:l.scope})))];
  return [...new Map(scopes.map(x=>[canonical(x),x])).values()].sort((a,b)=>canonical(a).localeCompare(canonical(b)));
 }
 export function itemScopes(i:CatalogItem,s:Snapshot,p:Policy):Set<string> {
@@ -71,7 +71,7 @@ export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResul
   const when_status:Truth=i.baseline.proposed_tier==="advanced"?"fails":condition===true?"holds":condition===false?"fails":"unknown";
   out.push({id:i.id,item_version:i.item_version,layer:i.layer.primary as Layer,scope,
    applicability:{status:app,reason:decision.reason??"",questions:i.applicability.questions},
-   result,claims,observations:s.observations.filter(o=>sameScope(o.scope,scope)&&(i.inspection.detectors.includes(o.detector)||i.verification.rerun.includes(o.detector)||o.facts.some(f=>f.subject===i.id))),
+   result,claims,observations:s.observations.filter(o=>countsFor(o.scope,scope)&&(i.inspection.detectors.includes(o.detector)||i.verification.rerun.includes(o.detector)||o.facts.some(f=>f.subject===i.id))),
    assessments:assessments.filter(a=>a.check===i.id&&sameScope(a.scope,scope)),
    attestations:p.attestations.flatMap((a,n)=>{
     if(a.check!==i.id||!a.scope||!sameScope(a.scope,scope)) return [];
