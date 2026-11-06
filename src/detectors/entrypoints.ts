@@ -24,7 +24,7 @@ export function detectedEntrypoints(s:ScanData):Entrypoint[] {
    if(templates.length!==1)continue;
    const [,template,project]=templates[0]!,manifest=projects.get(project!);
    for(let k=i+2;k<lines.length&&lines[k]!.startsWith("|");k++) {
-    const row=/^\|\s*`([A-Za-z0-9:_.-]+)`\s*\|(.+)\|\s*$/.exec(lines[k]!);
+    const row=/^\|\s*`([A-Za-z0-9:_.-]+)`\s*\|([^|]+)\|\s*$/.exec(lines[k]!);
     if(!row||!row[2]!.trim())continue;
     out.push({name:project+":"+row[1],command:template!.replace("<target>",row[1]!),purpose:row[2]!.trim(),scope:{},document:m.path,
      target:row[1]!,...(manifest?{manifest}:{})});

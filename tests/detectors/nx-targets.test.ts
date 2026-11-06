@@ -29,3 +29,9 @@ test("a built-in property name or a missing project file is never a declared tar
  expect(detectedEntrypoints(alone).map(e=>e.manifest??null)).toEqual([null,null]);
  expect(invocations(alone)).toEqual(["unknown","unknown"]);
 });
+test("a template from another section or a row with extra cells declares nothing",()=>{
+ const split="## Commands\n\nUse `bun nx run workspace:<target>`.\n\n## Gates\n\n| Target | Checks |\n|---|---|\n| `check-decks` | mechanical deck checks |\n";
+ expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:split},project]))).toEqual([]);
+ const extra=guide.replace("| `missing-one` | not declared in project.json |","| `missing-one` | first | second |");
+ expect(detectedEntrypoints(scan([{path:"AGENTS.md",text:extra},project])).map(e=>e.name)).toEqual(["workspace:check-decks"]);
+});
