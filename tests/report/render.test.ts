@@ -31,3 +31,14 @@ test("item details count observations instead of copying evidence",async()=>{
  expect(md).not.toContain("a".repeat(64));
  expect(md).toContain("full observations, claim basis and evidence are in the JSON report");
 });
+test("the summary lists baseline gaps and explains states and prerequisites",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p,[]);
+ const md=renderReport(buildReport(s,p,c,"2026-11-04T00:00:00Z"));
+ const summary=md.slice(md.indexOf("## Summary"),md.indexOf("## Layer findings"));
+ expect(summary).toContain("ready = prerequisites hold but baseline gaps remain");
+ expect(summary).toContain("| Layer / scope | State | Baseline gaps | Missing prerequisites | Unconfirmed prerequisites |");
+ expect(summary).toContain("| prompt {} | pending | prompt.output-contract; prompt.task-spec | none | none |");
+ expect(summary).toContain("- worker_evaluation_requirement: a verification entrypoint must be declared and documented in this scope");
+ expect(summary).toMatch(/Items without a result: \d+ \(baseline \d+, advanced \d+\)/);
+});
