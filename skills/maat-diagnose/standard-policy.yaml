@@ -1,7 +1,8 @@
 # Owner standard policy (2026-11-06). The maat-diagnose skill copies this file
 # as the draft for a project without .maat/policy.yaml, then fills only the
 # project parts: target_clis, project exclusions, loops, and attestations.
-# Loop and graph applicability is decided per project.
+# Loop and graph applicability is decided per project; their baseline items
+# are targets too (owner decision 2026-11-07), so they count once declared.
 policy_schema: 1.0.0
 catalog_version: 0.1.0
 target_clis: []
@@ -41,5 +42,17 @@ targets:
   harness.permission-boundaries: { baseline: true }
   harness.recovery: { baseline: true }
   harness.verification-wiring: { baseline: true }
+  loop.trigger: { baseline: true }
+  loop.feedback-routing: { baseline: true }
+  loop.acceptance-policy: { baseline: true }
+  loop.bounds: { baseline: true }
+  loop.stopping-policy: { baseline: true }
+  loop.resumable-state: { baseline: true }
+  graph.roles: { baseline: true }
+  graph.declared-routes: { baseline: true }
+  graph.handoff-contract: { baseline: true }
+  graph.shared-state: { baseline: true }
+  graph.edge-gates: { baseline: true }
+  graph.human-gates: { baseline: true }
 exemptions: []
 attestations: []
