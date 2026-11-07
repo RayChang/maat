@@ -1,4 +1,4 @@
-import type { Report,Snapshot,Policy,ProtectionObservation,Assessment,Fingerprint } from "../models";
+import type { Report,Snapshot,Policy,ProtectionObservation,Assessment,Fingerprint,ItemResult } from "../models";
 import type { Catalog } from "../catalog/types";
 import { versions } from "../versions";
 import { evaluationScopes,evaluateItems } from "../evaluate/items";
@@ -34,7 +34,18 @@ export function buildReport(s:Snapshot,p:Policy,c:Catalog,now:string,policyPath:
  diagnostics:[...policyDiagnostics,...invalid]},items,capabilities:capabilities.map(({id,status,scope,basis})=>({id,status,scope,basis})),layers,protection_observations,
  diagnostics:[...new Set(diagnostics)].sort()};
 }
-const cell=(v:unknown)=>canonical(v).replaceAll("|","\\|").replaceAll("\n"," ");
+const text=(s:string)=>s.replaceAll("|","\\|").replaceAll("\n"," ");
+const cell=(v:unknown)=>text(canonical(v));
+const listed=(xs:string[])=>xs.length?text(xs.join("; ")):"none";
+function observationCounts(i:ItemResult):string {
+ const groups=new Map<string,{count:number;status:Record<string,number>}>();
+ for(const o of i.observations) {
+  const g=groups.get(o.detector)??{count:0,status:{}};g.count++;
+  for(const f of o.facts)g.status[f.status]=(g.status[f.status]??0)+1;
+  groups.set(o.detector,g);
+ }
+ return listed([...groups].map(([d,g])=>d+" x"+g.count+" ("+(Object.entries(g.status).sort().map(([k,n])=>k+" "+n).join(", ")||"no facts")+")"));
+}
 export function renderReport(r:Report):string {
  const lines=["# maat audit report","","## Summary","",
  "| Layer / scope | State | Required gaps | Unknown requirements |","|---|---|---|---|"];
@@ -46,9 +57,13 @@ export function renderReport(r:Report):string {
   for(const i of r.items.filter(i=>i.layer===l.layer&&canonical(i.scope)===canonical(l.scope)&&
    (i.baseline.tier==="advanced"||i.baseline.when_status==="fails"))) lines.push("- "+i.id+": "+i.result);
  }
- lines.push("","## Item details","","| Item / scope / result | Machine observations | Agent assessments | User attestations |","|---|---|---|---|");
- for(const i of r.items) lines.push("| "+[i.id+" "+cell(i.scope)+" "+i.result,cell(i.observations),cell(i.assessments),cell(i.attestations)].join(" | ")+" |",
- "\nClaims: "+cell(i.claims)+"; applicability: "+cell(i.applicability)+"; prerequisites: "+cell(i.prerequisites)+"; diagnostics: "+cell(i.diagnostics)+"\n");
+ lines.push("","## Item details","","Counts per detector and fact status; full observations, claim basis and evidence are in the JSON report (--json or --out).","",
+ "| Item / scope / result | Machine observations | Agent assessments | User attestations |","|---|---|---|---|");
+ for(const i of r.items) lines.push("| "+[i.id+" "+cell(i.scope)+" "+i.result,observationCounts(i),
+ listed(i.assessments.map(a=>a.claim+" "+a.stance)),
+ listed(i.attestations.map(a=>"#"+a.ref+" "+(a.valid?"valid":"invalid "+a.invalid_reason)))].join(" | ")+" |",
+ "\nClaims: "+listed(i.claims.map(x=>x.name+" "+x.status))+"; applicability: "+i.applicability.status+"; prerequisites: "+
+ listed([...i.prerequisites.required,...i.prerequisites.recommended].map(x=>x.capability+" "+x.status))+"; diagnostics: "+cell(i.diagnostics)+"\n");
  lines.push("","## Protection observations","");
  for(const p of r.protection_observations) lines.push("- "+cell(p));
  lines.push("","## Scope and limits","",cell(r.repository),cell(r.scope),cell(r.diagnostics),
