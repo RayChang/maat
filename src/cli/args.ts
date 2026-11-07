@@ -6,7 +6,7 @@ const grammar: Record<string, { flags: string[]; required?: string[]; min?: numb
   plan: { flags: ["report","target"], required: ["report"] },
   explain: { flags: [], min: 1, max: 1 },
   "catalog list": { flags: ["layer","tier"] }, "catalog validate": { flags: [] },
-  "policy init": { flags: [] }, "policy validate": { flags: [], max: 1 },
+  "policy init": { flags: [] }, "policy validate": { flags: ["snapshot"], max: 1 },
   "attest template": { flags: ["check"], required: ["check"] },
   "flow open": { flags: ["plan","snapshot"], required: ["plan","snapshot"] },
   "flow approve": { flags: ["flow","scope","by"], required: ["flow","scope","by"] },
