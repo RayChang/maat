@@ -18,3 +18,16 @@ test("report order, separate evidence, and unapproved policy",async()=>{
  expect(Object.keys(r)).not.toContain("score");
  expect(Object.keys(r.adapters[0]!)).not.toContain("sources");expect(Object.keys(r.adapters[0]!)).not.toContain("observations");
 });
+test("item details count observations instead of copying evidence",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p,[]);
+ const r=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ const ev={path:"a.md",sha256:"a".repeat(64),lines:"1-2"};
+ const fact=(status:"holds"|"unknown")=>({subject:"documents",claim:"lines",status,scope:{},basis:"2",complete:false});
+ r.items[0]!.observations=[{detector:"d@1",version:1,scope:{},evidence:[ev],limits:[],facts:[fact("holds")],diagnostics:[]},
+  {detector:"d@1",version:1,scope:{},evidence:[ev],limits:[],facts:[fact("unknown")],diagnostics:[]}];
+ const md=renderReport(r);
+ expect(md).toContain("| d@1 x2 (holds 1, unknown 1) | none | none |");
+ expect(md).not.toContain("a".repeat(64));
+ expect(md).toContain("full observations, claim basis and evidence are in the JSON report");
+});
