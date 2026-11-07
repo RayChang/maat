@@ -24,6 +24,8 @@ test("attestation and loop scopes hold only their own items",async()=>{
  const r=buildReport(s,p,c,"2026-11-04T00:00:00Z");
  expect(r.items.filter(i=>i.scope.cli==="codex").map(i=>i.id)).toEqual(["prompt.task-spec"]);
  expect(r.items.filter(i=>i.scope.workflow===".claude/hooks/stop.sh").map(i=>i.id)).toEqual(c.items.filter(i=>i.layer.primary==="loop").map(i=>i.id));
+ expect(r.items.filter(i=>i.layer==="loop"&&!Object.keys(i.scope).length)).toHaveLength(0);
+ expect(r.layers.filter(l=>l.layer==="loop").map(l=>l.scope)).toEqual([{workflow:".claude/hooks/stop.sh"}]);
 });
 test("an exemption scope holds its item, and an unobserved target CLI gets no scope",async()=>{
  const c=await loadCatalog("catalog"),p=emptyPolicy();

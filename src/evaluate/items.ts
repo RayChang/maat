@@ -19,7 +19,9 @@ export function evaluationScopes(s:Snapshot,p:Policy):Scope[] {
 export function itemScopes(i:CatalogItem,s:Snapshot,p:Policy):Set<string> {
  const own=(o:Observation)=>i.inspection.detectors.includes(o.detector)||i.verification.rerun.includes(o.detector)||o.facts.some(f=>f.subject===i.id);
  const loops=Object.entries(p.applicability).filter(([key])=>key===i.id||key===i.layer.primary).flatMap(([,d])=>(d.loops??[]).map(l=>({workflow:l.scope})));
- return new Set([{},...s.observations.filter(own).map(o=>o.scope),...p.attestations.flatMap(a=>a.check===i.id&&a.scope?[a.scope]:[]),...p.exemptions.flatMap(e=>e.check===i.id&&e.scope?[e.scope]:[]),...loops].map(x=>canonical(x)));
+ const scopes=new Set([{},...s.observations.filter(own).map(o=>o.scope),...p.attestations.flatMap(a=>a.check===i.id&&a.scope?[a.scope]:[]),...p.exemptions.flatMap(e=>e.check===i.id&&e.scope?[e.scope]:[]),...loops].map(x=>canonical(x)));
+ if(loops.length)scopes.delete(canonical({}));
+ return scopes;
 }
 export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResult[],now:string,assessments:Assessment[]=[]):ItemResult[] {
  const ids=new Set(c.items.map(i=>i.id));
