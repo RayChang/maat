@@ -27,6 +27,15 @@ test("attestation and loop scopes hold only their own items",async()=>{
  expect(r.items.filter(i=>i.layer==="loop"&&!Object.keys(i.scope).length)).toHaveLength(0);
  expect(r.layers.filter(l=>l.layer==="loop").map(l=>l.scope)).toEqual([{workflow:".claude/hooks/stop.sh"}]);
 });
+test("a loop declared on one item moves only that item off the project scope",async()=>{
+ const c=await loadCatalog("catalog"),p=emptyPolicy();
+ p.applicability={"loop.bounds":{status:"applicable",loops:[{id:"stop",kind:"execution-feedback",scope:".claude/hooks/stop.sh"}]}};
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const r=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ expect(r.items.filter(i=>i.id==="loop.bounds").map(i=>i.scope)).toEqual([{workflow:".claude/hooks/stop.sh"}]);
+ expect(r.items.some(i=>i.id==="loop.trigger"&&!Object.keys(i.scope).length)).toBe(true);
+ expect(r.layers.some(l=>l.layer==="loop"&&!Object.keys(l.scope).length)).toBe(true);
+});
 test("an exemption scope holds its item, and an unobserved target CLI gets no scope",async()=>{
  const c=await loadCatalog("catalog"),p=emptyPolicy();
  p.target_clis=["claude-code"];
