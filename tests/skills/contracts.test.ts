@@ -26,6 +26,7 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("ask the user which commands are CI obligations");
  expect(diagnose).toContain("declared under applicability.loop as status: applicable plus loops");
  expect(diagnose).toContain("plus source and provided_by");
+ expect(diagnose).toContain("add its claim name to claims");
  expect(improve).toContain("Modification approval does not authorize tests");
  expect(improve).toContain("Preserve unrelated dirty work");
  expect(improve).toContain("cannot prevent host bypass");
