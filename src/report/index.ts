@@ -37,6 +37,9 @@ export function buildReport(s:Snapshot,p:Policy,c:Catalog,now:string,policyPath:
 const text=(s:string)=>s.replaceAll("|","\\|").replaceAll("\n"," ");
 const cell=(v:unknown)=>text(canonical(v));
 const listed=(xs:string[])=>xs.length?text(xs.join("; ")):"none";
+const prerequisiteNotes:Record<string,string>={
+ worker_evaluation_requirement:"a verification entrypoint must be declared and documented in this scope (verify.entrypoint-declared@1, verify.entrypoint-documented@1)",
+ conditional_evaluation_requirement:"an evaluation config must be declared in this scope (evaluation.config-declared@1)"};
 function observationCounts(i:ItemResult):string {
  const groups=new Map<string,{count:number;status:Record<string,number>}>();
  for(const o of i.observations) {
@@ -48,9 +51,13 @@ function observationCounts(i:ItemResult):string {
 }
 export function renderReport(r:Report):string {
  const lines=["# maat audit report","","## Summary","",
- "| Layer / scope | State | Required gaps | Unknown requirements |","|---|---|---|---|"];
- for(const l of r.layers) lines.push("| "+[l.layer+" "+cell(l.scope),l.status,cell(l.missing_required),cell(l.unknown_required)].join(" | ")+" |");
- lines.push("","Pending items: "+r.items.filter(i=>i.result==="unknown").length,
+ "States: adopted = baseline items met; ready = prerequisites hold but baseline gaps remain; blocked = a prerequisite is missing or unconfirmed; in_use_unsupported = in use while blocked; pending = applicability not decided; not_applicable = declared not applicable.","",
+ "| Layer / scope | State | Baseline gaps | Missing prerequisites | Unconfirmed prerequisites |","|---|---|---|---|---|"];
+ for(const l of r.layers) lines.push("| "+[l.layer+" "+cell(l.scope),l.status,listed(l.baseline_gaps),listed(l.missing_required),listed(l.unknown_required)].join(" | ")+" |");
+ const codes=[...new Set(r.layers.flatMap(l=>[...l.missing_required,...l.unknown_required]))].sort();
+ if(codes.length)lines.push("",...codes.map(x=>"- "+x+": "+(prerequisiteNotes[x]??"see maat explain "+x)));
+ const pending=r.items.filter(i=>i.result==="unknown");
+ lines.push("","Items without a result: "+pending.length+" (baseline "+pending.filter(i=>i.baseline.tier==="baseline").length+", advanced "+pending.filter(i=>i.baseline.tier==="advanced").length+")",
  "Authoritative: "+r.layers.every(l=>l.authoritative),"","## Layer findings","");
  for(const l of r.layers) {
   lines.push("### "+l.layer+" "+cell(l.scope),"","Baseline gaps: "+cell(l.baseline_gaps));
