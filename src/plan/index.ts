@@ -9,7 +9,10 @@ import { assertAcyclic } from "../catalog/validate";
 import { capabilityRules } from "../evaluate/capabilities";
 import { templateDefinitions,renderTemplate } from "./templates";
 import { policySkeleton } from "../policy/load";
-export function buildPlan(r:Report,targets:string[],c:Catalog):Plan {
+export type PlanAnswers=Record<string,{path?:string;values?:Record<string,string>}>;
+export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}):Plan {
+ if(!answers||typeof answers!=="object"||Array.isArray(answers))throw new MaatError(3,"answers_shape");
+ const given=answers as PlanAnswers,used=new Set<string>();
  const required=r.items.filter(i=>i.baseline.tier==="baseline"&&i.baseline.when_status==="holds"&&i.applicability.status==="applicable"&&i.result!=="verified");
  const requested=targets.length?targets:required.length?[...new Set(required.map(i=>i.id))]:["foundation.verify-entrypoints","prompt.task-spec","context.instruction-authority"];
  const layers=["foundation","prompt","context","harness","loop","graph"];
@@ -31,12 +34,22 @@ export function buildPlan(r:Report,targets:string[],c:Catalog):Plan {
   const resource=templateDefinitions.find(t=>t.checks.includes(item.id));
   const refs=item.observations.filter(o=>contract.inspection.detectors.includes(o.detector)).flatMap(o=>o.evidence);
   const paths=[...new Set(refs.map(e=>e.path).filter(path=>path.endsWith(".md")))];
-  const target_path=paths.length===1?paths[0]!:null;
+  const answer=given[id(item.id,item.scope)];
+  if(answer!==undefined) {
+   used.add(id(item.id,item.scope));
+   if(!answer||typeof answer!=="object"||Object.keys(answer).some(k=>k!=="path"&&k!=="values"))throw new MaatError(3,"answers_shape: "+id(item.id,item.scope));
+   if(answer.path!==undefined&&(typeof answer.path!=="string"||!answer.path.trim()||answer.path.startsWith("/")||answer.path.split("/").includes("..")))
+    throw new MaatError(3,"answer_path: "+id(item.id,item.scope));
+   for(const [k,v] of Object.entries(answer.values??{}))
+    if(!resource?.parameters.includes(k)||typeof v!=="string"||!v.trim())throw new MaatError(3,"answer_value: "+id(item.id,item.scope)+" "+k);
+  }
+  const target_path=answer?.path??(paths.length===1?paths[0]!:null);
   const facts=item.observations.flatMap(o=>o.facts).filter(f=>f.status==="holds");
   const inputs:Record<string,string>={};
   const invocation=facts.find(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation");
   const purpose=facts.find(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="purpose");
   if(invocation)inputs.command=invocation.basis;if(purpose)inputs.purpose=purpose.basis;
+  Object.assign(inputs,answer?.values??{});
   let template:PlanAction["template"]=null;
   const questions:string[]=[];
   if(resource) {
@@ -59,6 +72,7 @@ export function buildPlan(r:Report,targets:string[],c:Catalog):Plan {
     manual:contract.verification.attestation.question},fingerprints,fix_conditions:{max_fixes:0},
    stop_conditions:["scope_change","fingerprint_drift","unknown_effect","no_progress","cancelled"]});
  }
+ for(const key of Object.keys(given))if(!used.has(key))throw new MaatError(3,"unknown_answer: "+key);
  const graph=Object.fromEntries(actions.map(a=>[a.id,a.depends_on]));
  assertAcyclic(graph);
  const ordered:PlanAction[]=[],done=new Set<string>();

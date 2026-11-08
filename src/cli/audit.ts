@@ -25,7 +25,10 @@ async function input(path:string):Promise<string> {
 export async function runAuditCommand(a:Args,now:string):Promise<CommandResult> {
  const c=await loadCatalog(one(a,"catalog"));validateCatalog(c);
  if(a.command==="plan") {
-  const report=parseReport(await input(one(a,"report")!)),plan=buildPlan(report,a.flags.target??[],c);
+  const report=parseReport(await input(one(a,"report")!));
+  let answers:unknown={};
+  if(one(a,"answers")){try{answers=JSON.parse(await input(one(a,"answers")!));}catch(e){if(e instanceof MaatError)throw e;throw new MaatError(3,"answers_parse");}}
+  const plan=buildPlan(report,a.flags.target??[],c,answers);
   return {value:plan,markdown:renderPlan(plan),repository:report.repository.path,kind:"plan"};
  }
  let s:Snapshot,p:Policy,policyPath:string|null=null,diagnostics:string[]=[];
