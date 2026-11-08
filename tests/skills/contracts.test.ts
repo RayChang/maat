@@ -33,6 +33,7 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("maat policy validate <file> --snapshot <saved snapshot>");
  expect(improve).toContain("Modification approval does not authorize tests");
  expect(improve).toContain("Preserve unrelated dirty work");
+ expect(improve).toContain("rerun maat plan with --answers <file>");
  expect(improve).toContain("cannot prevent host bypass");
  expect(improve).toContain("reconcile effects and fingerprints");
 });
