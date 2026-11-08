@@ -51,5 +51,7 @@ test("user answers give an ask action its location and template values",async()=
  expect(action.template?.body).toContain("Goal: G\nScope: S\n");
  expect(()=>buildPlan(report,["prompt.task-spec"],c,{absent:{path:"a.md"}})).toThrow("unknown_answer: absent");
  expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{path:"../a.md"}})).toThrow("answer_path: "+ask.id);
+ for(const path of ["./a.md","docs//a.md","docs/./a.md",".","docs/"," a.md"])
+  expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{path}})).toThrow("answer_path: "+ask.id);
  expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{values:{other:"x"}}})).toThrow("answer_value: "+ask.id+" other");
 });

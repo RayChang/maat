@@ -1,3 +1,4 @@
+import { posix } from "node:path";
 import { reportFingerprints,reportVersionBinding } from "../report";
 import { checkShape } from "../schema";
 import type { Report,Scope } from "../models";
@@ -38,7 +39,8 @@ export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}
   if(answer!==undefined) {
    used.add(id(item.id,item.scope));
    if(!answer||typeof answer!=="object"||Object.keys(answer).some(k=>k!=="path"&&k!=="values"))throw new MaatError(3,"answers_shape: "+id(item.id,item.scope));
-   if(answer.path!==undefined&&(typeof answer.path!=="string"||!answer.path.trim()||answer.path.startsWith("/")||answer.path.split("/").includes("..")))
+   if(answer.path!==undefined&&(typeof answer.path!=="string"||!answer.path.trim()||answer.path.trim()!==answer.path||answer.path.startsWith("/")||
+    answer.path.split("/").includes("..")||answer.path==="."||answer.path.endsWith("/")||posix.normalize(answer.path)!==answer.path))
     throw new MaatError(3,"answer_path: "+id(item.id,item.scope));
    for(const [k,v] of Object.entries(answer.values??{}))
     if(!resource?.parameters.includes(k)||typeof v!=="string"||!v.trim())throw new MaatError(3,"answer_value: "+id(item.id,item.scope)+" "+k);
