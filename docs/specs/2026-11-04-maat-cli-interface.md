@@ -91,7 +91,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 | `record --flow <id> --kind change\|evaluation --file <json>` | 保存候選成果、修改範圍、執行來源、方法與結果／錯誤；error／timeout／cancel 不是 pass |
 | `decide --flow <id> --event <name> [--by <who>]` | 觸發狀態轉移：`accept`、`continue-fix`、`stop`、`handoff`、`resume`。guard 不滿足時拒絕，結束代碼 4 |
 | `status --flow <id>` | 目前狀態、剩餘修正條件、未完成 checkpoint、未知效果 |
-| `template --flow <id> --step approve\|authorize\|before\|after\|change\|evaluation [--action <aid>]` | 印出該步要交的事件檔骨架，不寫檔。序號、事件 id、計畫與材料指紋、修改路徑由 maat 算好填入；`before`／`after` 在當下讀取專案檔案算指紋。要由使用者或 host 回答的欄位（核准人、來源、有效期限、執行者、未知效果、評估方法與結果）留 `null`，沒填就送出會被拒絕。核准骨架列出計畫裡全部非「先詢問」動作，使用者沒核准的要刪掉（2026-11-09 補充） |
+| `template --flow <id> --step approve\|authorize\|before\|after\|change\|evaluation [--action <aid>]` | 印出該步要交的事件檔骨架，不寫檔。序號、事件 id、計畫與材料指紋、修改路徑由 maat 算好填入；`before`／`after` 在當下讀取專案檔案算指紋。要由使用者或 host 回答的欄位（核准人、來源、有效期限、執行者、未知效果、評估方法與結果）留 `null`，沒填就送出會被拒絕。核准骨架列出計畫裡全部非「先詢問」動作，使用者沒核准的要刪掉（2026-11-09 補充）。流程現在還不能做的 `before`／`after`／`evaluation` 直接拒絕（結束代碼 4，`flow_rejected: <原因> (status <狀態>; <該先記錄的步驟>)`，只在確定時才附該先記錄的步驟），不讀檔也不寫入 ledger（2026-11-09 補充） |
 | `list` | 列出此 repository 的 flows 與狀態 |
 
 Ledger：append-only JSONL，一個 flow 一個檔案，寫入採「寫暫存檔再 rename」與 lock 檔；每筆事件有序號、時間、前後狀態、事件、拒絕原因。位置預設 `$XDG_STATE_HOME/maat/<repo-id>/`（macOS 回退 `~/Library/Application Support/maat/`），`repo-id` 為 repository 絕對路徑的雜湊；可用 `--ledger` 或 `MAAT_STATE_DIR` 覆寫。預設不在目標 repository 內，也不建立 ignore 規則。

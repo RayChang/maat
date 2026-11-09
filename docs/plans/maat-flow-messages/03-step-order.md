@@ -7,7 +7,7 @@ Owner rule: over-design is forbidden. Change only the lines below.
 ## Files
 
 - Create: None.
-- Modify: `tests/e2e/flow-template.test.ts`, `src/flow/template.ts`, `skills/maat-improve/SKILL.md` (anchored edits).
+- Modify: `tests/e2e/flow-template.test.ts`, `src/flow/template.ts`, `skills/maat-improve/SKILL.md`, `docs/specs/2026-11-04-maat-cli-interface.md` (anchored edits).
 - Test paths: `tests/e2e/flow-template.test.ts`.
 
 ## Interfaces
@@ -22,7 +22,7 @@ Produces: None (behavior only).
 
 ## Steps
 
-- [ ] 1. Write the failing test. Make two edits.
+- [ ] 1. Write the failing test. Make four edits.
 
   a. In `tests/e2e/flow-template.test.ts`, replace
 
@@ -52,7 +52,33 @@ Produces: None (behavior only).
   expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: illegal_before (status changed; record the evaluation of the changed action first)")]);
 ```
 
-- [ ] 2. Run the focused test; expect exit 1 with `0 pass`, `1 fail`: the new `toEqual([4,...])` fails because the template prints a before event while the flow is in status `changed` (exit 0).
+  c. In `tests/e2e/flow-template.test.ts`, replace
+
+```ts
+  expect((await flow(["approve","--scope",await file("e1.json",approve),"--by","ray"])).status).toBe("approved");
+```
+
+  with
+
+```ts
+  expect((await flow(["approve","--scope",await file("e1.json",approve),"--by","ray"])).status).toBe("approved");
+  expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("flow_rejected: illegal_after (status approved; record the before checkpoint of "+action.id+" first)");
+```
+
+  d. In `tests/e2e/flow-template.test.ts`, replace
+
+```ts
+  expect((await flow(["checkpoint","--action",action.id,"--phase","before","--fingerprints",await file("e2.json",before)])).status).toBe("executing");
+```
+
+  with
+
+```ts
+  expect((await flow(["checkpoint","--action",action.id,"--phase","before","--fingerprints",await file("e2.json",before)])).status).toBe("executing");
+  expect((await main(["flow","template","--step","evaluation","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("flow_rejected: evaluation_state (status executing; action "+action.id+" is still open: record its after checkpoint and change first)");
+```
+
+- [ ] 2. Run the focused test; expect exit 1 with `0 pass`, `1 fail`: the first new assertion, the after template in status `approved`, fails because the template prints an event instead of refusing it.
 
 ```sh
 bun test tests/e2e/flow-template.test.ts
@@ -70,11 +96,11 @@ bun test tests/e2e/flow-template.test.ts
   with
 
 ```ts
- const open=f.pending?"; action "+f.pending.action+" is still open: record its after checkpoint and change first":"";
+ const open=f.pending?"; action "+f.pending.action+" is still open: record its "+(f.pending.after?"change":"after checkpoint and change")+" first":"";
  if(step==="before"&&(!["approved","evaluated"].includes(f.status)||f.pending))
-  throw new MaatError(4,"flow_rejected: illegal_before (status "+f.status+(open||"; record the evaluation of the changed action first")+")");
+  throw new MaatError(4,"flow_rejected: illegal_before (status "+f.status+(open||(f.status==="changed"?"; record the evaluation of the changed action first":""))+")");
  if(step==="after"&&(f.status!=="executing"||f.pending?.action!==action!.id||f.pending.after))
-  throw new MaatError(4,"flow_rejected: illegal_after (status "+f.status+"; record the before checkpoint of "+action!.id+" first)");
+  throw new MaatError(4,"flow_rejected: illegal_after (status "+f.status+(open||(["approved","evaluated"].includes(f.status)?"; record the before checkpoint of "+action!.id+" first":""))+")");
  if(step==="evaluation"&&(!["changed","evaluated","approved"].includes(f.status)||f.pending))
   throw new MaatError(4,"flow_rejected: evaluation_state (status "+f.status+open+")");
  let payload:Record<string,unknown>;
@@ -94,7 +120,7 @@ bun test
 bun run typecheck
 ```
 
-- [ ] 6. Update the skill. The anchor text occurs exactly once in the file and stays as it is.
+- [ ] 6. Update the skill and the spec. Each anchor text occurs exactly once in its file and stays as it is.
 
   In `skills/maat-improve/SKILL.md`, directly after the sentence
 
@@ -108,6 +134,18 @@ Record evaluation separately. Human declaration checks may use valid human evide
  Finish one action before starting the next: before checkpoint, change, after checkpoint, change record, then its evaluation; maat flow template refuses a step the flow cannot take yet. In the evaluation file, result is one of pass, fail, unknown, error, timeout, cancel; method is {"kind": "manual" or "command", "id": "<text>", "version": "<text>"}; report is the whole JSON report of a fresh maat scan or maat evaluate of the current files, and a pass requires it; execution stays null for a manual method; unknown_effects is a list, empty when there are none. Accept is one decision for the whole flow: it reads each action's latest evaluation of the current files, so after attestations change, record a new evaluation for every action with a fresh report.
 ```
 
+  Then, in `docs/specs/2026-11-04-maat-cli-interface.md`, directly after the text
+
+```text
+使用者沒核准的要刪掉（2026-11-09 補充）
+```
+
+  insert this text on the same line (it begins with the character shown):
+
+```text
+。流程現在還不能做的 `before`／`after`／`evaluation` 直接拒絕（結束代碼 4，`flow_rejected: <原因> (status <狀態>; <該先記錄的步驟>)`，只在確定時才附該先記錄的步驟），不讀檔也不寫入 ledger（2026-11-09 補充）
+```
+
 - [ ] 7. Run the whole suite again; expect `117 pass`, `0 fail`.
 
 ```sh
@@ -117,6 +155,8 @@ bun test
 - [ ] 8. Commit this task using the exact message below.
 
 ```sh
-git add -- tests/e2e/flow-template.test.ts src/flow/template.ts skills/maat-improve/SKILL.md docs/plans/maat-flow-messages/03-step-order.md
+git add -- tests/e2e/flow-template.test.ts src/flow/template.ts skills/maat-improve/SKILL.md docs/specs/2026-11-04-maat-cli-interface.md docs/plans/maat-flow-messages/03-step-order.md
 git commit -m '📝 feat(flow): refuse templates for steps the flow cannot take yet'
 ```
+
+Cloud review of PR #82 (2026-11-09), must-fix applied: each refusal adds the step to record first only when that hint is right for the current state (an open action, status `changed` for before, status `approved` or `evaluated` for after); otherwise it gives the status alone. Two assertions pin the after and evaluation refusals.
