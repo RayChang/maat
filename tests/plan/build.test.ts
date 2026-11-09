@@ -38,3 +38,20 @@ test("the default plan skips a scope whose applicability is unknown",async()=>{
  report.items.push({...item,scope:{cli:"codex"},applicability:{...item.applicability,status:"unknown"}});
  expect(buildPlan(report,[],c).actions.map(a=>[a.check,a.scope])).toEqual([["foundation.automated-tests",{}]]);
 });
+test("user answers give an ask action its location and template values",async()=>{
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ p.target_clis=["claude-code"];
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const report=buildReport(s,p,c,"2026-11-04T00:00:00Z");
+ const ask=buildPlan(report,["prompt.task-spec"],c).actions[0]!;
+ expect(ask.kind).toBe("ask");
+ const answers={[ask.id]:{path:"docs/task.md",values:{goal:"G",scope:"S",constraints:"C",acceptance:"A"}}};
+ const action=buildPlan(report,["prompt.task-spec"],c,answers).actions[0]!;
+ expect([action.id,action.kind,action.target_path]).toEqual([ask.id,"modify","docs/task.md"]);
+ expect(action.template?.body).toContain("Goal: G\nScope: S\n");
+ expect(()=>buildPlan(report,["prompt.task-spec"],c,{absent:{path:"a.md"}})).toThrow("unknown_answer: absent");
+ expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{path:"../a.md"}})).toThrow("answer_path: "+ask.id);
+ for(const path of ["./a.md","docs//a.md","docs/./a.md",".","docs/"," a.md"])
+  expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{path}})).toThrow("answer_path: "+ask.id);
+ expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{values:{other:"x"}}})).toThrow("answer_value: "+ask.id+" other");
+});

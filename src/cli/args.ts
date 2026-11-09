@@ -3,7 +3,7 @@ export interface Args { command: string; positionals: string[]; flags: Record<st
 const grammar: Record<string, { flags: string[]; required?: string[]; min?: number; max?: number }> = {
   scan: { flags: ["cli","policy","evidence","snapshot","format"], max: 1 },
   evaluate: { flags: ["snapshot","policy","evidence"], required: ["snapshot"] },
-  plan: { flags: ["report","target"], required: ["report"] },
+  plan: { flags: ["report","target","answers"], required: ["report"] },
   explain: { flags: [], min: 1, max: 1 },
   "catalog list": { flags: ["layer","tier"] }, "catalog validate": { flags: [] },
   "policy init": { flags: [] }, "policy validate": { flags: ["snapshot"], max: 1 },
