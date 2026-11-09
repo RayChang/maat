@@ -52,7 +52,7 @@ export function reduceCore(original:Flow,e:FlowEvent):Flow|string|undefined {
   }
   if(f.status!=="executing"||f.pending?.action!==p.action||f.pending.after)return "illegal_after";
   const paths=changed(f.pending.before,p.fingerprints);
-  if(paths.some(path=>!f.approval!.paths.includes(path)||(action.kind!=="command"&&path!==action.target_path)))return "checkpoint_scope_violation";
+  if(paths.some(path=>!f.approval!.paths.includes(path)||(action.kind!=="command"&&path!==action.target_path&&!(action.extra_paths??[]).includes(path))))return "checkpoint_scope_violation";
   if(f.approval!.mode==="candidate"&&f.approval!.candidate_fingerprint!==fingerprintSet(p.fingerprints))return "candidate_not_approved";
   f.pending.after=p.fingerprints;return f;
  }
