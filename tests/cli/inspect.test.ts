@@ -28,7 +28,7 @@ test("policy validate checks attestations against a saved snapshot, not the work
    answer:"The task names the goal and the scope.",materials:[{path:"task.md",sha256:sha256(text),lines:"1-2",quote:text.trimEnd()}],
    scope:{},attested_by:"ray",attested_at:"2026-11-04T00:00:00Z",expires_at:"2027-01-01",catalog_version:"0.1.0",adapter_version:{}}]}));
   const time="2026-11-05T00:00:00Z";
-  await expect(runInspectCommand(parseArgs(["policy","validate",policy]),time,input)).rejects.toThrow("fingerprint_mismatch");
+  await expect(runInspectCommand(parseArgs(["policy","validate",policy]),time,input)).rejects.toThrow("policy_invalid: attestations[0] prompt.task-spec fingerprint_mismatch");
   const checked=await runInspectCommand(parseArgs(["policy","validate",policy,"--snapshot",snapshot]),time,input);
   expect(checked.value).toEqual({valid:true,policy_schema:"1.0.0"});
  }finally{await rm(root,{recursive:true,force:true});await rm(input,{recursive:true,force:true});}

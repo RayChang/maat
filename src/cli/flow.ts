@@ -71,7 +71,7 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
       expires_at:envelope.expires_at,type,by,payload};
     }
     const t=await appendEvent(dir,id,event);
-    if(!t.accepted)throw new MaatError(4,"flow_rejected: "+t.reason);
+    if(!t.accepted)throw new MaatError(4,"flow_rejected: "+t.reason+(t.detail?" ("+t.detail+")":""));
     value=status(t.flow);
    }
   }

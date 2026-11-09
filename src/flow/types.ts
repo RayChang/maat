@@ -15,5 +15,5 @@ export interface Flow {
  changes:ChangeRecord[];evaluations:EvaluationRecord[];meaningful_inputs:string[];
  unknown_effects:string[];last_rejection:string|null;resume_permit:boolean;
 }
-export interface Transition { flow:Flow;accepted:boolean;reason:string|null; }
+export interface Transition { flow:Flow;accepted:boolean;reason:string|null;detail?:string|null; }
 export interface LedgerRow { ledger_schema:string;seq:number;at:string;before:FlowStatus|null;after:FlowStatus;event:FlowEvent|{type:"open";id:string;plan:Plan;fingerprints:Fingerprint[]};accepted:boolean;reason:string|null; }
