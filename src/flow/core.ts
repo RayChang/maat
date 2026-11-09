@@ -2,7 +2,7 @@ import type { Flow,FlowEvent,Approval,Authorization,ChangeRecord,ExecutionSpec }
 import type { Fingerprint } from "../models";
 import { fingerprintSet } from "./model";
 import { actionGuard,executionGuard,approvalGuard } from "./guards";
-const changed=(a:Fingerprint[],b:Fingerprint[])=>[...new Set([...a.map(x=>x.path),...b.map(x=>x.path)])]
+export const changed=(a:Fingerprint[],b:Fingerprint[])=>[...new Set([...a.map(x=>x.path),...b.map(x=>x.path)])]
  .filter(path=>a.find(x=>x.path===path)?.sha256!==b.find(x=>x.path===path)?.sha256).sort();
 export function reduceCore(original:Flow,e:FlowEvent):Flow|string|undefined {
  const f=structuredClone(original);
@@ -52,7 +52,7 @@ export function reduceCore(original:Flow,e:FlowEvent):Flow|string|undefined {
   }
   if(f.status!=="executing"||f.pending?.action!==p.action||f.pending.after)return "illegal_after";
   const paths=changed(f.pending.before,p.fingerprints);
-  if(paths.some(path=>!f.approval!.paths.includes(path)||(action.kind!=="command"&&path!==action.target_path)))return "checkpoint_scope_violation";
+  if(paths.some(path=>!f.approval!.paths.includes(path)||(action.kind!=="command"&&path!==action.target_path&&!(action.extra_paths??[]).includes(path))))return "checkpoint_scope_violation";
   if(f.approval!.mode==="candidate"&&f.approval!.candidate_fingerprint!==fingerprintSet(p.fingerprints))return "candidate_not_approved";
   f.pending.after=p.fingerprints;return f;
  }

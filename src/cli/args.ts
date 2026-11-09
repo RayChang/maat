@@ -15,6 +15,7 @@ const grammar: Record<string, { flags: string[]; required?: string[]; min?: numb
   "flow record": { flags: ["flow","kind","file"], required: ["flow","kind","file"] },
   "flow decide": { flags: ["flow","event","by"], required: ["flow","event"] },
   "flow status": { flags: ["flow"], required: ["flow"] },
+  "flow template": { flags: ["flow","step","action"], required: ["flow","step"] },
   "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }, help: { flags: [] }
 };
 const global = ["json","out","quiet","catalog","ledger"];
@@ -24,7 +25,8 @@ const enums: Record<string,string[]> = {
   cli: ["claude-code","codex","copilot"], format: ["markdown","json","both"],
   tier: ["baseline","advanced"], layer: ["foundation","prompt","context","harness","loop","graph"],
   phase: ["before","after"], kind: ["change","evaluation"],
-  event: ["accept","continue-fix","stop","handoff","resume"]
+  event: ["accept","continue-fix","stop","handoff","resume"],
+  step: ["approve","authorize","before","after","change","evaluation"]
 };
 export function one(a: Args, key: string): string | undefined { return a.flags[key]?.[0]; }
 export function usage(): string {

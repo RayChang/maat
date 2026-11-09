@@ -27,7 +27,7 @@ export function approvalGuard(f:Flow,a:Approval,at:string):string|null {
  for(const id of a.actions) {
   const action=f.plan.actions.find(x=>x.id===id);
   if(!action)return "unknown_action";
-  if(action.kind!=="ask"&&action.target_path&&!a.paths.includes(action.target_path))return "approval_scope";
+  if(action.kind!=="ask"&&[action.target_path,...(action.extra_paths??[])].some(p=>p&&!a.paths.includes(p)))return "approval_scope";
   const limit=a.max_fixes[id];
   if(!Number.isInteger(limit)||limit<0||limit>action.fix_conditions.max_fixes)return "fix_condition_expansion";
   if(action.role_approval_required&&!a.role_approvals.some(r=>r.check===action.check&&r.by.trim()))return "role_approval_missing";

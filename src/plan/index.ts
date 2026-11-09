@@ -10,7 +10,8 @@ import { assertAcyclic } from "../catalog/validate";
 import { capabilityRules } from "../evaluate/capabilities";
 import { templateDefinitions,renderTemplate } from "./templates";
 import { policySkeleton } from "../policy/load";
-export type PlanAnswers=Record<string,{path?:string;values?:Record<string,string>}>;
+export type PlanAnswers=Record<string,{path?:string;values?:Record<string,string>;extra_paths?:string[];max_fixes?:number}>;
+const normal=(p:unknown):p is string=>typeof p==="string"&&!!p.trim()&&p.trim()===p&&!p.startsWith("/")&&!p.split("/").includes("..")&&p!=="."&&!p.endsWith("/")&&posix.normalize(p)===p;
 export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}):Plan {
  if(!answers||typeof answers!=="object"||Array.isArray(answers))throw new MaatError(3,"answers_shape");
  const given=answers as PlanAnswers,used=new Set<string>();
@@ -38,14 +39,16 @@ export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}
   const answer=given[id(item.id,item.scope)];
   if(answer!==undefined) {
    used.add(id(item.id,item.scope));
-   if(!answer||typeof answer!=="object"||Object.keys(answer).some(k=>k!=="path"&&k!=="values"))throw new MaatError(3,"answers_shape: "+id(item.id,item.scope));
-   if(answer.path!==undefined&&(typeof answer.path!=="string"||!answer.path.trim()||answer.path.trim()!==answer.path||answer.path.startsWith("/")||
-    answer.path.split("/").includes("..")||answer.path==="."||answer.path.endsWith("/")||posix.normalize(answer.path)!==answer.path))
-    throw new MaatError(3,"answer_path: "+id(item.id,item.scope));
+   if(!answer||typeof answer!=="object"||Object.keys(answer).some(k=>!["path","values","extra_paths","max_fixes"].includes(k)))throw new MaatError(3,"answers_shape: "+id(item.id,item.scope));
+   if(answer.path!==undefined&&!normal(answer.path))throw new MaatError(3,"answer_path: "+id(item.id,item.scope));
+   if(answer.extra_paths!==undefined&&(!Array.isArray(answer.extra_paths)||!answer.extra_paths.every(normal)||new Set(answer.extra_paths).size!==answer.extra_paths.length))
+    throw new MaatError(3,"answer_extra_paths: "+id(item.id,item.scope));
+   if(answer.max_fixes!==undefined&&(!Number.isInteger(answer.max_fixes)||answer.max_fixes<0))throw new MaatError(3,"answer_max_fixes: "+id(item.id,item.scope));
    for(const [k,v] of Object.entries(answer.values??{}))
     if(!resource?.parameters.includes(k)||typeof v!=="string"||!v.trim())throw new MaatError(3,"answer_value: "+id(item.id,item.scope)+" "+k);
   }
   const target_path=answer?.path??(paths.length===1?paths[0]!:null);
+  const extra_paths=(answer?.extra_paths??[]).filter(p=>p!==target_path).sort();
   const facts=item.observations.flatMap(o=>o.facts).filter(f=>f.status==="holds");
   const inputs:Record<string,string>={};
   const invocation=facts.find(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation");
@@ -67,11 +70,11 @@ export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}
   actions.push({id:id(item.id,item.scope),check:item.id,scope:item.scope,item_version:item.item_version,
    rule_cards:contract.remediation.rule_cards,template,current:item.result,target:"verified",
    kind:questions.length?"ask":command?"command":"modify",
-   actions:[...questions,...contract.remediation.actions],target_path,command,depends_on,
+   actions:[...questions,...contract.remediation.actions],target_path,extra_paths,command,depends_on,
    necessity:item.baseline.when_status==="holds"?"required":"recommended",
    risk:contract.remediation.risk,needs_approval:true,role_approval_required:contract.remediation.needs_approval,
    verification:{detectors:contract.verification.rerun,expected:contract.verification.expected,
-    manual:contract.verification.attestation.question},fingerprints,fix_conditions:{max_fixes:0},
+    manual:contract.verification.attestation.question},fingerprints,fix_conditions:{max_fixes:answer?.max_fixes??0},
    stop_conditions:["scope_change","fingerprint_drift","unknown_effect","no_progress","cancelled"]});
  }
  for(const key of Object.keys(given))if(!used.has(key))throw new MaatError(3,"unknown_answer: "+key);
@@ -89,6 +92,7 @@ export function renderPlan(p:Plan):string {
  return "# maat improvement plan\n\n"+p.actions.map(a=>"## "+a.id+"\n\n"+
  "Current: "+a.current+"; target: "+a.target+"; kind: "+a.kind+"\n\n"+
  a.actions.map(x=>"- "+x).join("\n")+"\n\nTarget: "+(a.target_path??"location requires confirmation")+
+ (a.extra_paths?.length?"\n\nAlso changes: "+a.extra_paths.join(", "):"")+"\n\nFix rounds: "+a.fix_conditions.max_fixes+
  "\n\nDependencies: "+a.depends_on.join(", ")+
  "\n\nApproval required: true; command authorization is separate.\n\n"+
  "Acceptance: "+canonical(a.verification)+"\n\n"+(a.template?.body??"")).join("\n")+"\n";
@@ -96,7 +100,7 @@ export function renderPlan(p:Plan):string {
 export function parsePlan(text:string):Plan {
  let p:Plan;try{p=JSON.parse(text);}catch{throw new MaatError(3,"plan_parse");}
  checkShape(p,{"type":"object","required":["report_schema","catalog_version","repository","source_report_fingerprint","plan_fingerprint","actions","fingerprints","authoritative","diagnostics","versions"],"properties":{"report_schema":{"type":"string","pattern":"^1\\."},"catalog_version":{"type":"string"},"repository":{"type":"object","required":["path","repo_id"],"properties":{"path":{"type":"string"},"repo_id":{"type":"string","pattern":"^[a-f0-9]{16}$"}}},"source_report_fingerprint":{"type":"string","pattern":"^[a-f0-9]{64}$"},"plan_fingerprint":{"type":"string","pattern":"^[a-f0-9]{64}$"},"actions":{"type":"array","items":{"type":"object","required":["id","check","scope","item_version","rule_cards","template","current","target","kind","actions","target_path","command","depends_on","necessity","risk","needs_approval","role_approval_required","verification","fingerprints","fix_conditions","stop_conditions"],"properties":{"kind":{"enum":["ask","modify","command"]},"depends_on":{"type":"array","items":{"type":"string"}},"needs_approval":{"type":"boolean"},"fix_conditions":{"type":"object","required":["max_fixes"],"properties":{"max_fixes":{"type":"number"}}},"id":{"type":"string"},"check":{"type":"string"},"current":{"type":"string"},"target":{"type":"string"},"risk":{"type":"string"},"scope":{"type":"object"},"item_version":{"type":"number"},"rule_cards":{"type":"array","items":{"type":"object","required":["id","version"],"properties":{"id":{"type":"string"},"version":{"type":"number"}}}},"actions":{"type":"array","items":{"type":"string"}},"necessity":{"enum":["required","recommended"]},"role_approval_required":{"type":"boolean"},"verification":{"type":"object","required":["detectors","expected","manual"],"properties":{"detectors":{"type":"array","items":{"type":"string"}},"manual":{"type":"string"}}},"fingerprints":{"type":"array","items":{"type":"object","required":["path","sha256"],"properties":{"path":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"}}}},"stop_conditions":{"type":"array","items":{"type":"string"}}}}},"fingerprints":{"type":"array","items":{"type":"object","required":["path","sha256"],"properties":{"path":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"}}}},"authoritative":{"type":"boolean"},"diagnostics":{"type":"array"},"versions":{"type":"object","required":["tool_version","catalog_version","report_schema","policy_schema","ledger_schema","adapters"],"properties":{"tool_version":{"type":"string"},"catalog_version":{"type":"string"},"report_schema":{"type":"string"},"policy_schema":{"type":"string"},"ledger_schema":{"type":"string"},"adapters":{"type":"array","items":{"type":"object","required":["name","adapter_version","verified_cli_range","checked_at"],"properties":{"name":{"type":"string"},"adapter_version":{"type":"string"},"verified_cli_range":{"type":"string"},"checked_at":{"type":"string"}}}}}}}});
- for(const a of p.actions)if((a.target_path!==null&&typeof a.target_path!=="string")||(a.command!==null&&typeof a.command!=="string")||!Number.isInteger(a.fix_conditions.max_fixes)||a.fix_conditions.max_fixes<0)throw new MaatError(3,"plan_shape");
+ for(const a of p.actions)if((a.target_path!==null&&typeof a.target_path!=="string")||(a.extra_paths!==undefined&&(!Array.isArray(a.extra_paths)||a.extra_paths.some(x=>typeof x!=="string")))||(a.command!==null&&typeof a.command!=="string")||!Number.isInteger(a.fix_conditions.max_fixes)||a.fix_conditions.max_fixes<0)throw new MaatError(3,"plan_shape");
  const {plan_fingerprint,...unsigned}=p;
  if(sha256(canonical(unsigned))!==plan_fingerprint)throw new MaatError(3,"plan_fingerprint");
  assertAcyclic(Object.fromEntries(p.actions.map(a=>[a.id,a.depends_on])));
