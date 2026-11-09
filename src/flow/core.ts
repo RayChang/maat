@@ -2,7 +2,7 @@ import type { Flow,FlowEvent,Approval,Authorization,ChangeRecord,ExecutionSpec }
 import type { Fingerprint } from "../models";
 import { fingerprintSet } from "./model";
 import { actionGuard,executionGuard,approvalGuard } from "./guards";
-const changed=(a:Fingerprint[],b:Fingerprint[])=>[...new Set([...a.map(x=>x.path),...b.map(x=>x.path)])]
+export const changed=(a:Fingerprint[],b:Fingerprint[])=>[...new Set([...a.map(x=>x.path),...b.map(x=>x.path)])]
  .filter(path=>a.find(x=>x.path===path)?.sha256!==b.find(x=>x.path===path)?.sha256).sort();
 export function reduceCore(original:Flow,e:FlowEvent):Flow|string|undefined {
  const f=structuredClone(original);

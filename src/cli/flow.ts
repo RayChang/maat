@@ -11,6 +11,7 @@ import { parseSnapshot } from "../snapshot";
 import { openFlow } from "../flow/model";
 import { ledgerDirectory,createLedger,readFlow,appendEvent,listFlows,flowDirectory } from "../flow/ledger";
 import { canonical,sha256,repoId } from "../canonical";
+import { flowTemplate } from "../flow/template";
 async function repositoryRoot(cwd:string):Promise<string> {
  let path=await realpath(resolve(cwd));
  for(;;) {
@@ -43,6 +44,7 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
   else {
    const id=one(a,"flow")!,flow=await readFlow(dir,id);repository=flow.repository.path;
    if(a.command==="flow status")value=status(flow);
+   else if(a.command==="flow template")value=await flowTemplate(flow,one(a,"step")!,one(a,"action"),now);
    else {
     let event:FlowEvent;
     if(a.command==="flow decide") {
