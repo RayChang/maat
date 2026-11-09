@@ -78,7 +78,7 @@ export function evaluateItems(c:Catalog,s:Snapshot,p:Policy,caps:CapabilityResul
    attestations:p.attestations.flatMap((a,n)=>{
     if(a.check!==i.id||!a.scope||!sameScope(a.scope,scope)) return [];
     const issues=attestationIssues(a,s.materials,s.versions,scope,now);
-    return [{ref:String(n),valid:!issues.length,invalid_reason:issues.length?issues.join(","):null}];
+    return [{ref:String(n),valid:!issues.length,invalid_reason:issues.length?issues.join(","):null,paths:Array.isArray(a.materials)?[...new Set(a.materials.map(m=>m.path))].sort():[]}];
    }),prerequisites,baseline:{tier:i.baseline.proposed_tier,when_status},diagnostics});
  }
  return out;

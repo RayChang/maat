@@ -34,7 +34,7 @@ export interface ItemResult {
  id:string;item_version:number;layer:Layer;scope:Scope;
  applicability:{status:Decision["status"];reason:string;questions:string[]};
  result:ItemStatus;claims:Claim[];observations:Observation[];assessments:Assessment[];
- attestations:{ref:string;valid:boolean;invalid_reason:string|null}[];
+ attestations:{ref:string;valid:boolean;invalid_reason:string|null;paths?:string[]}[];
  prerequisites:{required:{capability:string;status:Truth}[];recommended:{capability:string;status:Truth}[]};
  baseline:{tier:"baseline"|"advanced";when_status:Truth};diagnostics:string[];
 }

@@ -49,6 +49,8 @@ export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}
   }
   const target_path=answer?.path??(paths.length===1?paths[0]!:null);
   const extra_paths=(answer?.extra_paths??[]).filter(p=>p!==target_path).sort();
+  const touched=[target_path,...extra_paths].filter((p):p is string=>!!p);
+  const invalidates=[...new Set(r.items.flatMap(i=>i.attestations.filter(a=>a.valid&&(a.paths??[]).some(p=>touched.includes(p))).map(a=>"attestations["+a.ref+"] "+i.id)))].sort();
   const facts=item.observations.flatMap(o=>o.facts).filter(f=>f.status==="holds");
   const inputs:Record<string,string>={};
   const invocation=facts.find(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation");
@@ -70,7 +72,7 @@ export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}
   actions.push({id:id(item.id,item.scope),check:item.id,scope:item.scope,item_version:item.item_version,
    rule_cards:contract.remediation.rule_cards,template,current:item.result,target:"verified",
    kind:questions.length?"ask":command?"command":"modify",
-   actions:[...questions,...contract.remediation.actions],target_path,extra_paths,command,depends_on,
+   actions:[...questions,...contract.remediation.actions],target_path,extra_paths,invalidates,command,depends_on,
    necessity:item.baseline.when_status==="holds"?"required":"recommended",
    risk:contract.remediation.risk,needs_approval:true,role_approval_required:contract.remediation.needs_approval,
    verification:{detectors:contract.verification.rerun,expected:contract.verification.expected,
@@ -93,6 +95,7 @@ export function renderPlan(p:Plan):string {
  "Current: "+a.current+"; target: "+a.target+"; kind: "+a.kind+"\n\n"+
  a.actions.map(x=>"- "+x).join("\n")+"\n\nTarget: "+(a.target_path??"location requires confirmation")+
  (a.extra_paths?.length?"\n\nAlso changes: "+a.extra_paths.join(", "):"")+"\n\nFix rounds: "+a.fix_conditions.max_fixes+
+ (a.invalidates?.length?"\n\nInvalidates attestations (they must be confirmed again after the change): "+a.invalidates.join(", "):"")+
  "\n\nDependencies: "+a.depends_on.join(", ")+
  "\n\nApproval required: true; command authorization is separate.\n\n"+
  "Acceptance: "+canonical(a.verification)+"\n\n"+(a.template?.body??"")).join("\n")+"\n";
