@@ -58,6 +58,7 @@ test("each non-pass evaluation is recorded but cannot be accepted",async()=>{
   expect(recorded.accepted).toBe(true);expect(recorded.flow.status).toBe("evaluated");f=recorded.flow;
   expect(reduceFlow(f,flowEvent(f,"accept",{}))).toMatchObject({reason:"target_not_verified",detail:"a: latest evaluation is not a pass with a report and no unknown effects"});
   expect(evaluationFingerprint(record)).toBe(evaluationFingerprint({...record,by:"rewritten agent"}));
+  expect(evaluationFingerprint(record)).not.toBe(evaluationFingerprint({...record,action:"b"}));
  }
 });
 test("clarification resolves through evidence; expiry is checked at acceptance",async()=>{
