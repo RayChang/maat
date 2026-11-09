@@ -6,7 +6,7 @@ import { reduceCore } from "./core";
 import { fingerprintSet } from "./model";
 import { canonical,sha256 } from "../canonical";
 export function evaluationFingerprint(r:EvaluationRecord):string {
- return sha256(canonical({candidate:r.candidate_fingerprint,method:r.method,result:r.result,
+ return sha256(canonical({action:r.action,candidate:r.candidate_fingerprint,method:r.method,result:r.result,
  evidence:r.evidence,unknown_effects:r.unknown_effects,
  report:r.report?{catalog:r.report.catalog_version,materials:reportFingerprints(r.report),
  policy:r.report.policy.valid,items:r.report.items.map(i=>({id:i.id,scope:i.scope,result:i.result,
