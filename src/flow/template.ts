@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile,lstat,stat,realpath } from "node:fs/promises";
 import { join } from "node:path";
 import type { Flow } from "./types";
 import type { Fingerprint } from "../models";
@@ -10,8 +10,14 @@ async function onDisk(f:Flow,extra:string|null):Promise<Fingerprint[]> {
  const paths=[...new Set([...f.current.map(m=>m.path),...(extra?[extra]:[])])].sort();
  const out:Fingerprint[]=[];
  for(const path of paths) {
-  try{out.push({path,sha256:path.startsWith("policy:")?sha256(await readFile(path.slice(7),"utf8")):sha256(await readFile(join(f.repository.path,path)))});}
-  catch(e){if((e as NodeJS.ErrnoException).code!=="ENOENT")throw new MaatError(3,"repository_read: "+path);}
+  const full=path.startsWith("policy:")?path.slice(7):join(f.repository.path,path);
+  if(!path.startsWith("policy:")&&(path.startsWith("/")||path.split("/").includes("..")))throw new MaatError(3,"repository_read: "+path);
+  try{await lstat(full);}catch(e){if((e as NodeJS.ErrnoException).code==="ENOENT")continue;throw new MaatError(3,"repository_read: "+path);}
+  try{
+   const st=await stat(full);
+   if(!path.startsWith("policy:")&&(await realpath(full)!==full||!st.isFile()||st.size>1048576))throw Error();
+   out.push({path,sha256:path.startsWith("policy:")?sha256(await readFile(full,"utf8")):sha256(await readFile(full))});
+  }catch{throw new MaatError(3,"repository_read: "+path);}
  }
  return out;
 }

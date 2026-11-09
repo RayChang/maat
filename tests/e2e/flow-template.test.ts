@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { mkdtemp,mkdir,writeFile,readFile,rm } from "node:fs/promises";
+import { mkdtemp,mkdir,writeFile,readFile,rm,symlink } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { main } from "../../src/cli/main";
@@ -36,5 +36,7 @@ test("flow template prints each event with the computed values filled",async()=>
   expect([evaluation.payload.method,evaluation.payload.result]).toEqual([{kind:"manual",id:null,version:null},null]);
   expect((await main(["flow","template","--step","before","--flow",id,"--ledger",ledger],time)).stderr).toContain("--step before requires --action");
   expect(JSON.parse(await readFile(join(dir,"e1.json"),"utf8")).payload.base_fingerprint).toMatch(/^[a-f0-9]{64}$/);
+  await rm(join(repo,"docs/task.md"));await symlink(join(repo,"README.md"),join(repo,"docs/task.md"));
+  expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("repository_read: docs/task.md");
  } finally {await rm(dir,{recursive:true,force:true});}
 });
