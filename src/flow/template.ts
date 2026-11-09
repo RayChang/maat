@@ -25,6 +25,13 @@ export async function flowTemplate(f:Flow,step:string,actionId:string|undefined,
  const action=actionId===undefined?undefined:f.plan.actions.find(a=>a.id===actionId);
  if(actionId!==undefined&&!action)throw new MaatError(3,"unknown_action: "+actionId);
  if(["authorize","before","after","evaluation"].includes(step)&&!action)throw new MaatError(2,"usage_error: --step "+step+" requires --action");
+ const open=f.pending?"; action "+f.pending.action+" is still open: record its after checkpoint and change first":"";
+ if(step==="before"&&(!["approved","evaluated"].includes(f.status)||f.pending))
+  throw new MaatError(4,"flow_rejected: illegal_before (status "+f.status+(open||"; record the evaluation of the changed action first")+")");
+ if(step==="after"&&(f.status!=="executing"||f.pending?.action!==action!.id||f.pending.after))
+  throw new MaatError(4,"flow_rejected: illegal_after (status "+f.status+"; record the before checkpoint of "+action!.id+" first)");
+ if(step==="evaluation"&&(!["changed","evaluated","approved"].includes(f.status)||f.pending))
+  throw new MaatError(4,"flow_rejected: evaluation_state (status "+f.status+open+")");
  let payload:Record<string,unknown>;
  if(step==="approve") {
   const actions=f.plan.actions.filter(a=>a.kind!=="ask");
