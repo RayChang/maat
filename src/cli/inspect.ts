@@ -39,8 +39,8 @@ export async function runInspectCommand(a:Args,now:string,cwd=process.cwd()):Pro
   let text="";if(file)try{text=await readFile(file,"utf8");}catch{throw new MaatError(3,"input_read: "+file);}
   const s=file?parseSnapshot(text):undefined;
   const materials=s?s.materials:(await discover(cwd,p.scope)).materials;
-  const issues=p.attestations.flatMap(x=>attestationIssues(x,materials,s?s.versions:versions,x.scope,now));
-  for(const e of p.exemptions)if(!decisionValid(e,now)||!e.fingerprints.length||!e.fingerprints.every(f=>materials.some(m=>m.path===f.path&&m.sha256===f.sha256)))issues.push("invalid_exemption");
+  const issues=p.attestations.flatMap((x,i)=>attestationIssues(x,materials,s?s.versions:versions,x.scope,now).map(r=>"attestations["+i+"] "+x.check+" "+r));
+  p.exemptions.forEach((e,i)=>{if(!decisionValid(e,now)||!e.fingerprints.length||!e.fingerprints.every(f=>materials.some(m=>m.path===f.path&&m.sha256===f.sha256)))issues.push("exemptions["+i+"] invalid_exemption");});
   if(issues.length)throw new MaatError(3,"policy_invalid: "+[...new Set(issues)].join(","));
   value={valid:true,policy_schema:p.policy_schema};
  } else if(a.command==="attest template") {

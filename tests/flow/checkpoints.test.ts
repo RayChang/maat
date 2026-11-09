@@ -56,7 +56,7 @@ test("each non-pass evaluation is recorded but cannot be accepted",async()=>{
   let f=approve(flowFixture());const record={...await passRecord(f),result,report:null};
   const recorded=reduceFlow(f,flowEvent(f,"evaluation",record));
   expect(recorded.accepted).toBe(true);expect(recorded.flow.status).toBe("evaluated");f=recorded.flow;
-  expect(reduceFlow(f,flowEvent(f,"accept",{})).reason).toBe("target_not_verified");
+  expect(reduceFlow(f,flowEvent(f,"accept",{}))).toMatchObject({reason:"target_not_verified",detail:"a: latest evaluation is not a pass with a report and no unknown effects"});
   expect(evaluationFingerprint(record)).toBe(evaluationFingerprint({...record,by:"rewritten agent"}));
  }
 });
@@ -102,4 +102,10 @@ test("authorized command changes are limited to the exact approved file set",()=
  const after=[...f.current,{path:installed,sha256:sha256("skill body")}];
  expect(reduceFlow(f,flowEvent(f,"after",{action:"a",fingerprints:after})).accepted).toBe(true);
  expect(reduceFlow(f,flowEvent(f,"after",{action:"a",fingerprints:[...after,{path:"unapproved",sha256:sha256("extra")}]})).reason).toBe("checkpoint_scope_violation");
+});
+test("a rejected accept names the action and the invalid policy of its latest report",async()=>{
+ let f=approve(flowFixture());const record=await passRecord(f);
+ const report={...record.report!,policy:{...record.report!.policy,valid:false,diagnostics:["fingerprint_mismatch"]}};
+ f=reduceFlow(f,flowEvent(f,"evaluation",{...record,report})).flow;
+ expect(reduceFlow(f,flowEvent(f,"accept",{}))).toMatchObject({reason:"non_authoritative_report",detail:"a: latest evaluation report has an invalid policy: fingerprint_mismatch"});
 });
