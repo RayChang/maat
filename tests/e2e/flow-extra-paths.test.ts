@@ -16,6 +16,8 @@ test("an action may change its answered extra paths and use answered fix rounds"
   const ask=(await json(["plan","--report",report,"--target","prompt.task-spec"])).actions[0];
   const bad=await main(["plan","--report",report,"--target","prompt.task-spec","--answers",await file("bad.json",{[ask.id]:{path:"docs/task.md",extra_paths:["../x"]}})],time);
   expect([bad.code,bad.stderr]).toEqual([3,expect.stringContaining("answer_extra_paths")]);
+  const outside=await main(["plan","--report",report,"--target","prompt.task-spec","--answers",await file("outside.json",{[ask.id]:{path:"policy:/etc/hosts"}})],time);
+  expect([outside.code,outside.stderr]).toEqual([3,expect.stringContaining("answer_path")]);
   const answers=await file("answers.json",{[ask.id]:{path:"docs/task.md",extra_paths:["scripts/check.sh"],max_fixes:1,values:{goal:"G",scope:"S",constraints:"C",acceptance:"A"}}});
   const plan=await json(["plan","--report",report,"--target","prompt.task-spec","--answers",answers]),action=plan.actions[0];
   expect([action.extra_paths,action.fix_conditions.max_fixes]).toEqual([["scripts/check.sh"],1]);
