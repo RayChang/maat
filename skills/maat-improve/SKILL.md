@@ -10,7 +10,7 @@ Show the concrete plan, rendered text, modified paths, dependencies, risks, veri
 Reject an empty render or unresolved placeholder. Changes to the plan, rule, template, or evidence require a new review.
 Every modification requires explicit plan/action approval even when the catalog's needs_approval is false.
 A true needs_approval also requires the relevant role approval. Preserve its stated source; do not claim authenticated identity.
-Use maat flow open and maat flow approve to record the approved plan, base, boundaries, validity, and finite correction conditions.
+Use maat flow open and maat flow approve to record the approved plan, base, boundaries, validity, and finite correction conditions. Get every approve, authorize, checkpoint, and record file from maat flow template --flow <id> --step <step> [--action <id>] right before submitting it; maat fills the sequence, ids, fingerprints, and bindings. Replace each null with the user's or host's own answer, delete any action the user did not approve together with its path and max_fixes entry, and do not edit the computed values.
 Use maat flow authorize separately for each concrete command/script version, inputs, cwd, permissions, and external effects.
 Modification approval does not authorize tests, installation, networking, or external actions.
 Before each action, collect actual relevant fingerprints and record maat flow checkpoint with --phase before.
