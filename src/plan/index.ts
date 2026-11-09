@@ -11,7 +11,7 @@ import { capabilityRules } from "../evaluate/capabilities";
 import { templateDefinitions,renderTemplate } from "./templates";
 import { policySkeleton } from "../policy/load";
 export type PlanAnswers=Record<string,{path?:string;values?:Record<string,string>;extra_paths?:string[];max_fixes?:number}>;
-const normal=(p:unknown):p is string=>typeof p==="string"&&!!p.trim()&&p.trim()===p&&!p.startsWith("/")&&!p.split("/").includes("..")&&p!=="."&&!p.endsWith("/")&&posix.normalize(p)===p;
+const normal=(p:unknown):p is string=>typeof p==="string"&&!!p.trim()&&p.trim()===p&&!p.startsWith("/")&&!p.startsWith("policy:")&&!p.split("/").includes("..")&&p!=="."&&!p.endsWith("/")&&posix.normalize(p)===p;
 export function buildPlan(r:Report,targets:string[],c:Catalog,answers:unknown={}):Plan {
  if(!answers||typeof answers!=="object"||Array.isArray(answers))throw new MaatError(3,"answers_shape");
  const given=answers as PlanAnswers,used=new Set<string>();
