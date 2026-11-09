@@ -22,9 +22,13 @@ test("flow template prints each event with the computed values filled",async()=>
   expect([approve.expected_seq,approve.by,approve.payload.by,approve.payload.paths,approve.payload.actions]).toEqual([0,null,null,["docs/task.md"],[action.id]]);
   Object.assign(approve.payload,{expires_at:"2026-12-01T00:00:00Z",by:"ray",source:"user statement"});
   expect((await flow(["approve","--scope",await file("e1.json",approve),"--by","ray"])).status).toBe("approved");
+  expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("flow_rejected: illegal_after (status approved; record the before checkpoint of "+action.id+" first)");
   const before={...await flow(["template","--step","before","--action",action.id]),by:"host"};
   expect((await flow(["checkpoint","--action",action.id,"--phase","before","--fingerprints",await file("e2.json",before)])).status).toBe("executing");
-  await mkdir(join(repo,"docs"));await writeFile(join(repo,"docs/task.md"),action.template.body);
+  expect((await main(["flow","template","--step","evaluation","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("flow_rejected: evaluation_state (status executing; action "+action.id+" is still open: record its after checkpoint and change first)");
+  await mkdir(join(repo,"docs"));await symlink(join(repo,"README.md"),join(repo,"docs/task.md"));
+  expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("repository_read: docs/task.md");
+  await rm(join(repo,"docs/task.md"));await writeFile(join(repo,"docs/task.md"),action.template.body);
   const after={...await flow(["template","--step","after","--action",action.id]),by:"host"};
   expect(after.payload.fingerprints.map((f:{path:string})=>f.path)).toContain("docs/task.md");
   expect((await flow(["checkpoint","--action",action.id,"--phase","after","--fingerprints",await file("e3.json",after)])).status).toBe("executing");
@@ -36,7 +40,7 @@ test("flow template prints each event with the computed values filled",async()=>
   expect([evaluation.payload.method,evaluation.payload.result]).toEqual([{kind:"manual",id:null,version:null},null]);
   expect((await main(["flow","template","--step","before","--flow",id,"--ledger",ledger],time)).stderr).toContain("--step before requires --action");
   expect(JSON.parse(await readFile(join(dir,"e1.json"),"utf8")).payload.base_fingerprint).toMatch(/^[a-f0-9]{64}$/);
-  await rm(join(repo,"docs/task.md"));await symlink(join(repo,"README.md"),join(repo,"docs/task.md"));
-  expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("repository_read: docs/task.md");
+  const early=await main(["flow","template","--step","before","--action",action.id,"--flow",id,"--ledger",ledger],time);
+  expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: illegal_before (status changed; record the evaluation of the changed action first)")]);
  } finally {await rm(dir,{recursive:true,force:true});}
 });
