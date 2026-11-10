@@ -19,7 +19,7 @@ async function repositoryRoot(cwd:string):Promise<string> {
    try{await lstat(join(path,name));return path;}
    catch(e){if((e as NodeJS.ErrnoException).code!=="ENOENT")throw new MaatError(3,"repository_read");}
   }
-  const parent=dirname(path);if(parent===path)return realpath(resolve(cwd));path=parent;
+  const parent=dirname(path);if(parent===path)throw new MaatError(3,"repository_not_found: run maat flow list inside the project (no .git or .maat/policy.yaml above the current directory)");path=parent;
  }
 }
 async function input(path:string):Promise<string>{try{return await readFile(path,"utf8");}catch{throw new MaatError(3,"input_read");}}
@@ -71,7 +71,7 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
       expires_at:envelope.expires_at,type,by,payload};
     }
     const t=await appendEvent(dir,id,event);
-    if(!t.accepted)throw new MaatError(4,"flow_rejected: "+t.reason);
+    if(!t.accepted)throw new MaatError(4,"flow_rejected: "+t.reason+(t.detail?" ("+t.detail+")":""));
     value=status(t.flow);
    }
   }

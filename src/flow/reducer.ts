@@ -6,7 +6,7 @@ import { reduceCore } from "./core";
 import { fingerprintSet } from "./model";
 import { canonical,sha256 } from "../canonical";
 export function evaluationFingerprint(r:EvaluationRecord):string {
- return sha256(canonical({candidate:r.candidate_fingerprint,method:r.method,result:r.result,
+ return sha256(canonical({action:r.action,candidate:r.candidate_fingerprint,method:r.method,result:r.result,
  evidence:r.evidence,unknown_effects:r.unknown_effects,
  report:r.report?{catalog:r.report.catalog_version,materials:reportFingerprints(r.report),
  policy:r.report.policy.valid,items:r.report.items.map(i=>({id:i.id,scope:i.scope,result:i.result,
@@ -62,16 +62,20 @@ function decide(f:Flow,e:FlowEvent):Flow|string {
   if(!f.plan.authoritative)return "policy_unapproved";
   if(f.pending||f.unknown_effects.length)return "incomplete_effects";
   for(const action of f.plan.actions) {
-   const guard=actionGuard(f,action,e.at);if(guard)return guard;
+   const at=(reason:string,why:string)=>reason+"\n"+action.id+": "+why;
+   const guard=actionGuard(f,action,e.at);if(guard)return at(guard,"approval check");
    const r=[...f.evaluations].reverse().find(r=>r.action===action.id&&r.candidate_fingerprint===fingerprintSet(f.current));
-   if(!r || r.result!=="pass" || !r.report || r.unknown_effects.length)return "target_not_verified";
-   if(r.method.kind==="command"&&(!r.execution||executionGuard(f,r.execution,e.at)))return "execution_not_authorized";
-   if(r.report.valid_until&&Date.parse(r.report.valid_until)<=Date.parse(e.at))return "evidence_expired";
-   if(canonical(reportVersionBinding(r.report))!==canonical(f.plan.versions))return "version_changed";
-   if(!r.report.policy.valid||r.report.layers.some(l=>!l.authoritative))return "non_authoritative_report";
+   if(!r)return at("target_not_verified","no evaluation for the current candidate");
+   if(r.result!=="pass" || !r.report || r.unknown_effects.length)return at("target_not_verified","latest evaluation is not a pass with a report and no unknown effects");
+   if(r.method.kind==="command"&&(!r.execution||executionGuard(f,r.execution,e.at)))return at("execution_not_authorized","evaluation command");
+   if(r.report.valid_until&&Date.parse(r.report.valid_until)<=Date.parse(e.at))return at("evidence_expired","report valid_until "+r.report.valid_until);
+   if(canonical(reportVersionBinding(r.report))!==canonical(f.plan.versions))return at("version_changed","report versions differ from the plan");
+   if(!r.report.policy.valid)return at("non_authoritative_report","latest evaluation report has an invalid policy: "+r.report.policy.diagnostics.join(","));
+   if(r.report.layers.some(l=>!l.authoritative))return at("non_authoritative_report","latest evaluation report layers not authoritative: "+r.report.layers.filter(l=>!l.authoritative).map(l=>l.layer).join(","));
    const item=r.report.items.find(i=>i.id===action.check&&canonical(i.scope)===canonical(action.scope));
    if(!item||item.result!=="verified"||item.item_version!==action.item_version||
-    item.prerequisites.required.some(x=>x.status!=="holds")||item.attestations.some(a=>!a.valid))return "target_not_verified";
+    item.prerequisites.required.some(x=>x.status!=="holds")||item.attestations.some(a=>!a.valid))
+    return at("target_not_verified","report item is "+(item?item.result+(item.attestations.some(a=>!a.valid)?" with invalid attestations":""):"missing"));
   }
   f.status="accepted";return f;
  }
@@ -85,8 +89,9 @@ export function reduceFlow(original:Flow,e:FlowEvent):Transition {
   next=reduceCore(original,e)??decide(structuredClone(original),e);
   if(typeof next==="string")reason=next;
  }
+ const [code,detail]=(reason??"").split("\n");reason=code||null;
  const f=reason?structuredClone(original):next as Flow;
  if(reason==="checkpoint_drift"||reason==="checkpoint_scope_violation")f.status="drifted";
  f.seq=original.seq+1;f.seen=[...new Set([...original.seen,e.id])];f.last_rejection=reason;
- return {flow:f,accepted:!reason,reason};
+ return {flow:f,accepted:!reason,reason,detail:detail??null};
 }

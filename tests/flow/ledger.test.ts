@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { mkdtemp,writeFile,readFile,readdir,realpath,rm,unlink } from "node:fs/promises";
+import { mkdtemp,mkdir,writeFile,readFile,readdir,realpath,rm,unlink } from "node:fs/promises";
 import { tmpdir,hostname } from "node:os";
 import { join } from "node:path";
 import { fingerprintSet } from "../../src/flow/model";
@@ -57,6 +57,9 @@ test("flow list skips a corrupt ledger, keeps the healthy flows, and reports the
  expect(listed.diagnostics).toEqual(["ledger_skipped: "+broken+": ledger_truncated"]);
  // The cwd must not contain the ledger directory, or it would count as inside the repository.
  const cwd=await mkdtemp(join(tmpdir(),"maat-cwd-"));
+ const outside=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04",cwd);
+ expect([outside.code,outside.stderr]).toEqual([3,expect.stringContaining("repository_not_found: run maat flow list inside the project")]);
+ await mkdir(join(cwd,".git"));
  const cli=await main(["flow","list","--ledger",dir,"--json"],"2026-11-04",cwd).finally(()=>rm(cwd,{recursive:true,force:true}));
  expect(cli.code).toBe(0);expect(JSON.parse(cli.stdout)).toEqual([]);
  expect(cli.stderr).toBe("ledger_skipped: "+await realpath(broken)+": ledger_truncated\n");
