@@ -22,6 +22,8 @@ test("flow template prints each event with the computed values filled",async()=>
   expect([approve.expected_seq,approve.by,approve.payload.by,approve.payload.paths,approve.payload.actions]).toEqual([0,null,null,["docs/task.md"],[action.id]]);
   Object.assign(approve.payload,{expires_at:"2026-12-01T00:00:00Z",by:"ray",source:"user statement"});
   expect((await flow(["approve","--scope",await file("e1.json",approve),"--by","ray"])).status).toBe("approved");
+  const state=await flow(["status"]);
+  expect([state.status,state.materials>0,"current" in state,"plan" in state,"evaluations" in state]).toEqual(["approved",true,false,false,true]);
   expect((await main(["flow","template","--step","after","--action",action.id,"--flow",id,"--ledger",ledger],time)).stderr).toContain("flow_rejected: illegal_after (status approved; record the before checkpoint of "+action.id+" first)");
   const before={...await flow(["template","--step","before","--action",action.id]),by:"host"};
   expect((await flow(["checkpoint","--action",action.id,"--phase","before","--fingerprints",await file("e2.json",before)])).status).toBe("executing");
