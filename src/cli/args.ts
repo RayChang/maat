@@ -33,7 +33,9 @@ export function usage(): string {
   const arg = (s: { min?: number; max?: number }) => (s.max ?? 0) === 0 ? "" : (s.min ?? 0) > 0 ? " <arg>" : " [<arg>]";
   const flag = (k: string, required: boolean) => { const f = "--" + k + (boolean.has(k) ? "" : " <" + (enums[k]?.join("|") ?? "value") + ">") + (repeat.has(k) ? " ..." : ""); return required ? " " + f : " [" + f + "]"; };
   return Object.entries(grammar).map(([c, s]) => "maat " + c + arg(s) + s.flags.map(k => flag(k, !!s.required?.includes(k))).join("")).join("\n")
-    + "\nGlobal flags:" + global.map(k => flag(k, false)).join("") + "\n";
+    + "\nGlobal flags:" + global.map(k => flag(k, false)).join("") + "\n"
+    + "--out <dir> writes <kind>.json and <kind>.md outside the repository; --quiet prints nothing to stdout, so use it only with --out.\n"
+    + "maat flow list lists the flows of the repository that contains the current directory.\n";
 }
 export function parseArgs(argv: string[]): Args {
   const words = [...argv]; let command = words.shift() ?? "";

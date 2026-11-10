@@ -55,5 +55,6 @@ test("help lists every command and usage errors point to it",async()=>{
  expect(r.stdout).toContain("maat evaluate --snapshot <value>");
  expect(r.stdout).toContain("maat attest template --check <value>");
  expect(r.stdout).toContain("Global flags: [--json]");
+ expect(r.stdout).toContain("--quiet prints nothing to stdout, so use it only with --out.");
  expect((await main(["nope"])).stderr).toBe("usage_error: unknown command (run maat help)\n");
 });
