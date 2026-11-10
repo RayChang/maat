@@ -38,7 +38,7 @@ maat update                       從 GitHub 重新安裝最新版（唯一會�
 maat help                         列出每個命令、位置參數與旗標；用法錯誤的訊息也會提示執行它（2026-11-06 補充）
 ```
 
-通用旗標：`--json`（stdout 改輸出 JSON）、`--out <dir>`（同時寫 JSON 與 Markdown 檔，stdout 只印寫出的兩個路徑，2026-11-10 補充）、`--quiet`（stdout 什麼都不印）、`--catalog <dir>`（覆寫 catalog 來源，報告記錄為非預設）、`--ledger <dir>`（流程紀錄位置）。
+通用旗標：`--json`（stdout 改輸出 JSON）、`--out <dir>`（同時寫 JSON 與 Markdown 檔，stdout 只印寫出的兩個路徑，2026-11-10 補充）、`--quiet`（stdout 什麼都不印；stderr 的診斷照印，scan／evaluate／plan 同一類診斷超過 5 筆時只印筆數，完整清單在輸出的 `diagnostics`，2026-11-10 補充）、`--catalog <dir>`（覆寫 catalog 來源，報告記錄為非預設）、`--ledger <dir>`（流程紀錄位置）。
 
 所有命令預設輸出到 stdout；診斷訊息到 stderr。沒有任何命令會寫入目標 repository，包含 `.maat/` 下的政策檔。
 
