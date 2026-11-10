@@ -87,7 +87,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 | `open --plan <file> --snapshot <file>` | 建立 flow，記錄計畫與材料指紋；回傳 `flow_id` |
 | `approve --flow <id> --scope <file> --by <who>` | 記錄修改核准：綁定計畫指紋、允許動作、修改邊界、修正條件、有效條件 |
 | `authorize --flow <id> --command <file> --by <who>` | 記錄執行授權：具體命令／script 版本、輸入、工作目錄、權限與外部效果。與 `approve` 分開，互不替代 |
-| `checkpoint --flow <id> --action <aid> --phase before\|after --fingerprints <file>` | 記錄動作前後材料指紋；`before` 與上一個 `after` 或 base 不符 → 拒絕並標示漂移 |
+| `checkpoint --flow <id> --action <aid> --phase before\|after [--fingerprints <file>] [--by <who>]` | 記錄動作前後材料指紋；`before` 與上一個 `after` 或 base 不符 → 拒絕並標示漂移。`--fingerprints` 可省略，省略時 maat 依 `template` 同樣的規則自己讀檔算指紋，執行者由 `--by` 提供（2026-11-10 補充） |
 | `record --flow <id> --kind change\|evaluation --file <json>` | 保存候選成果、修改範圍、執行來源、方法與結果／錯誤；error／timeout／cancel 不是 pass |
 | `decide --flow <id> --event <name> [--by <who>]` | 觸發狀態轉移：`accept`、`continue-fix`、`stop`、`handoff`、`resume`。guard 不滿足時拒絕，結束代碼 4。`accept` 只檢查核准範圍裡的動作，計畫裡沒核准的動作（包括「先詢問」）不擋結案；沒有任何核准就拒絕（2026-11-10 補充） |
 | `status --flow <id>` | 目前狀態、剩餘修正條件、未完成 checkpoint、未知效果。各流程指令都只印摘要：材料數與整體指紋、各動作的路徑、核准範圍、每筆修改與評估的結果，不印逐檔指紋與內嵌報告；完整內容留在 ledger（2026-11-10 補充） |
