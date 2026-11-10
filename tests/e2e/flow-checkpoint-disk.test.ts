@@ -26,6 +26,10 @@ test("a checkpoint without --fingerprints reads the files itself and needs --by"
   expect((await flow(["checkpoint","--action",action.id,"--phase","before","--by","host"])).status).toBe("executing");
   await mkdir(join(repo,"docs"));await writeFile(join(repo,"docs/task.md"),action.template.body);
   expect((await flow(["checkpoint","--action",action.id,"--phase","after","--by","host"])).status).toBe("executing");
+  const early=await main(["flow","checkpoint","--action",action.id,"--phase","before","--by","host","--flow",id,"--ledger",ledger],time);
+  expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: illegal_before")]);
+  const state=await flow(["status"]);
+  expect([state.seq,state.last_rejection]).toEqual([4,"illegal_before"]);
   expect((await flow(["template","--step","change"])).payload.paths).toEqual(["docs/task.md"]);
  } finally {await rm(dir,{recursive:true,force:true});}
 });

@@ -1,6 +1,6 @@
 # J01 — Let a checkpoint read the files itself
 
-Lottery run 2 (2026-11-10): every before/after checkpoint file the host submitted was about 170 KB, because a checkpoint must list the fingerprint of every material in the flow (1,032 files on lottery) so maat can detect drift. The host got that list from `maat flow template --step before|after`, which already reads the files from disk with the repository read boundary (B02), and then passed the same file back with `--fingerprints`. Owner decision (2026-11-10): let maat do it. The fix makes `--fingerprints` optional on `maat flow checkpoint`: without it, maat builds the event from the same template (same fingerprints, same id and sequence, same refusal when the step is not legal yet), and the actor comes from the new `--by` flag; without `--by` the event is refused with `event_actor`. Drift and scope checks do not change, because the reducer receives the same event either way.
+Lottery run 2 (2026-11-10): every before/after checkpoint file the host submitted was about 170 KB, because a checkpoint must list the fingerprint of every material in the flow (1,032 files on lottery) so maat can detect drift. The host got that list from `maat flow template --step before|after`, which already reads the files from disk with the repository read boundary (B02), and then passed the same file back with `--fingerprints`. Owner decision (2026-11-10): let maat do it. The fix makes `--fingerprints` optional on `maat flow checkpoint`: without it, maat builds the event from the same template (same fingerprints, same id and sequence, same refusal when the step is not legal yet), and the actor comes from the new `--by` flag; without `--by` the event is refused with `event_actor` before any file is read. When the step is not legal yet, maat still submits the event (with no fingerprints) so the reducer refuses it and the ledger records the refusal, the same as with `--fingerprints`. Drift and scope checks do not change, because the reducer receives the same event either way.
 
 Owner rule: over-design is forbidden. Change only the lines below.
 
@@ -54,6 +54,10 @@ test("a checkpoint without --fingerprints reads the files itself and needs --by"
   expect((await flow(["checkpoint","--action",action.id,"--phase","before","--by","host"])).status).toBe("executing");
   await mkdir(join(repo,"docs"));await writeFile(join(repo,"docs/task.md"),action.template.body);
   expect((await flow(["checkpoint","--action",action.id,"--phase","after","--by","host"])).status).toBe("executing");
+  const early=await main(["flow","checkpoint","--action",action.id,"--phase","before","--by","host","--flow",id,"--ledger",ledger],time);
+  expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: illegal_before")]);
+  const state=await flow(["status"]);
+  expect([state.seq,state.last_rejection]).toEqual([4,"illegal_before"]);
   expect((await flow(["template","--step","change"])).payload.paths).toEqual(["docs/task.md"]);
  } finally {await rm(dir,{recursive:true,force:true});}
 });
@@ -89,7 +93,13 @@ bun test tests/e2e/flow-checkpoint-disk.test.ts
 
 ```ts
      let envelope:Record<string,unknown>;
-     if(a.command==="flow checkpoint"&&!file)envelope=await flowTemplate(flow,one(a,"phase")!,one(a,"action"),now) as Record<string,unknown>;
+     if(a.command==="flow checkpoint"&&!file) {
+      if(!one(a,"by")?.trim())throw new MaatError(3,"event_actor");
+      try{envelope=await flowTemplate(flow,one(a,"phase")!,one(a,"action"),now) as Record<string,unknown>;}
+      catch(e){if(!(e instanceof MaatError)||e.code!==4)throw e;
+       envelope={id:sha256(canonical({flow:id,seq:flow.seq,step:one(a,"phase"),action:one(a,"action")})),expected_seq:flow.seq,
+        expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,payload:{fingerprints:[]}};}
+     }
      else try{envelope=JSON.parse(await input(file!));}catch{throw new MaatError(3,"event_parse");}
 ```
 
@@ -144,3 +154,5 @@ bun test
 git add -- tests/e2e/flow-checkpoint-disk.test.ts src/cli/args.ts src/cli/flow.ts skills/maat-improve/SKILL.md docs/specs/2026-11-04-maat-cli-interface.md docs/plans/maat-output-size/03-checkpoint-reads-disk.md
 git commit -m '⚡️ perf(flow): let a checkpoint read the files itself'
 ```
+
+Cloud review of PR #92 (2026-11-10), must-fix applied: a refused step without `--fingerprints` was rejected by the template before reaching the ledger, so it left no ledger row, `seq` and `last_rejection` unchanged, unlike the same command with `--fingerprints`. Now a template refusal (exit 4) still submits the event so the refusal is recorded, and `--by` is checked first. The test pins `seq` and `last_rejection` after such a refusal.
