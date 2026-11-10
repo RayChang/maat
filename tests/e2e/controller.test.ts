@@ -1,8 +1,9 @@
 import { test, expect } from "bun:test";
-import { mkdtemp,readFile,rm } from "node:fs/promises";
+import { mkdtemp,readFile,writeFile,rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { main } from "../../src/cli/main";
+import { canonical,sha256 } from "../../src/canonical";
 const time="2026-11-04T12:00:00Z",fixture="tests/fixtures/flow/";
 test("approved edits accept only their matching evidence and survive restart",async()=>{
  const ledger=await mkdtemp(join(tmpdir(),"maat-flow-e2e-"));
@@ -72,4 +73,25 @@ test("drift, out-of-scope edits, and expired events cannot enter a legal flow",a
    expect(JSON.parse((await call(["status","--flow",id])).stdout).status).toBe("drifted");
   }finally{await rm(ledger,{recursive:true,force:true});}
  }
+});
+test("accept checks only the approved actions, not an unapproved ask action",async()=>{
+ const dir=await mkdtemp(join(tmpdir(),"maat-flow-ask-")),ledger=join(dir,"ledger");
+ const call=(args:string[])=>main(["flow",...args,"--ledger",ledger,"--json"],time);
+ try {
+  const {plan_fingerprint:_,...plan}=JSON.parse(await readFile(fixture+"base.plan.json","utf8"));
+  plan.actions.push({...plan.actions[0],id:"b",kind:"ask",target_path:null,depends_on:[]});
+  const signed={...plan,plan_fingerprint:sha256(canonical(plan))};
+  const approval=JSON.parse(await readFile(fixture+"approval.json","utf8"));approval.payload.plan_fingerprint=signed.plan_fingerprint;
+  await writeFile(join(dir,"plan.json"),JSON.stringify(signed));await writeFile(join(dir,"approval.json"),JSON.stringify(approval));
+  const id=JSON.parse((await call(["open","--plan",join(dir,"plan.json"),"--snapshot",fixture+"base.snapshot.json"])).stdout).flow_id as string;
+  for(const args of [
+   ["approve","--scope",join(dir,"approval.json"),"--by","ray"],
+   ["checkpoint","--action","a","--phase","before","--fingerprints",fixture+"before.json"],
+   ["checkpoint","--action","a","--phase","after","--fingerprints",fixture+"after.json"],
+   ["record","--kind","change","--file",fixture+"change.json"],
+   ["record","--kind","evaluation","--file",fixture+"evaluation.json"]
+  ]) expect((await call([...args,"--flow",id])).code).toBe(0);
+  const accepted=await call(["decide","--event","accept","--by","ray","--flow",id]);
+  expect([accepted.code,accepted.stderr]).toEqual([0,""]);expect(JSON.parse(accepted.stdout).status).toBe("accepted");
+ }finally{await rm(dir,{recursive:true,force:true});}
 });

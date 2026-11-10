@@ -61,7 +61,8 @@ function decide(f:Flow,e:FlowEvent):Flow|string {
   if(f.status!=="evaluated")return "not_evaluated";
   if(!f.plan.authoritative)return "policy_unapproved";
   if(f.pending||f.unknown_effects.length)return "incomplete_effects";
-  for(const action of f.plan.actions) {
+  if(!f.approval?.actions.length)return "approval_expired_or_missing";
+  for(const action of f.plan.actions.filter(a=>f.approval!.actions.includes(a.id))) {
    const at=(reason:string,why:string)=>reason+"\n"+action.id+": "+why;
    const guard=actionGuard(f,action,e.at);if(guard)return at(guard,"approval check");
    const r=[...f.evaluations].reverse().find(r=>r.action===action.id&&r.candidate_fingerprint===fingerprintSet(f.current));
