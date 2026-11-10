@@ -13,7 +13,7 @@ A true needs_approval also requires the relevant role approval. Preserve its sta
 Use maat flow open and maat flow approve to record the approved plan, base, boundaries, validity, and finite correction conditions. Get every approve, authorize, checkpoint, and record file from maat flow template --flow <id> --step <step> [--action <id>] right before submitting it; maat fills the sequence, ids, fingerprints, and bindings. Replace each null with the user's or host's own answer, delete any action the user did not approve together with its path and max_fixes entry, and do not edit the computed values.
 Use maat flow authorize separately for each concrete command/script version, inputs, cwd, permissions, and external effects.
 Modification approval does not authorize tests, installation, networking, or external actions.
-Before each action, collect actual relevant fingerprints and record maat flow checkpoint with --phase before.
+Before each action, record maat flow checkpoint --flow <id> --action <id> --phase before --by <host>; without --fingerprints maat reads the current files itself, the same way its template does.
 The existing host performs only the approved action. maat does not execute it and cannot prevent host bypass.
 Preserve unrelated dirty work. Use the project's selected recovery method; do not require a clean tree or worktree.
 Record the after checkpoint, candidate changes, executor source, and known or unknown effects.
