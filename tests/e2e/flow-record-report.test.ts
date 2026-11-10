@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { mkdtemp,mkdir,writeFile,rm } from "node:fs/promises";
+import { mkdtemp,mkdir,writeFile,readFile,rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { main } from "../../src/cli/main";
@@ -35,5 +35,7 @@ test("an evaluation can take its report from --report instead of inlining it",as
   expect([wrong.code,wrong.stderr]).toEqual([2,"usage_error: --report needs --kind evaluation\n"]);
   const recorded=await flow(["record","--kind","evaluation","--file",e5,"--report",after]);
   expect([recorded.status,recorded.evaluations.length]).toEqual(["evaluated",1]);
+  const rows=(await readFile(join(ledger,id+".jsonl"),"utf8")).trim().split("\n").map(x=>JSON.parse(x));
+  expect(rows.findLast((r:{event:{type:string}})=>r.event.type==="evaluation").event.payload.report).toEqual(JSON.parse(await readFile(after,"utf8")));
  } finally {await rm(dir,{recursive:true,force:true});}
 });
