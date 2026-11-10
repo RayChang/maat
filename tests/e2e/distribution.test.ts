@@ -47,7 +47,8 @@ test("scan/evaluate/plan never execute target content or mutate a target",async(
   await symlink("/etc/passwd",join(root,"escape.md"));
   const before=await inventory(root),snapshot=join(base,"snapshot.json"),out=join(base,"reports");
   const scan=await main(["scan",root,"--json","--snapshot",snapshot,"--out",out],"2026-11-04T12:00:00Z");
-  expect(scan.code).toBe(0);const report=JSON.parse(scan.stdout) as Report;
+  expect(scan.code).toBe(0);expect(JSON.parse(scan.stdout).written).toHaveLength(2);
+  const report=JSON.parse(await readFile(join(out,"report.json"),"utf8")) as Report;
   expect(report.scope.diagnostics).toContain("read_error: invalid.md");
   expect(report.scope.diagnostics).toContain("symlink_unread: escape.md");
   expect(report.scope.complete).toBe(false);

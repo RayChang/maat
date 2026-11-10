@@ -37,6 +37,8 @@ export async function emitOutput(value:unknown,markdown:string,o:{repository:str
   const a=await outsidePath(join(o.out,o.kind+".json"),o.repository);
   const b=await outsidePath(join(o.out,o.kind+".md"),o.repository);
   await writeOutside(a,json,o.repository);await writeOutside(b,markdown,o.repository);
+  if(o.quiet)return "";
+  return o.format==="json"?canonical({written:[a,b]})+"\n":"Wrote "+a+"\nWrote "+b+"\n";
  }
  if(o.quiet)return "";
  return o.format==="json"?json:o.format==="both"?markdown+"\n\u0060\u0060\u0060json\n"+json+"\u0060\u0060\u0060\n":markdown;
