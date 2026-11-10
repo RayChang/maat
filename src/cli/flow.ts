@@ -7,6 +7,7 @@ import type { CommandResult } from "./audit";
 import type { FlowEvent,Flow } from "../flow/types";
 import { MaatError } from "../errors";
 import { parsePlan } from "../plan";
+import { parseReport } from "../report";
 import { parseSnapshot } from "../snapshot";
 import { openFlow,fingerprintSet } from "../flow/model";
 import { ledgerDirectory,createLedger,readFlow,appendEvent,listFlows,flowDirectory } from "../flow/ledger";
@@ -63,7 +64,15 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
       expires_at:new Date(Date.parse(now)+60000).toISOString(),type,by,payload:{}};
     } else {
      const file=one(a,"scope")??one(a,"command")??one(a,"fingerprints")??one(a,"file");
-     let envelope:Record<string,unknown>;try{envelope=JSON.parse(await input(file!));}catch{throw new MaatError(3,"event_parse");}
+     let envelope:Record<string,unknown>;
+     if(a.command==="flow checkpoint"&&!file) {
+      if(!one(a,"by")?.trim())throw new MaatError(3,"event_actor");
+      try{envelope=await flowTemplate(flow,one(a,"phase")!,one(a,"action"),now) as Record<string,unknown>;}
+      catch(e){if(!(e instanceof MaatError)||e.code!==4)throw e;
+       envelope={id:sha256(canonical({flow:id,seq:flow.seq,step:one(a,"phase"),action:one(a,"action")})),expected_seq:flow.seq,
+        expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,payload:{fingerprints:[]}};}
+     }
+     else try{envelope=JSON.parse(await input(file!));}catch{throw new MaatError(3,"event_parse");}
      if(!envelope || typeof envelope.id!=="string" || !Number.isInteger(envelope.expected_seq) ||
        typeof envelope.expires_at!=="string" || !envelope.payload || typeof envelope.payload!=="object")throw new MaatError(3,"event_shape");
      const payload=envelope.payload as Record<string,unknown>;
@@ -71,6 +80,10 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
      if(a.command==="flow checkpoint") {
       if(payload.action!==undefined&&payload.action!==one(a,"action"))throw new MaatError(3,"action_mismatch");
       payload.action=one(a,"action");
+     }
+     if(one(a,"report")) {
+      if(type!=="evaluation")throw new MaatError(2,"usage_error: --report needs --kind evaluation");
+      payload.report=parseReport(await input(one(a,"report")!));
      }
      const by=one(a,"by")??envelope.by??payload.by??payload.executed_by;
      if(typeof by!=="string"||!by.trim())throw new MaatError(3,"event_actor");
