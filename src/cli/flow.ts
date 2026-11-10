@@ -7,6 +7,7 @@ import type { CommandResult } from "./audit";
 import type { FlowEvent,Flow } from "../flow/types";
 import { MaatError } from "../errors";
 import { parsePlan } from "../plan";
+import { parseReport } from "../report";
 import { parseSnapshot } from "../snapshot";
 import { openFlow,fingerprintSet } from "../flow/model";
 import { ledgerDirectory,createLedger,readFlow,appendEvent,listFlows,flowDirectory } from "../flow/ledger";
@@ -79,6 +80,10 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
      if(a.command==="flow checkpoint") {
       if(payload.action!==undefined&&payload.action!==one(a,"action"))throw new MaatError(3,"action_mismatch");
       payload.action=one(a,"action");
+     }
+     if(one(a,"report")) {
+      if(type!=="evaluation")throw new MaatError(2,"usage_error: --report needs --kind evaluation");
+      payload.report=parseReport(await input(one(a,"report")!));
      }
      const by=one(a,"by")??envelope.by??payload.by??payload.executed_by;
      if(typeof by!=="string"||!by.trim())throw new MaatError(3,"event_actor");
