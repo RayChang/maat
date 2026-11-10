@@ -8,7 +8,7 @@ import type { FlowEvent,Flow } from "../flow/types";
 import { MaatError } from "../errors";
 import { parsePlan } from "../plan";
 import { parseSnapshot } from "../snapshot";
-import { openFlow } from "../flow/model";
+import { openFlow,fingerprintSet } from "../flow/model";
 import { ledgerDirectory,createLedger,readFlow,appendEvent,listFlows,flowDirectory } from "../flow/ledger";
 import { canonical,sha256,repoId } from "../canonical";
 import { flowTemplate } from "../flow/template";
@@ -24,7 +24,15 @@ async function repositoryRoot(cwd:string):Promise<string> {
 }
 async function input(path:string):Promise<string>{try{return await readFile(path,"utf8");}catch{throw new MaatError(3,"input_read");}}
 function status(f:Flow):unknown {
- return {...f,remaining_fixes:Object.fromEntries(f.plan.actions.map(a=>[a.id,
+ return {flow_id:f.flow_id,status:f.status,seq:f.seq,repository:f.repository,plan_fingerprint:f.plan_fingerprint,
+ current_fingerprint:fingerprintSet(f.current),materials:f.current.length,
+ actions:f.plan.actions.map(a=>({id:a.id,check:a.check,kind:a.kind,target_path:a.target_path,extra_paths:a.extra_paths??[]})),
+ approval:f.approval&&{actions:f.approval.actions,paths:f.approval.paths,max_fixes:f.approval.max_fixes,expires_at:f.approval.expires_at,by:f.approval.by},
+ pending:f.pending&&{action:f.pending.action,after_recorded:!!f.pending.after},
+ changes:f.changes.map(c=>({action:c.action,candidate_fingerprint:c.candidate_fingerprint,paths:c.paths})),
+ evaluations:f.evaluations.map(e=>({action:e.action,candidate_fingerprint:e.candidate_fingerprint,method:e.method,result:e.result})),
+ fixes:f.fixes,attempts:f.attempts,unknown_effects:f.unknown_effects,last_rejection:f.last_rejection,
+ remaining_fixes:Object.fromEntries(f.plan.actions.map(a=>[a.id,
  Math.max(0,(f.approval?.max_fixes[a.id]??0)-(f.fixes[a.id]??0))]))};
 }
 export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promise<CommandResult&{diagnostics?:string[]}> {
