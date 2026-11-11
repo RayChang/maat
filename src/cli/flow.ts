@@ -76,6 +76,26 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
       const hint=" (--"+["scope","command","fingerprints","file"].find(k=>one(a,k))+" takes the event JSON file saved from maat flow template --json and filled in)";
       let text:string;try{text=await readFile(file!,"utf8");}catch{throw new MaatError(3,"input_read: "+file+hint);}
       try{envelope=JSON.parse(text);}catch{throw new MaatError(3,"event_parse: "+file+hint);}
+      if(envelope&&typeof envelope==="object"&&envelope.id===undefined) {
+       const p=(envelope.payload??{}) as Record<string,unknown>,execution=p.execution as {action?:unknown}|undefined;
+       const step=a.command==="flow checkpoint"?one(a,"phase")!:a.command==="flow record"?one(a,"kind")!:a.command.slice(5);
+       const action=one(a,"action")??(typeof p.action==="string"?p.action:typeof execution?.action==="string"?execution.action:undefined);
+       if(step==="evaluation"&&action===undefined)throw new MaatError(3,"event_action: a partial evaluation file needs payload.action");
+       if(step==="approve"&&!Array.isArray(p.actions))throw new MaatError(3,"event_actions: a partial approve file must list the approved action ids in payload.actions");
+       let t:Record<string,unknown>;
+       try{t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;}
+       catch(e){if(!(e instanceof MaatError)||e.code!==4)throw e;
+        t={id:sha256(canonical({flow:id,seq:flow.seq,step,action:action??null})),expected_seq:flow.seq,
+         expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,
+         payload:step==="change"||step==="evaluation"?{action:action??"unknown",candidate_fingerprint:fingerprintSet([]),
+          ...(step==="change"?{paths:[]}:{report:null,execution:null,evidence:[]})}:{fingerprints:[]}};}
+       if(step==="approve") {
+        const chosen=flow.plan.actions.filter(x=>(p.actions as unknown[]).includes(x.id));
+        t.payload={...t.payload as Record<string,unknown>,paths:[...new Set(chosen.flatMap(x=>[x.target_path,...(x.extra_paths??[])]).filter((x):x is string=>!!x))].sort(),
+         max_fixes:Object.fromEntries(chosen.map(x=>[x.id,x.fix_conditions.max_fixes])),role_approvals:chosen.filter(x=>x.role_approval_required).map(x=>({check:x.check,by:null}))};
+       }
+       envelope={...t,...envelope,payload:{...t.payload as Record<string,unknown>,...p}};
+      }
      }
      if(!envelope || typeof envelope.id!=="string" || !Number.isInteger(envelope.expected_seq) ||
        typeof envelope.expires_at!=="string" || !envelope.payload || typeof envelope.payload!=="object")throw new MaatError(3,"event_shape");

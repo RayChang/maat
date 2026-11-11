@@ -30,7 +30,7 @@ export function approvalGuard(f:Flow,a:Approval,at:string):string|null {
   if(action.kind!=="ask"&&[action.target_path,...(action.extra_paths??[])].some(p=>p&&!a.paths.includes(p)))return "approval_scope";
   const limit=a.max_fixes[id];
   if(!Number.isInteger(limit)||limit<0||limit>action.fix_conditions.max_fixes)return "fix_condition_expansion";
-  if(action.role_approval_required&&!a.role_approvals.some(r=>r.check===action.check&&r.by.trim()))return "role_approval_missing";
+  if(action.role_approval_required&&!a.role_approvals.some(r=>r.check===action.check&&typeof r.by==="string"&&r.by.trim()))return "role_approval_missing";
  }
  return null;
 }
@@ -39,7 +39,7 @@ export function actionGuard(f:Flow,action:PlanAction,at:string):string|null {
  if(!a || !live(a.expires_at,at)||a.plan_fingerprint!==f.plan_fingerprint)return "approval_expired_or_missing";
  if(!a.actions.includes(action.id))return "action_not_approved";
  if(action.kind!=="ask"&&action.target_path&&!a.paths.includes(action.target_path))return "approval_scope";
- if(action.role_approval_required&&!a.role_approvals.some(r=>r.check===action.check&&r.by.trim()))return "role_approval_missing";
+ if(action.role_approval_required&&!a.role_approvals.some(r=>r.check===action.check&&typeof r.by==="string"&&r.by.trim()))return "role_approval_missing";
  if(action.depends_on.some(id=>!f.evaluations.some(e=>e.action===id&&e.result==="pass")))return "dependency_unaccepted";
  return null;
 }
