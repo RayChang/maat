@@ -76,6 +76,13 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
       const hint=" (--"+["scope","command","fingerprints","file"].find(k=>one(a,k))+" takes the event JSON file saved from maat flow template --json and filled in)";
       let text:string;try{text=await readFile(file!,"utf8");}catch{throw new MaatError(3,"input_read: "+file+hint);}
       try{envelope=JSON.parse(text);}catch{throw new MaatError(3,"event_parse: "+file+hint);}
+      if(envelope&&typeof envelope==="object"&&envelope.id===undefined) {
+       const p=(envelope.payload??{}) as Record<string,unknown>,execution=p.execution as {action?:unknown}|undefined;
+       const step=a.command==="flow checkpoint"?one(a,"phase")!:a.command==="flow record"?one(a,"kind")!:a.command.slice(5);
+       const action=one(a,"action")??(typeof p.action==="string"?p.action:typeof execution?.action==="string"?execution.action:undefined);
+       const t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;
+       envelope={...t,...envelope,payload:{...t.payload as Record<string,unknown>,...p}};
+      }
      }
      if(!envelope || typeof envelope.id!=="string" || !Number.isInteger(envelope.expected_seq) ||
        typeof envelope.expires_at!=="string" || !envelope.payload || typeof envelope.payload!=="object")throw new MaatError(3,"event_shape");
