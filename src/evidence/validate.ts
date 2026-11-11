@@ -25,7 +25,7 @@ export function attestationIssues(a:Attestation,m:Fingerprint[],v:Versions,scope
   out.push("adapter_incompatible");
  for(const e of a.materials) {
   const found=m.find(x=>x.path===e.path);
-  if(!found || found.sha256!==e.sha256) {out.push("fingerprint_mismatch");continue;}
+  if(!found || found.sha256!==e.sha256) {out.push("fingerprint_mismatch "+e.path+(found?" changed":" missing"));continue;}
   const range=/^([1-9][0-9]*)-([1-9][0-9]*)$/.exec(e.lines??"");
   if(!range){out.push("invalid_lines");continue;}
   const start=Number(range[1]),stop=Number(range[2]);
