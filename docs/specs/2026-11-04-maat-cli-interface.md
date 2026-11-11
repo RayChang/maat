@@ -76,7 +76,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 
 ### 3.6 `maat policy`、`maat attest`
 
-`policy init` 印出骨架到 stdout（含註解），使用者或改善 Skill 自行存成 `.maat/policy.yaml`；`policy validate [file] [--snapshot <file>]` 檢查 schema、catalog 版本相容、attestation 必填欄位與到期；確認與豁免的檔案指紋，有 `--snapshot` 時與快照比對、不讀專案，沒有時與目前目錄比對。`attest template --check <id>` 印出該題 `verification.attestation` 要求的欄位骨架；其中 `optional_capability_claims` 只是說明，列出同一份確認還能一併成立的能力，maat 不讀這個欄位。要主張某項能力，把它的 claim 名稱加進 `claims`，回答要涵蓋它列出的欄位。兩者都不寫檔。
+`policy init` 印出骨架到 stdout（含註解），使用者或改善 Skill 自行存成 `.maat/policy.yaml`；`policy validate [file] [--snapshot <file>]` 檢查 schema、catalog 版本相容、attestation 必填欄位與到期；確認與豁免的檔案指紋，有 `--snapshot` 時與快照比對、不讀專案，沒有時與目前目錄比對。`attest template --check <id>` 印出該題 `verification.attestation` 要求的欄位骨架；其中 `optional_capability_claims` 只是說明，列出同一份確認還能一併成立的能力，maat 不讀這個欄位。要主張某項能力，把它的 claim 名稱加進 `claims`，回答要涵蓋它列出的欄位。兩者都不寫檔。範圍指定某個 CLI 的確認，`adapter_version` 要寫該 CLI 目前的 adapter 版本；不符時原因寫成 `adapter_incompatible (adapter_version.<cli> must be <版本>)`（2026-11-11 補充）。
 
 ### 3.7 `maat flow`
 

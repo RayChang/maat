@@ -21,8 +21,9 @@ export function attestationIssues(a:Attestation,m:Fingerprint[],v:Versions,scope
  if(end<=time) out.push("expired");
  if(a.catalog_version?.split(".")[0]!==v.catalog_version.split(".")[0]) out.push("catalog_incompatible");
  if(!sameScope(a.scope,scope)) out.push("scope_mismatch");
- if(scope.cli && a.adapter_version[scope.cli]!==v.adapters.find(x=>x.name===scope.cli)?.adapter_version)
-  out.push("adapter_incompatible");
+ const adapter=scope.cli?v.adapters.find(x=>x.name===scope.cli)?.adapter_version:undefined;
+ if(scope.cli && a.adapter_version[scope.cli]!==adapter)
+  out.push("adapter_incompatible (adapter_version."+scope.cli+" must be "+(adapter??"a supported adapter")+")");
  for(const e of a.materials) {
   const found=m.find(x=>x.path===e.path);
   if(!found || found.sha256!==e.sha256) {out.push("fingerprint_mismatch "+e.path+(found?" changed":" missing"));continue;}
