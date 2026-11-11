@@ -4,8 +4,8 @@ Lottery run 3 (2026-11-11): the confirmed policy from an older develop no longer
 
 The fix has three parts:
 - `attestationIssues` reports `fingerprint_mismatch <path> missing` or `fingerprint_mismatch <path> changed` instead of a bare `fingerprint_mismatch`.
-- The report's `policy.diagnostics` lists each invalid attestation as `attestations[<index>] <check> <reasons>` (the same form as `maat policy validate`).
-- For scan and evaluate, when the report's policy is invalid, stderr starts with `policy_invalid: <n> policy issues; affected claims are unknown`, followed by one line per `policy.diagnostics` entry.
+- The report's `policy.diagnostics` lists each invalid attestation as `attestations[<index>] <check> <reasons>` (one line per attestation, several reasons joined by commas).
+- For scan and evaluate, when any attestation is invalid, stderr starts with `policy_invalid: <n> policy issues; affected claims are unknown`, followed by one line per invalid attestation. A missing policy file (`policy_missing`) is not an invalid attestation and prints no warning.
 
 Owner rule: over-design is forbidden. Change only the lines below.
 
@@ -53,6 +53,7 @@ test("a stale policy is named on stderr: which attestation, which file, missing 
   expect(r.code).toBe(0);
   expect(r.stderr.split("\n").slice(0,3)).toEqual(["policy_invalid: 2 policy issues; affected claims are unknown",...named]);
   expect(JSON.parse(r.stdout).policy).toMatchObject({valid:false,diagnostics:named});
+  expect((await main(["scan",repo,"--json"],"2026-11-04T12:00:00Z")).stderr).not.toContain("policy_invalid");
  } finally {await rm(root,{recursive:true,force:true});}
 });
 ```
@@ -111,8 +112,8 @@ bun test tests/e2e/evaluate-stale-policy.test.ts tests/evidence/validity.test.ts
   with
 
 ```ts
-  const policy=result.kind==="report"?(result.value as {policy?:{valid?:boolean;diagnostics?:string[]}}).policy:undefined;
-  const warning=policy&&policy.valid===false?["policy_invalid: "+(policy.diagnostics??[]).length+" policy issues; affected claims are unknown",...(policy.diagnostics??[])]:[];
+  const stale=result.kind==="report"?((result.value as {policy?:{diagnostics?:string[]}}).policy?.diagnostics??[]).filter(d=>d.startsWith("attestations[")):[];
+  const warning=stale.length?["policy_invalid: "+stale.length+" policy issues; affected claims are unknown",...stale]:[];
   const stderr=[...warning,...(Array.isArray(diagnostics)?(own?diagnostics.map(String):summarize(diagnostics.map(String))):[])].join("\n");
 ```
 
@@ -152,7 +153,7 @@ without --snapshot it compares fingerprints with the current directory. When maa
   with
 
 ```text
-快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。診斷寫成 `fingerprint_mismatch <路徑> missing|changed`，報告 `policy.diagnostics` 每筆寫成 `attestations[<序號>] <check> <原因>`；政策無效時 scan／evaluate 結束碼仍為 0，但 stderr 第一行印 `policy_invalid: <n> policy issues; affected claims are unknown`，其後逐行列出這些診斷（2026-11-11 補充）。
+快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。診斷寫成 `fingerprint_mismatch <路徑> missing|changed`，報告 `policy.diagnostics` 中每條失效的確認寫成一筆 `attestations[<序號>] <check> <原因>`，多個原因以逗號分隔；有確認失效時 scan／evaluate 結束碼仍為 0，但 stderr 第一行印 `policy_invalid: <n> policy issues; affected claims are unknown`，其後逐行列出這些診斷（2026-11-11 補充）。
 ```
 
 - [ ] 7. Run the whole suite again; expect `122 pass`, `0 fail`.

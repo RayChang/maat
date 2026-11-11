@@ -18,5 +18,6 @@ test("a stale policy is named on stderr: which attestation, which file, missing 
   expect(r.code).toBe(0);
   expect(r.stderr.split("\n").slice(0,3)).toEqual(["policy_invalid: 2 policy issues; affected claims are unknown",...named]);
   expect(JSON.parse(r.stdout).policy).toMatchObject({valid:false,diagnostics:named});
+  expect((await main(["scan",repo,"--json"],"2026-11-04T12:00:00Z")).stderr).not.toContain("policy_invalid");
  } finally {await rm(root,{recursive:true,force:true});}
 });
