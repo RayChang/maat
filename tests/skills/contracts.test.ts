@@ -22,7 +22,8 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("Each attestation quote must be whole lines copied from its cited range");
  expect(diagnose).toContain("If the report lists scan_limit diagnostics");
  expect(diagnose).toContain("Run maat help for every command and flag");
- expect(diagnose).toContain("maat finds verification entrypoints in two forms");
+ expect(diagnose).toContain("maat finds verification entrypoints in three forms");
+ expect(diagnose).toContain("a two-column table headed Task | Command");
  expect(diagnose).toContain("ask the user which commands are CI obligations");
  expect(diagnose).toContain("declared under applicability.loop as status: applicable plus loops");
  expect(diagnose).toContain("Each loop scope is one path or glob string");

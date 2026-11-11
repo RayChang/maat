@@ -14,3 +14,14 @@ test("documented command binds to a real script without proving execution",()=>{
  s.materials[1]!.text='{"scripts":{}}';s.materials[1]!.sha256=sha256(s.materials[1]!.text);
  expect(entrypointObservations(s,p).flatMap(o=>o.facts).find(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation")!.status).toBe("fails");
 });
+test("a Task | Command table in AGENTS.md declares the verification rows",()=>{
+ const p=emptyPolicy(),table=["## Build & Run","","| Task | Command |","| ---- | ------- |","| Dev server | `bun run dev` |",
+  "| Build | `bun run build` (see pitfall #27) |","| Format | `bun run format` |","| Test (unit) | `bun run test:unit` |","| Type check | `bun vitest typecheck` |",""].join("\n");
+ const materials=[{path:"AGENTS.md",text:table},{path:"package.json",text:'{"scripts":{"dev":"next dev","build":"next build","format":"prettier -w ."}}'}]
+  .map(m=>({...m,sha256:sha256(m.text)}));
+ const s=makeScan({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials},p);
+ expect(detectedEntrypoints(s).map(e=>[e.name,e.purpose,e.command])).toEqual([["build","Build","bun run build"],
+  ["test:unit","Test (unit)","bun run test:unit"],["bun vitest typecheck","Type check","bun vitest typecheck"]]);
+ expect(entrypointObservations(s,p).flatMap(o=>o.facts).filter(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation").map(f=>f.status))
+  .toEqual(["holds","fails","holds"]);
+});
