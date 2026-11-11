@@ -25,7 +25,9 @@ export async function main(argv:string[],now=new Date().toISOString(),cwd=proces
    out:one(a,"out"),quiet:!!one(a,"quiet"),format:one(a,"json")?"json":(one(a,"format") as "markdown"|"json"|"both"|undefined)??"markdown"});
   const value=result.value as {diagnostics?:unknown};
   const own=("diagnostics" in result?result.diagnostics:undefined) as unknown[]|undefined,diagnostics=own??value?.diagnostics;
-  const stderr=Array.isArray(diagnostics)?(own?diagnostics.map(String):summarize(diagnostics.map(String))).join("\n"):"";
+  const policy=result.kind==="report"?(result.value as {policy?:{valid?:boolean;diagnostics?:string[]}}).policy:undefined;
+  const warning=policy&&policy.valid===false?["policy_invalid: "+(policy.diagnostics??[]).length+" policy issues; affected claims are unknown",...(policy.diagnostics??[])]:[];
+  const stderr=[...warning,...(Array.isArray(diagnostics)?(own?diagnostics.map(String):summarize(diagnostics.map(String))):[])].join("\n");
   return {code:0,stdout,stderr:stderr?stderr+"\n":""};
  }catch(e){return {code:e instanceof MaatError?e.code:1,stdout:"",
   stderr:(e instanceof MaatError?e.message:"internal_error: "+(e instanceof Error?e.message:String(e)))+"\n"};}

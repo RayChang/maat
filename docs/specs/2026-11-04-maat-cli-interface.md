@@ -60,7 +60,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 
 ### 3.2 `maat evaluate`
 
-輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。`line_hashes` 只是每行雜湊的前 8 碼，短而好猜的行（例如 `PORT=3000`）可以被比對出來，所以快照仍屬敏感材料，和報告一樣存放在目標 repository 之外並由使用者保管。
+輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。診斷寫成 `fingerprint_mismatch <路徑> missing|changed`，報告 `policy.diagnostics` 每筆寫成 `attestations[<序號>] <check> <原因>`；政策無效時 scan／evaluate 結束碼仍為 0，但 stderr 第一行印 `policy_invalid: <n> policy issues; affected claims are unknown`，其後逐行列出這些診斷（2026-11-11 補充）。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。`line_hashes` 只是每行雜湊的前 8 碼，短而好猜的行（例如 `PORT=3000`）可以被比對出來，所以快照仍屬敏感材料，和報告一樣存放在目標 repository 之外並由使用者保管。
 
 ### 3.3 `maat plan`
 
