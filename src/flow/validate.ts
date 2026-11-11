@@ -25,22 +25,22 @@ export function validateFlowEvent(event:unknown):asserts event is FlowEvent {
  if(e.type==="approve") {
   checkShape(p,object(["plan_fingerprint","base_fingerprint","actions","paths","mode","candidate_fingerprint","max_fixes","role_approvals","expires_at","by","source"],
   {plan_fingerprint:hash,base_fingerprint:hash,actions:strings,paths:strings,mode:{enum:["plan","candidate"]},
-  max_fixes:{type:"object",additionalProperties:{type:"number"}},role_approvals:{type:"array",items:object(["check","by"],{check:str,by:str})},expires_at:str,by:str,source:str}));
+  max_fixes:{type:"object",additionalProperties:{type:"number"}},role_approvals:{type:"array",items:object(["check","by"],{check:str,by:str})},expires_at:str,by:str,source:str}),"$.payload");
   if(p.candidate_fingerprint!==null)checkShape(p.candidate_fingerprint,hash);
   if(p.mode==="candidate"&&p.candidate_fingerprint===null)throw new MaatError(3,"candidate_shape");
   if(Object.values(p.max_fixes as Record<string,number>).some(n=>!Number.isInteger(n)||n<0))throw new MaatError(3,"fix_count_shape");
  } else if(e.type==="authorize") {
-  checkShape(p,object(["execution","expires_at","by","source"],{expires_at:str,by:str,source:str}));execution(p.execution);
+  checkShape(p,object(["execution","expires_at","by","source"],{expires_at:str,by:str,source:str}),"$.payload");execution(p.execution);
  } else if(e.type==="before"||e.type==="after") {
-  checkShape(p,object(["action","fingerprints"],{action:str,fingerprints:{type:"array"},reconcile:{type:"boolean"},unknown_effects:strings}));
+  checkShape(p,object(["action","fingerprints"],{action:str,fingerprints:{type:"array"},reconcile:{type:"boolean"},unknown_effects:strings}),"$.payload");
   fingerprintSet(p.fingerprints as import("../models").Fingerprint[]);if(p.execution!==undefined)execution(p.execution);
  } else if(e.type==="change") {
   checkShape(p,object(["action","candidate_fingerprint","paths","executed_by","source","unknown_effects"],
-  {action:str,candidate_fingerprint:hash,paths:strings,executed_by:str,source:str,unknown_effects:strings}));
+  {action:str,candidate_fingerprint:hash,paths:strings,executed_by:str,source:str,unknown_effects:strings}),"$.payload");
  } else if(e.type==="evaluation") {
   checkShape(p,object(["action","candidate_fingerprint","method","result","report","execution","evidence","by","source","unknown_effects"],
   {action:str,candidate_fingerprint:hash,method:object(["kind","id","version"],{kind:{enum:["manual","command"]},id:str,version:str}),
-  result:{enum:["pass","fail","unknown","error","timeout","cancel"]},evidence:{type:"array"},by:str,source:str,unknown_effects:strings}));
+  result:{enum:["pass","fail","unknown","error","timeout","cancel"]},evidence:{type:"array"},by:str,source:str,unknown_effects:strings}),"$.payload");
   fingerprintSet(p.evidence as import("../models").Fingerprint[]);
   if(p.execution!==null)execution(p.execution);
   if(p.report!==null)parseReport(JSON.stringify(p.report));

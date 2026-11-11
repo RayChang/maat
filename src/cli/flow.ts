@@ -72,7 +72,11 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
        envelope={id:sha256(canonical({flow:id,seq:flow.seq,step:one(a,"phase"),action:one(a,"action")})),expected_seq:flow.seq,
         expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,payload:{fingerprints:[]}};}
      }
-     else try{envelope=JSON.parse(await input(file!));}catch{throw new MaatError(3,"event_parse");}
+     else {
+      const hint=" (--"+["scope","command","fingerprints","file"].find(k=>one(a,k))+" takes the event JSON file saved from maat flow template --json and filled in)";
+      let text:string;try{text=await readFile(file!,"utf8");}catch{throw new MaatError(3,"input_read: "+file+hint);}
+      try{envelope=JSON.parse(text);}catch{throw new MaatError(3,"event_parse: "+file+hint);}
+     }
      if(!envelope || typeof envelope.id!=="string" || !Number.isInteger(envelope.expected_seq) ||
        typeof envelope.expires_at!=="string" || !envelope.payload || typeof envelope.payload!=="object")throw new MaatError(3,"event_shape");
      const payload=envelope.payload as Record<string,unknown>;

@@ -60,7 +60,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 
 ### 3.2 `maat evaluate`
 
-輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。`line_hashes` 只是每行雜湊的前 8 碼，短而好猜的行（例如 `PORT=3000`）可以被比對出來，所以快照仍屬敏感材料，和報告一樣存放在目標 repository 之外並由使用者保管。
+輸入 `--snapshot <file>`、`--policy`、`--evidence`。不碰檔案系統中的 repository；只用快照裡的觀察重新評估。快照指紋與政策引用的材料指紋不符時，受影響主張為 `unknown` 並附診斷。診斷寫成 `fingerprint_mismatch <路徑> missing|changed`，報告 `policy.diagnostics` 中每條失效的確認寫成一筆 `attestations[<序號>] <check> <原因>`，多個原因以逗號分隔；有確認失效時 scan／evaluate 結束碼仍為 0，但 stderr 第一行印 `policy_invalid: <n> policy issues; affected claims are unknown`，其後逐行列出這些診斷（2026-11-11 補充）。用途：診斷 Skill 收到新確認後重評，以及改善後比對。快照為每個材料另存每一行（去掉前後空白）的 SHA-256 前 8 碼 `line_hashes`，不存原文；確認的每段引文必須是引用行數範圍內的整行（可省略前後空白、可跳行），否則為 `citation_mismatch`（2026-11-06 補充）。在此之前產生的舊快照沒有 `line_hashes`，其中每份確認都會判為 `citation_mismatch`，需重新掃描。`line_hashes` 只是每行雜湊的前 8 碼，短而好猜的行（例如 `PORT=3000`）可以被比對出來，所以快照仍屬敏感材料，和報告一樣存放在目標 repository 之外並由使用者保管。
 
 ### 3.3 `maat plan`
 
@@ -76,7 +76,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 
 ### 3.6 `maat policy`、`maat attest`
 
-`policy init` 印出骨架到 stdout（含註解），使用者或改善 Skill 自行存成 `.maat/policy.yaml`；`policy validate [file] [--snapshot <file>]` 檢查 schema、catalog 版本相容、attestation 必填欄位與到期；確認與豁免的檔案指紋，有 `--snapshot` 時與快照比對、不讀專案，沒有時與目前目錄比對。`attest template --check <id>` 印出該題 `verification.attestation` 要求的欄位骨架；其中 `optional_capability_claims` 只是說明，列出同一份確認還能一併成立的能力，maat 不讀這個欄位。要主張某項能力，把它的 claim 名稱加進 `claims`，回答要涵蓋它列出的欄位。兩者都不寫檔。
+`policy init` 印出骨架到 stdout（含註解），使用者或改善 Skill 自行存成 `.maat/policy.yaml`；`policy validate [file] [--snapshot <file>]` 檢查 schema、catalog 版本相容、attestation 必填欄位與到期；確認與豁免的檔案指紋，有 `--snapshot` 時與快照比對、不讀專案，沒有時與目前目錄比對。`attest template --check <id>` 印出該題 `verification.attestation` 要求的欄位骨架；其中 `optional_capability_claims` 只是說明，列出同一份確認還能一併成立的能力，maat 不讀這個欄位。要主張某項能力，把它的 claim 名稱加進 `claims`，回答要涵蓋它列出的欄位。兩者都不寫檔。範圍指定某個 CLI 的確認，`adapter_version` 要寫該 CLI 目前的 adapter 版本；不符時原因寫成 `adapter_incompatible (adapter_version.<cli> must be <版本>)`（2026-11-11 補充）。
 
 ### 3.7 `maat flow`
 
@@ -85,7 +85,7 @@ CI 設定支援三種格式（2026-11-06 補充）：GitHub Actions 的 `.github
 | 子命令 | 事件與守門 |
 |---|---|
 | `open --plan <file> --snapshot <file>` | 建立 flow，記錄計畫與材料指紋；回傳 `flow_id` |
-| `approve --flow <id> --scope <file> --by <who>` | 記錄修改核准：綁定計畫指紋、允許動作、修改邊界、修正條件、有效條件 |
+| `approve --flow <id> --scope <file> --by <who>` | 記錄修改核准：綁定計畫指紋、允許動作、修改邊界、修正條件、有效條件。`--scope` 和其他 flow 指令的 `--command`、`--fingerprints`、`--file` 一樣是事件檔路徑；讀不到檔案或內容不是 JSON 時，`input_read`／`event_parse` 會寫出檔名與旗標；事件內容欄位錯誤時，`schema_error` 的路徑以 `$.payload.` 開頭（2026-11-11 補充） |
 | `authorize --flow <id> --command <file> --by <who>` | 記錄執行授權：具體命令／script 版本、輸入、工作目錄、權限與外部效果。與 `approve` 分開，互不替代 |
 | `checkpoint --flow <id> --action <aid> --phase before\|after [--fingerprints <file>] [--by <who>]` | 記錄動作前後材料指紋；`before` 與上一個 `after` 或 base 不符 → 拒絕並標示漂移。`--fingerprints` 可省略，省略時 maat 依 `template` 同樣的規則自己讀檔算指紋，執行者由 `--by` 提供（2026-11-10 補充） |
 | `record --flow <id> --kind change\|evaluation --file <json> [--report <file>]` | 保存候選成果、修改範圍、執行來源、方法與結果／錯誤；error／timeout／cancel 不是 pass。評估可用 `--report` 指定報告檔，maat 讀檔後放進評估，不必把整份報告貼進事件檔；`--report` 只用於 `--kind evaluation`（2026-11-10 補充） |

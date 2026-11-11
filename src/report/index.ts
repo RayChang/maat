@@ -18,7 +18,7 @@ export function buildReport(s:Snapshot,p:Policy,c:Catalog,now:string,policyPath:
  if(truncated)diagnostics.push("scan_truncated");
  if(!c.approved)diagnostics.push("policy_unapproved");
  if(s.versions.catalog_version!==c.catalog_version)diagnostics.push("catalog_version_mismatch");
- const invalid=items.flatMap(i=>i.attestations.filter(a=>!a.valid).map(a=>a.invalid_reason!));
+ const invalid=[...new Set(items.flatMap(i=>i.attestations.filter(a=>!a.valid).map(a=>"attestations["+a.ref+"] "+i.id+" "+a.invalid_reason)))];
  const protection_observations:ProtectionObservation[]=s.observations.filter(o=>o.detector==="permissions.declarations@1")
  .flatMap(o=>o.facts.filter(f=>f.claim==="deny").map(f=>({measure:"Declared deny rules",protects:f.basis,
  threat:"Unconfirmed threat model",boundary:"Repository configuration",evidence:o.evidence,
