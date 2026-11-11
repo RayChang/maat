@@ -149,3 +149,12 @@ bun test
 git add -- tests/e2e/flow-partial-events.test.ts src/cli/flow.ts skills/maat-improve/SKILL.md docs/specs/2026-11-04-maat-cli-interface.md docs/plans/maat-partial-events/01-partial-event-files.md
 git commit -m '⚡️ perf(flow): let an event file hold only the answered fields'
 ```
+
+## Follow-up after cloud review (2026-11-11)
+
+The cloud review of PR #103 asked for these changes, made in follow-up commits on the same branch:
+- A rejected partial event (the template refuses the step with exit 4) is submitted as a placeholder envelope so the reducer records the rejection, as J01 does for checkpoints.
+- A partial approve file must list `payload.actions` (otherwise exit 3 `event_actions`); maat limits `paths`, `max_fixes`, and `role_approvals` to the listed actions, so an approval never covers actions the user did not name.
+- A partial evaluation file without `payload.action` is exit 3 `event_action` instead of a usage error about flags `flow record` does not have.
+- `approvalGuard` and `actionGuard` treat a role approval whose `by` is not a string as missing (`role_approval_missing`) instead of throwing.
+- Tests: `tests/e2e/flow-partial-events.test.ts` covers the rejection, the missing action list, a two-action plan with only one action approved, and the missing evaluation action; `tests/flow/guards.test.ts` covers a null role approver.

@@ -47,6 +47,8 @@ function guardFixture():{flow:Flow;action:PlanAction;approval:Approval} {
 test("approval guard requires the bound base and required role approval",()=>{
  const {flow,approval}=guardFixture();
  expect(approvalGuard(flow,approval,"2026-11-04")).toBe("role_approval_missing");
+ approval.role_approvals=[{check:"prompt.task-spec",by:null as unknown as string}];
+ expect(approvalGuard(flow,approval,"2026-11-04")).toBe("role_approval_missing");
  approval.role_approvals=[{check:"prompt.task-spec",by:"reviewer"}];
  expect(approvalGuard(flow,approval,"2026-11-04")).toBeNull();
  expect(approvalGuard(flow,{...approval,base_fingerprint:sha256("stale")},"2026-11-04")).toBe("approval_binding_mismatch");
