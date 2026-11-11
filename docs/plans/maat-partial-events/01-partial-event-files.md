@@ -1,6 +1,6 @@
 # R01 — Let an event file hold only the answered fields
 
-Lottery run 3 (2026-11-11): every approve, change and evaluation event started from `maat flow template`, which is about 151 KB for an evaluation (every material fingerprint) and wraps the JSON in Markdown unless `--json` is given. The host only fills a handful of fields (by, source, expires_at, executed_by, unknown_effects, method, result). Owner decision (2026-11-11): like J01 for checkpoints, let maat fill the rest. The fix: when an event file has no `id`, maat builds the template for the same step at submit time and merges the file over it (top-level fields from the file win; `payload` merges field by field, the file winning). The step is the command (`approve`, `authorize`), the checkpoint phase, or the record kind; the action is `--action`, else `payload.action`, else `payload.execution.action`. Files with an `id` behave exactly as before.
+Lottery run 3 (2026-11-11): every approve, change and evaluation event started from `maat flow template`, which is about 151 KB for an evaluation (every material fingerprint) and wraps the JSON in Markdown unless `--json` is given. The host only fills a handful of fields (by, source, expires_at, executed_by, unknown_effects, method, result). Owner decision (2026-11-11): like J01 for checkpoints, let maat fill the rest. The fix: when an event file has no `id`, maat builds the template for the same step at submit time and merges the file over it (top-level fields from the file win; `payload` merges field by field, the file winning). The step is the command (`approve`, `authorize`), the checkpoint phase, or the record kind; the action is `--action`, else `payload.action`, else `payload.execution.action`. Files with an `id` behave exactly as before. When the template refuses the step (exit 4, the step is not legal yet), maat submits a placeholder envelope so the reducer records the rejection in the ledger, as J01 does for checkpoints.
 
 Owner rule: over-design is forbidden. Change only the lines below.
 
@@ -47,10 +47,14 @@ test("an event file without an id holds only the answered fields; maat fills the
   const id=(await json(["flow","open","--plan",await file("plan.json",plan),"--snapshot",join(dir,"snapshot.json"),"--ledger",ledger])).flow_id;
   const flow=(args:string[])=>json(["flow",...args,"--flow",id,"--ledger",ledger]);
   await flow(["approve","--scope",await file("e1.json",{payload:{expires_at:"2026-12-01T00:00:00Z",by:"ray",source:"user statement"}}),"--by","ray"]);
+  const change={payload:{executed_by:"host",source:"host session",unknown_effects:[]}};
+  const early=await main(["flow","record","--kind","change","--file",await file("e0.json",change),"--flow",id,"--ledger",ledger],time);
+  expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: ")]);
+  expect((await flow(["status"])).last_rejection).toBeTruthy();
   await flow(["checkpoint","--action",action.id,"--phase","before","--by","host"]);
   await mkdir(join(repo,"docs"));await writeFile(join(repo,"docs/task.md"),action.template.body);
   await flow(["checkpoint","--action",action.id,"--phase","after","--by","host"]);
-  await flow(["record","--kind","change","--file",await file("e2.json",{payload:{executed_by:"host",source:"host session",unknown_effects:[]}})]);
+  await flow(["record","--kind","change","--file",await file("e2.json",change)]);
   const after=await file("after.json",await json(["scan",repo,"--policy",policy]));
   const e3=await file("e3.json",{payload:{action:action.id,method:{kind:"manual",id:"review",version:"1"},result:"unknown",by:"ray",source:"user review",unknown_effects:[]}});
   const recorded=await flow(["record","--kind","evaluation","--file",e3,"--report",after]);
@@ -82,7 +86,13 @@ bun test tests/e2e/flow-partial-events.test.ts
        const p=(envelope.payload??{}) as Record<string,unknown>,execution=p.execution as {action?:unknown}|undefined;
        const step=a.command==="flow checkpoint"?one(a,"phase")!:a.command==="flow record"?one(a,"kind")!:a.command.slice(5);
        const action=one(a,"action")??(typeof p.action==="string"?p.action:typeof execution?.action==="string"?execution.action:undefined);
-       const t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;
+       let t:Record<string,unknown>;
+       try{t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;}
+       catch(e){if(!(e instanceof MaatError)||e.code!==4)throw e;
+        t={id:sha256(canonical({flow:id,seq:flow.seq,step,action:action??null})),expected_seq:flow.seq,
+         expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,
+         payload:step==="change"||step==="evaluation"?{action:action??"unknown",candidate_fingerprint:fingerprintSet([]),
+          ...(step==="change"?{paths:[]}:{report:null,execution:null,evidence:[]})}:{fingerprints:[]}};}
        envelope={...t,...envelope,payload:{...t.payload as Record<string,unknown>,...p}};
       }
      }

@@ -80,7 +80,13 @@ export async function runFlowCommand(a:Args,now:string,cwd=process.cwd()):Promis
        const p=(envelope.payload??{}) as Record<string,unknown>,execution=p.execution as {action?:unknown}|undefined;
        const step=a.command==="flow checkpoint"?one(a,"phase")!:a.command==="flow record"?one(a,"kind")!:a.command.slice(5);
        const action=one(a,"action")??(typeof p.action==="string"?p.action:typeof execution?.action==="string"?execution.action:undefined);
-       const t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;
+       let t:Record<string,unknown>;
+       try{t=await flowTemplate(flow,step,action,now) as Record<string,unknown>;}
+       catch(e){if(!(e instanceof MaatError)||e.code!==4)throw e;
+        t={id:sha256(canonical({flow:id,seq:flow.seq,step,action:action??null})),expected_seq:flow.seq,
+         expires_at:new Date(Date.parse(now)+86400000).toISOString(),by:null,
+         payload:step==="change"||step==="evaluation"?{action:action??"unknown",candidate_fingerprint:fingerprintSet([]),
+          ...(step==="change"?{paths:[]}:{report:null,execution:null,evidence:[]})}:{fingerprints:[]}};}
        envelope={...t,...envelope,payload:{...t.payload as Record<string,unknown>,...p}};
       }
      }

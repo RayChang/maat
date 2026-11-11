@@ -19,10 +19,14 @@ test("an event file without an id holds only the answered fields; maat fills the
   const id=(await json(["flow","open","--plan",await file("plan.json",plan),"--snapshot",join(dir,"snapshot.json"),"--ledger",ledger])).flow_id;
   const flow=(args:string[])=>json(["flow",...args,"--flow",id,"--ledger",ledger]);
   await flow(["approve","--scope",await file("e1.json",{payload:{expires_at:"2026-12-01T00:00:00Z",by:"ray",source:"user statement"}}),"--by","ray"]);
+  const change={payload:{executed_by:"host",source:"host session",unknown_effects:[]}};
+  const early=await main(["flow","record","--kind","change","--file",await file("e0.json",change),"--flow",id,"--ledger",ledger],time);
+  expect([early.code,early.stderr]).toEqual([4,expect.stringContaining("flow_rejected: ")]);
+  expect((await flow(["status"])).last_rejection).toBeTruthy();
   await flow(["checkpoint","--action",action.id,"--phase","before","--by","host"]);
   await mkdir(join(repo,"docs"));await writeFile(join(repo,"docs/task.md"),action.template.body);
   await flow(["checkpoint","--action",action.id,"--phase","after","--by","host"]);
-  await flow(["record","--kind","change","--file",await file("e2.json",{payload:{executed_by:"host",source:"host session",unknown_effects:[]}})]);
+  await flow(["record","--kind","change","--file",await file("e2.json",change)]);
   const after=await file("after.json",await json(["scan",repo,"--policy",policy]));
   const e3=await file("e3.json",{payload:{action:action.id,method:{kind:"manual",id:"review",version:"1"},result:"unknown",by:"ray",source:"user review",unknown_effects:[]}});
   const recorded=await flow(["record","--kind","evaluation","--file",e3,"--report",after]);
