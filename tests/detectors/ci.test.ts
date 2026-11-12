@@ -73,3 +73,16 @@ test("a step that runs a repository shell script counts the declared commands at
  expect(steps[0]!.limits).toContain("Wrapper script read one level deep; a declared command counts only at the start of a script line");
  expect(ciObservations(s,p).flatMap(o=>o.facts).find(f=>f.claim==="invocation"&&!f.scope.workflow)!.status).toBe("holds");
 });
+test("a wrapper script with a heredoc, a function, or only a comment does not count",()=>{
+ const p=emptyPolicy(),materials=[{path:"AGENTS.md",text:"Verification command: bun test\nVerification purpose: regression\n"},
+ {path:"CLAUDE.md",text:"Verification command: bun test\nVerification purpose: regression\n"},
+ {path:".github/workflows/ci.yml",text:"jobs:\n  test:\n    steps:\n      - run: bash scripts/comment.sh\n      - run: bash scripts/heredoc.sh\n      - run: bash scripts/function.sh\n      - run: bash scripts/ci.sh\n"},
+ {path:"scripts/comment.sh",text:"# bun test\n"},
+ {path:"scripts/heredoc.sh",text:"cat <<'EOF' > notes.md\nbun test\nEOF\n"},
+ {path:"scripts/function.sh",text:"run() {\n  bun test\n}\n"},
+ {path:"scripts/ci.sh",text:"bun test\n"}].map(m=>({...m,sha256:sha256(m.text)}));
+ const s=makeScan({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials},p);
+ const steps=ciObservations(s,p).filter(o=>o.detector==="ci.step-invokes-entrypoint@1"&&o.scope.workflow);
+ expect(steps.map(o=>[o.facts[0]!.status,o.facts[0]!.basis])).toEqual([
+  ["unknown","bash scripts/comment.sh"],["unknown","bash scripts/heredoc.sh"],["unknown","bash scripts/function.sh"],["holds","bash scripts/ci.sh runs bun test"]]);
+});
