@@ -196,7 +196,7 @@ diagnostics[] (例如 policy_unapproved、catalog_overridden、read_error)
 
 ### 5.3 改善計畫 JSON／Markdown
 
-依 spec 8.3 欄位；另含 `source_report_fingerprint`、`plan_fingerprint`、每個動作的 `fix_conditions` 與 `stop_conditions`，供 `flow open` 綁定。
+依 spec 8.3 欄位；另含 `source_report_fingerprint`、`plan_fingerprint`、每個動作的 `fix_conditions` 與 `stop_conditions`，供 `flow open` 綁定。證據指紋只在計畫最上層的 `fingerprints` 列一份，動作不再各自重複（2026-11-12 補充）；舊計畫的動作若帶 `fingerprints`，仍可讀取，但不使用。
 
 ## 6. 結束代碼
 

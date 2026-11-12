@@ -32,7 +32,7 @@ function guardFixture():{flow:Flow;action:PlanAction;approval:Approval} {
  const action:PlanAction={id:"a",check:"prompt.task-spec",scope:{},item_version:1,rule_cards:[],template:null,
  current:"unknown",target:"verified",kind:"modify",actions:["Update task"],target_path:"task.md",command:null,
  depends_on:[],necessity:"required",risk:"low",needs_approval:true,role_approval_required:true,
- verification:{detectors:[],expected:"Confirmed task contract",manual:"Review task"},fingerprints:current,
+ verification:{detectors:[],expected:"Confirmed task contract",manual:"Review task"},
  fix_conditions:{max_fixes:0},stop_conditions:["scope_change"]};
  const unsigned={report_schema:"1.0.0",versions,catalog_version:"0.1.0",repository:{path:"/r",repo_id:"0".repeat(16)},
  source_report_fingerprint:sha256("report"),actions:[action],fingerprints:current,authoritative:true,diagnostics:[]};
