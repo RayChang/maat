@@ -10,6 +10,8 @@ Rules of the change (all CI providers, because it works on the step command):
 
 Measured on a lottery copy without the ci-verification attestation: `bun run test` moves from unmatched to matched. The item stays unknown because AGENTS.md also declares `bun vitest run`, `bun run test:unit`, and `bun run test:integration`, which CI does not run directly; that is the intended strict rule. With the confirmed policy the counts stay 8 verified / 4 partial / 1 unknown.
 
+Note (2026-11-12): steps 1, 3a, and 6b below are the first version. The section "Follow-up after cloud review" at the end replaces them; do not redo them as written.
+
 Owner rule: over-design is forbidden. Change only the lines below.
 
 ## Files
@@ -179,3 +181,4 @@ git commit -m '✨ feat(detectors): read one level into a CI step that runs a sh
 - The wrapper pattern accepted a bare `<path>.sh` step, which the shell looks up on `PATH` instead of in the repository; it now accepts only `bash <path>.sh`, `sh <path>.sh`, and `./<path>.sh`, as the spec says.
 - The test now covers `sh <path>.sh` and a bare `scripts/ci.sh` step (unknown).
 - The spec notes that the reading keeps `ci.step-invokes-entrypoint@1`, so results can change between maat versions, and that failure handling inside the script and a step's `working-directory` are not observed.
+- Second review: a script with a heredoc (`<<`) or a function definition does not count, because such lines may never run; the basis lists each command once when two documents declare it; a comment-only script is tested to stay unknown.

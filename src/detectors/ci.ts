@@ -69,7 +69,9 @@ function wrapper(s:ScanData,command:string):Material|undefined {
  return path?s.materials.find(m=>m.path===path):undefined;
 }
 // The declared command must start a script line, after optional shell keywords (if, then, do, exec, !).
+// A heredoc or a function definition can hold lines that never run, so such a script does not count.
 function invokes(text:string,command:string):boolean {
+ if(text.includes("<<")||/^\s*(?:function\s+[A-Za-z_][\w-]*|[A-Za-z_][\w-]*\s*\(\s*\))/m.test(text))return false;
  const escaped=command.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
  const line=new RegExp("^(?:(?:if|then|else|elif|do|while|until|exec|!)\\s+)*"+escaped+"(?=$|[\\s;|&)])");
  return text.split("\n").some(l=>line.test(l.trim()));
@@ -94,7 +96,7 @@ export function ciObservations(s:ScanData,_p:Policy):Observation[] {
    if(status==="holds")for(const e of invoked)matched.add(e.command);
    out.push(observe("ci.step-invokes-entrypoint@1",[m,...(script?[script]:[]),...s.materials.filter(x=>invoked.some(e=>e.document===x.path))],scope,
     [{subject:"foundation.ci-verification",claim:"invocation",status,scope,
-     basis:script&&invoked.length?step.command+" runs "+invoked.map(e=>e.command).join(", "):step.command??"Unrecognized step",complete:status==="holds",signal:true}],
+     basis:script&&invoked.length?step.command+" runs "+[...new Set(invoked.map(e=>e.command))].join(", "):step.command??"Unrecognized step",complete:status==="holds",signal:true}],
     ["Exact declared invocation only; execution and remote gating unobserved",
      ...(script?["Wrapper script read one level deep; a declared command counts only at the start of a script line"]:[])]));
    out.push(observe("ci.failure-consequence@1",[m],scope,[signal("foundation.ci-verification","consequence",step.consequence,scope)],
