@@ -3,7 +3,7 @@
 Lottery run 3 (2026-11-11): lottery's `.github/workflows/test.yml` runs its tests with `run: bash .github/scripts/run-vitest-with-retry.sh`, and that script runs `bun run test` on the line `  if bun run test 2>&1 | tee /tmp/test-output.txt; then`. maat compares the step text with the declared commands only, so `bun run test` was listed as unmatched and the owner had to attest the CI invocation by hand.
 
 Rules of the change (all CI providers, because it works on the step command):
-- A step whose whole command is `bash <path>.sh`, `sh <path>.sh`, `./<path>.sh`, or `<path>.sh` (path made of letters, digits, `_ . / -`) and whose script is a scanned material is read one level deep.
+- A step whose whole command is `bash <path>.sh`, `sh <path>.sh`, or `./<path>.sh` (path made of letters, digits, `_ . / -`) and whose script is a scanned material is read one level deep.
 - A declared command counts when it starts a line of that script after trimming, optionally after the shell words `if`, `then`, `else`, `elif`, `do`, `while`, `until`, `exec`, or `!`, and is followed by the end of the line, a space, `;`, `|`, `&`, or `)`. Comments and `echo "..."` lines do not count.
 - The step's fact then holds, its basis reads `<step> runs <command>, <command>`, its evidence adds the script (so a later script change makes attestations stale like any other material), and it gets one more limit text.
 - A step whose script is not scanned, or whose script does not start a line with a declared command, stays unknown with the old basis.
@@ -173,3 +173,9 @@ bun test
 git add -- tests/detectors/ci.test.ts src/detectors/ci.ts tests/skills/contracts.test.ts skills/maat-diagnose/SKILL.md docs/specs/2026-11-04-maat-cli-interface.md docs/plans/maat-ci-wrapper/01-ci-wrapper-script.md
 git commit -m '✨ feat(detectors): read one level into a CI step that runs a shell script'
 ```
+
+## Follow-up after cloud review
+
+- The wrapper pattern accepted a bare `<path>.sh` step, which the shell looks up on `PATH` instead of in the repository; it now accepts only `bash <path>.sh`, `sh <path>.sh`, and `./<path>.sh`, as the spec says.
+- The test now covers `sh <path>.sh` and a bare `scripts/ci.sh` step (unknown).
+- The spec notes that the reading keeps `ci.step-invokes-entrypoint@1`, so results can change between maat versions, and that failure handling inside the script and a step's `working-directory` are not observed.

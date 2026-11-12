@@ -65,7 +65,7 @@ const providers:[RegExp,(data:Record<string,unknown>)=>CiStep[]][]=[
  [/^\.github\/workflows\/[^/]+\.ya?ml$/,githubSteps],[/^\.gitlab-ci\.yml$/,gitlabSteps],[/^bitbucket-pipelines\.yml$/,bitbucketSteps]];
 // A step like `bash scripts/ci.sh` or `./scripts/ci.sh` runs a repository script; read that script one level deep.
 function wrapper(s:ScanData,command:string):Material|undefined {
- const path=/^(?:(?:bash|sh)\s+)?(?:\.\/)?([A-Za-z0-9_.\/-]+\.sh)$/.exec(command)?.[1];
+ const path=/^(?:(?:bash|sh)\s+(?:\.\/)?|\.\/)([A-Za-z0-9_.\/-]+\.sh)$/.exec(command)?.[1];
  return path?s.materials.find(m=>m.path===path):undefined;
 }
 // The declared command must start a script line, after optional shell keywords (if, then, do, exec, !).
