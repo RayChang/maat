@@ -63,6 +63,17 @@ function bitbucketSteps(data:Record<string,unknown>):CiStep[] {
 }
 const providers:[RegExp,(data:Record<string,unknown>)=>CiStep[]][]=[
  [/^\.github\/workflows\/[^/]+\.ya?ml$/,githubSteps],[/^\.gitlab-ci\.yml$/,gitlabSteps],[/^bitbucket-pipelines\.yml$/,bitbucketSteps]];
+// A step like `bash scripts/ci.sh` or `./scripts/ci.sh` runs a repository script; read that script one level deep.
+function wrapper(s:ScanData,command:string):Material|undefined {
+ const path=/^(?:(?:bash|sh)\s+(?:\.\/)?|\.\/)([A-Za-z0-9_.\/-]+\.sh)$/.exec(command)?.[1];
+ return path?s.materials.find(m=>m.path===path):undefined;
+}
+// The declared command must start a script line, after optional shell keywords (if, then, do, exec, !).
+function invokes(text:string,command:string):boolean {
+ const escaped=command.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+ const line=new RegExp("^(?:(?:if|then|else|elif|do|while|until|exec|!)\\s+)*"+escaped+"(?=$|[\\s;|&)])");
+ return text.split("\n").some(l=>line.test(l.trim()));
+}
 export function ciObservations(s:ScanData,_p:Policy):Observation[] {
  const out:Observation[]=[],entries=detectedEntrypoints(s),ci:Material[]=[],matched=new Set<string>();
  for(const m of s.materials) {
@@ -77,11 +88,15 @@ export function ciObservations(s:ScanData,_p:Policy):Observation[] {
    const scope={workflow:m.path,boundary:step.boundary,evaluator:"command"};
    const entry=entries.find(e=>e.command===step.command);
    const literal=!!step.command&&!/[\n\r;&|$<>`]/.test(step.command)&&!step.remote;
-   const status:Fact["status"]=literal&&entry?"holds":"unknown";
-   if(status==="holds")matched.add(step.command!);
-   out.push(observe("ci.step-invokes-entrypoint@1",[m,...s.materials.filter(x=>x.path===entry?.document)],scope,
-    [{subject:"foundation.ci-verification",claim:"invocation",status,scope,basis:step.command??"Unrecognized step",complete:status==="holds",signal:true}],
-    ["Exact declared invocation only; execution and remote gating unobserved"]));
+   const script=literal&&!entry?wrapper(s,step.command!):undefined;
+   const invoked=entry?[entry]:script?entries.filter(e=>invokes(script.text,e.command)):[];
+   const status:Fact["status"]=literal&&invoked.length?"holds":"unknown";
+   if(status==="holds")for(const e of invoked)matched.add(e.command);
+   out.push(observe("ci.step-invokes-entrypoint@1",[m,...(script?[script]:[]),...s.materials.filter(x=>invoked.some(e=>e.document===x.path))],scope,
+    [{subject:"foundation.ci-verification",claim:"invocation",status,scope,
+     basis:script&&invoked.length?step.command+" runs "+invoked.map(e=>e.command).join(", "):step.command??"Unrecognized step",complete:status==="holds",signal:true}],
+    ["Exact declared invocation only; execution and remote gating unobserved",
+     ...(script?["Wrapper script read one level deep; a declared command counts only at the start of a script line"]:[])]));
    out.push(observe("ci.failure-consequence@1",[m],scope,[signal("foundation.ci-verification","consequence",step.consequence,scope)],
     ["Configured failure consequence only"]));
   }

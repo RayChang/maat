@@ -57,3 +57,19 @@ test("CI holds only when every declared verification entrypoint has a literal st
  s.materials[2]!.text+="lint:\n  script: [biome check]\n";
  expect(summary().status).toBe("holds");
 });
+test("a step that runs a repository shell script counts the declared commands at the start of its lines",()=>{
+ const p=emptyPolicy(),materials=[{path:"AGENTS.md",text:"Verification command: bun test\nVerification purpose: regression\n"},
+ {path:".github/workflows/ci.yml",text:"jobs:\n  test:\n    steps:\n      - run: bash scripts/ci.sh\n      - run: ./scripts/ci.sh\n      - run: sh scripts/echo.sh\n      - run: bash scripts/missing.sh\n      - run: scripts/ci.sh\n"},
+ {path:"scripts/ci.sh",text:"#!/usr/bin/env bash\nset -euo pipefail\n# bun test runs below\nif bun test 2>&1 | tee out.txt; then\n  echo ok\nfi\n"},
+ {path:"scripts/echo.sh",text:"echo \"bun test\"\n"}].map(m=>({...m,sha256:sha256(m.text)}));
+ const s=makeScan({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials},p);
+ const steps=ciObservations(s,p).filter(o=>o.detector==="ci.step-invokes-entrypoint@1"&&o.scope.workflow);
+ expect(steps.map(o=>[o.scope.boundary,o.facts[0]!.status,o.facts[0]!.basis,o.evidence.map(e=>e.path)])).toEqual([
+  ["test/0","holds","bash scripts/ci.sh runs bun test",[".github/workflows/ci.yml","scripts/ci.sh","AGENTS.md"]],
+  ["test/1","holds","./scripts/ci.sh runs bun test",[".github/workflows/ci.yml","scripts/ci.sh","AGENTS.md"]],
+  ["test/2","unknown","sh scripts/echo.sh",[".github/workflows/ci.yml","scripts/echo.sh"]],
+  ["test/3","unknown","bash scripts/missing.sh",[".github/workflows/ci.yml"]],
+  ["test/4","unknown","scripts/ci.sh",[".github/workflows/ci.yml"]]]);
+ expect(steps[0]!.limits).toContain("Wrapper script read one level deep; a declared command counts only at the start of a script line");
+ expect(ciObservations(s,p).flatMap(o=>o.facts).find(f=>f.claim==="invocation"&&!f.scope.workflow)!.status).toBe("holds");
+});
