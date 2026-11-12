@@ -1,4 +1,4 @@
-# U01 — Read plural purposes and skip fenced Task | Command tables
+# U02 — Read plural purposes and skip fenced Task | Command tables
 
 The cloud review of Q01 (PR #101, 2026-11-11) left two gaps in the `Task | Command` table reader in `src/detectors/entrypoints.ts`:
 - A purpose written in the plural, such as `Unit tests`, `Builds`, or `Checks`, does not match `\btest\b`, `\bbuild\b`, or `\bcheck\b`, so the row is silently skipped.
