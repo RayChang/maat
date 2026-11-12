@@ -6,7 +6,7 @@ export interface PlanAction {
  kind:"ask"|"modify"|"command";actions:string[];target_path:string|null;extra_paths?:string[];invalidates?:string[];command:string|null;
  depends_on:string[];necessity:"required"|"recommended";risk:string;needs_approval:boolean;
  role_approval_required:boolean;verification:{detectors:string[];expected:unknown;manual:string};
- fingerprints:Fingerprint[];fix_conditions:{max_fixes:number};stop_conditions:string[];
+ fix_conditions:{max_fixes:number};stop_conditions:string[];
 }
 export interface Plan {
  report_schema:string;versions:Versions;catalog_version:string;repository:{path:string;repo_id:string};

@@ -13,7 +13,7 @@ export function flowFixture():Flow {
  template:null,current:"missing",target:"verified",kind:"modify",actions:["Fill the task contract"],target_path:"task.md",command:null,
  depends_on:[],necessity:"required",risk:"low",needs_approval:true,role_approval_required:false,
  verification:{detectors:[],expected:"Four task claims established",manual:"Confirm task content"},
- fingerprints,fix_conditions:{max_fixes:1},stop_conditions:["scope_change","fingerprint_drift","unknown_effect","no_progress","cancelled"]};
+ fix_conditions:{max_fixes:1},stop_conditions:["scope_change","fingerprint_drift","unknown_effect","no_progress","cancelled"]};
  const unsigned={report_schema:"1.0.0",versions:{...versions,adapters:[]},catalog_version:"0.1.0",repository:s.repository,source_report_fingerprint:sha256("source report"),
  actions:[action],fingerprints,authoritative:true,diagnostics:[]};
  const p:Plan={...unsigned,plan_fingerprint:sha256(canonical(unsigned))};
