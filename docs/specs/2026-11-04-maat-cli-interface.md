@@ -36,6 +36,7 @@ maat flow <subcommand>            流程控制核心：核准、授權、checkpo
 maat version                      印出工具、schema、catalog、adapter 版本
 maat update                       從 GitHub 重新安裝最新版（唯一會連網的命令）
 maat help                         列出每個命令、位置參數與旗標；用法錯誤的訊息也會提示執行它（2026-11-06 補充）
+maat help <命令>、maat <命令> --help 或 -h   只列那個命令；命令群組（例如 flow）列出群組內每個命令（2026-11-12 補充）
 ```
 
 通用旗標：`--json`（stdout 改輸出 JSON）、`--out <dir>`（同時寫 JSON 與 Markdown 檔，stdout 只印寫出的兩個路徑，2026-11-10 補充）、`--quiet`（stdout 什麼都不印；stderr 的診斷照印，scan／evaluate／plan 同一類診斷超過 5 筆時只印筆數，完整清單在輸出的 `diagnostics`，2026-11-10 補充）、`--catalog <dir>`（覆寫 catalog 來源，報告記錄為非預設）、`--ledger <dir>`（流程紀錄位置）。
