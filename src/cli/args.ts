@@ -16,7 +16,7 @@ const grammar: Record<string, { flags: string[]; required?: string[]; min?: numb
   "flow decide": { flags: ["flow","event","by"], required: ["flow","event"] },
   "flow status": { flags: ["flow"], required: ["flow"] },
   "flow template": { flags: ["flow","step","action"], required: ["flow","step"] },
-  "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }, help: { flags: [] }
+  "flow list": { flags: [] }, version: { flags: [] }, update: { flags: [] }, help: { flags: [], max: 2 }
 };
 const global = ["json","out","quiet","catalog","ledger"];
 const boolean = new Set(["json","quiet"]);
@@ -29,15 +29,24 @@ const enums: Record<string,string[]> = {
   step: ["approve","authorize","before","after","change","evaluation"]
 };
 export function one(a: Args, key: string): string | undefined { return a.flags[key]?.[0]; }
-export function usage(): string {
+export function usage(name?: string): string {
   const arg = (s: { min?: number; max?: number }) => (s.max ?? 0) === 0 ? "" : (s.min ?? 0) > 0 ? " <arg>" : " [<arg>]";
   const flag = (k: string, required: boolean) => { const f = "--" + k + (boolean.has(k) ? "" : " <" + (enums[k]?.join("|") ?? "value") + ">") + (repeat.has(k) ? " ..." : ""); return required ? " " + f : " [" + f + "]"; };
-  return Object.entries(grammar).map(([c, s]) => "maat " + c + arg(s) + s.flags.map(k => flag(k, !!s.required?.includes(k))).join("")).join("\n")
+  const shown = Object.entries(grammar).filter(([c]) => !name || c === name || c.startsWith(name + " "));
+  if (!shown.length) throw new MaatError(2, "usage_error: unknown command (run maat help)");
+  return shown.map(([c, s]) => "maat " + c + arg(s) + s.flags.map(k => flag(k, !!s.required?.includes(k))).join("")).join("\n")
     + "\nGlobal flags:" + global.map(k => flag(k, false)).join("") + "\n"
     + "--out <dir> writes <kind>.json and <kind>.md outside the repository and prints only their paths; --quiet prints nothing to stdout, so use it only with --out.\n"
+    + "maat scan --snapshot <file> writes the snapshot to that file; evaluate, policy validate, and flow open read it.\n"
     + "maat flow list lists the flows of the repository that contains the current directory.\n";
 }
 export function parseArgs(argv: string[]): Args {
+  // `maat <command> ... --help` (or -h) prints the usage of that command only.
+  if (argv.some(w => w === "--help" || w === "-h")) {
+    const [first, second] = argv.filter(w => w !== "--help" && w !== "-h");
+    const name = ["catalog","policy","attest","flow"].includes(first ?? "") && second && !second.startsWith("-") ? first + " " + second : first;
+    return { command: "help", positionals: name ? [name] : [], flags: {} };
+  }
   const words = [...argv]; let command = words.shift() ?? "";
   if (["catalog","policy","attest","flow"].includes(command)) command += " " + (words.shift() ?? "");
   const spec = grammar[command];
