@@ -58,3 +58,20 @@ test("help lists every command and usage errors point to it",async()=>{
  expect(r.stdout).toContain("--quiet prints nothing to stdout, so use it only with --out.");
  expect((await main(["nope"])).stderr).toBe("usage_error: unknown command (run maat help)\n");
 });
+test("--help after a command, -h, and maat help <command> print that command's usage",async()=>{
+ for(const argv of [["scan","--help"],["scan","-h"],["help","scan"],["scan","/repo","--cli","codex","--help"]]) {
+  const r=await main(argv);
+  expect(r.code).toBe(0);
+  expect(r.stdout.split("\n")[0]).toBe("maat scan [<arg>] [--cli <claude-code|codex|copilot> ...] [--policy <value>] [--evidence <value> ...] [--snapshot <value>] [--format <markdown|json|both>]");
+  expect(r.stdout).not.toContain("maat evaluate");
+  expect(r.stdout).toContain("Global flags: [--json]");
+  expect(r.stdout).toContain("maat scan --snapshot <file> writes the snapshot to that file; evaluate, policy validate, and flow open read it.");
+ }
+ const flow=await main(["flow","--help"]);
+ const commands=flow.stdout.slice(0,flow.stdout.indexOf("\nGlobal flags:")).split("\n");
+ expect(commands).toHaveLength(9);
+ expect(commands.every(l=>l.startsWith("maat flow "))).toBe(true);
+ expect(flow.stdout).toContain("maat flow approve --flow <value> --scope <value> --by <value>");
+ expect((await main(["help","nope"])).stderr).toBe("usage_error: unknown command (run maat help)\n");
+ expect((await main(["nope","--help"])).stderr).toBe("usage_error: unknown command (run maat help)\n");
+});

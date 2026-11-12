@@ -25,3 +25,10 @@ test("a Task | Command table in AGENTS.md declares the verification rows",()=>{
  expect(entrypointObservations(s,p).flatMap(o=>o.facts).filter(f=>f.subject==="verify.entrypoint-declared@1"&&f.claim==="invocation").map(f=>f.status))
   .toEqual(["holds","fails","holds"]);
 });
+test("a Task | Command table reads plural purposes and skips tables inside code fences",()=>{
+ const p=emptyPolicy(),text=["| Task | Command |","| --- | --- |","| Unit tests | `bun run test:unit` |","| Builds | `bun run build` |","",
+  "```md","| Task | Command |","| --- | --- |","| Example tests | `bun run example` |","```",""].join("\n");
+ const materials=[{path:"CLAUDE.md",text}].map(m=>({...m,sha256:sha256(m.text)}));
+ const s=makeScan({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials},p);
+ expect(detectedEntrypoints(s).map(e=>[e.purpose,e.command])).toEqual([["Unit tests","bun run test:unit"],["Builds","bun run build"]]);
+});
