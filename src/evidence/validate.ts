@@ -17,7 +17,10 @@ export function attestationIssues(a:Attestation,m:Fingerprint[],v:Versions,scope
  if(!a.scope || !a.adapter_version || !Array.isArray(a.materials)||!a.materials.length) return [...out,"missing_materials_or_scope"];
  if(/^(yes|no|true|false|有|沒有|是|否)$/i.test((a.answer??"").trim())) out.push("answer_not_substantive");
  const at=Date.parse(a.attested_at), end=Date.parse(a.expires_at), time=Date.parse(now);
- if(!Number.isFinite(at)||!Number.isFinite(end)||at>time||end<=at) out.push("invalid_time");
+ if(!Number.isFinite(at)) out.push("invalid_time (attested_at is not a date)");
+ else if(at>time) out.push("invalid_time (attested_at "+a.attested_at+" is later than now "+now+")");
+ if(!Number.isFinite(end)) out.push("invalid_time (expires_at is not a date)");
+ else if(end<=at) out.push("invalid_time (expires_at must be later than attested_at)");
  if(end<=time) out.push("expired");
  if(a.catalog_version?.split(".")[0]!==v.catalog_version.split(".")[0]) out.push("catalog_incompatible");
  if(!sameScope(a.scope,scope)) out.push("scope_mismatch");
