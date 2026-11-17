@@ -40,3 +40,9 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(improve).toContain("cannot prevent host bypass");
  expect(improve).toContain("reconcile effects and fingerprints");
 });
+test("diagnose skill explains claims already listed, the remaining-work count, and other diagnostics",async()=>{
+ const diagnose=await Bun.file("skills/maat-diagnose/SKILL.md").text();
+ expect(diagnose).toContain("A claim the template already lists in claims needs no adding");
+ expect(diagnose).toContain("is the number to report as remaining work");
+ expect(diagnose).toContain("Other diagnostics, such as detector_unsupported");
+});
