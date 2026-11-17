@@ -35,3 +35,23 @@ test("a quote must be whole lines found inside the cited range",()=>{
  const scanned={path:m.path,sha256:m.sha256,text};
  expect(attestationIssues(base,[scanned],versions,{},"2026-11-05")).toEqual([]);
 });
+test("invalid_time names the time rule that failed",()=>{
+ const text="Fix login feedback.\n";
+ const m={path:"task.md",text,sha256:sha256(text)};
+ const a:Attestation={check:"prompt.task-spec",claims:["goal"],answer:"The task explicitly requires fixing login feedback.",
+ materials:[{path:m.path,sha256:m.sha256,lines:"1-1",quote:"Fix login feedback."}],
+ scope:{},attested_by:"ray",attested_at:"2026-11-12T02:00:00Z",expires_at:"2027-01-01",catalog_version:"0.1.0",adapter_version:{}};
+ const now="2026-11-12T01:54:00Z";
+ expect(attestationIssues(a,[m],versions,{},now)).toEqual(["invalid_time (attested_at 2026-11-12T02:00:00.000Z is later than now 2026-11-12T01:54:00Z)"]);
+ expect(attestationIssues({...a,attested_at:"soon"},[m],versions,{},now)).toEqual(["invalid_time (attested_at is not a date)"]);
+ expect(attestationIssues({...a,expires_at:"never"},[m],versions,{},now)).toEqual(["invalid_time (attested_at 2026-11-12T02:00:00.000Z is later than now 2026-11-12T01:54:00Z)","invalid_time (expires_at is not a date)"]);
+ expect(attestationIssues({...a,attested_at:"2026-11-01",expires_at:"2026-10-01"},[m],versions,{},now)).toEqual(["invalid_time (expires_at must be later than attested_at)","expired"]);
+});
+test("invalid_time shows attested_at in ISO form, so the reason has no comma",()=>{
+ const text="Fix login feedback.\n";
+ const m={path:"task.md",text,sha256:sha256(text)};
+ const a:Attestation={check:"prompt.task-spec",claims:["goal"],answer:"The task explicitly requires fixing login feedback.",
+ materials:[{path:m.path,sha256:m.sha256,lines:"1-1",quote:"Fix login feedback."}],
+ scope:{},attested_by:"ray",attested_at:"Nov 12, 2026 02:00 UTC",expires_at:"2027-01-01",catalog_version:"0.1.0",adapter_version:{}};
+ expect(attestationIssues(a,[m],versions,{},"2026-11-12T01:54:00Z")).toEqual(["invalid_time (attested_at 2026-11-12T02:00:00.000Z is later than now 2026-11-12T01:54:00Z)"]);
+});

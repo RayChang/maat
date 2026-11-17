@@ -32,10 +32,10 @@ export function detectedEntrypoints(s:ScanData):Entrypoint[] {
    }
   }
   for(let i=0;i<lines.length;i++) {
-   if(!/^\|\s*Task\s*\|\s*Command\s*\|\s*$/i.test(lines[i]!)||!/^\|[-\s|:]+\|\s*$/.test(lines[i+1]??""))continue;
+   if(fenced[i]||!/^\|\s*Task\s*\|\s*Command\s*\|\s*$/i.test(lines[i]!)||!/^\|[-\s|:]+\|\s*$/.test(lines[i+1]??""))continue;
    for(let k=i+2;k<lines.length&&lines[k]!.startsWith("|");k++) {
     const row=/^\|([^|]+)\|([^|]+)\|\s*$/.exec(lines[k]!),purpose=row?.[1]!.trim(),command=/`([^`]+)`/.exec(row?.[2]??"")?.[1]?.trim();
-    if(!purpose||!command||!/\b(test|lint|typecheck|type check|build|verify|check)\b/i.test(purpose))continue;
+    if(!purpose||!command||!/\b(tests?|lint|typecheck|type check|builds?|verify|checks?)\b/i.test(purpose))continue;
     const script=/^(?:bun|npm|pnpm|yarn) run ([a-zA-Z0-9:_-]+)$/.exec(command)?.[1];
     out.push({name:script??command,command,purpose,scope:{},document:m.path,...(script?{manifest:"package.json",script}:{})});
    }

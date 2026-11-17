@@ -24,6 +24,7 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(diagnose).toContain("Run maat help for every command and flag");
  expect(diagnose).toContain("maat finds verification entrypoints in three forms");
  expect(diagnose).toContain("a two-column table headed Task | Command");
+ expect(diagnose).toContain("a step that runs a repository shell script");
  expect(diagnose).toContain("ask the user which commands are CI obligations");
  expect(diagnose).toContain("declared under applicability.loop as status: applicable plus loops");
  expect(diagnose).toContain("Each loop scope is one path or glob string");
@@ -38,4 +39,14 @@ test("skills share source and preserve the two authorization boundaries",async()
  expect(improve).toContain("maat flow template --flow <id> --step <step>");
  expect(improve).toContain("cannot prevent host bypass");
  expect(improve).toContain("reconcile effects and fingerprints");
+});
+test("diagnose skill explains claims already listed, the remaining-work count, and other diagnostics",async()=>{
+ const diagnose=await Bun.file("skills/maat-diagnose/SKILL.md").text();
+ expect(diagnose).toContain("A claim the template already lists in claims needs no adding");
+ expect(diagnose).toContain("is the number to report as remaining work");
+ expect(diagnose).toContain("Other diagnostics, such as detector_unsupported");
+});
+test("diagnose skill's answer example names no project line numbers",async()=>{
+ const diagnose=await Bun.file("skills/maat-diagnose/SKILL.md").text();
+ expect(diagnose).toContain("for example: bun run test runs the unit tests (the test script in package.json), and AGENTS.md tells agents to run it before finishing; cite the real line ranges in the materials.");
 });

@@ -55,3 +55,16 @@ test("user answers give an ask action its location and template values",async()=
   expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{path}})).toThrow("answer_path: "+ask.id);
  expect(()=>buildPlan(report,["prompt.task-spec"],c,{[ask.id]:{values:{other:"x"}}})).toThrow("answer_value: "+ask.id+" other");
 });
+test("plan actions do not repeat the plan's fingerprint list, and older plans that repeat it still parse",async()=>{
+ const {canonical,sha256}=await import("../../src/canonical");
+ const p=emptyPolicy(),c=await loadCatalog("catalog");
+ const s=makeSnapshot({root:"/r",repo_id:"0".repeat(16),complete:true,include:["."],exclude:[],limits:[],diagnostics:[],materials:[]},p);
+ const plan=buildPlan(buildReport(s,p,c,"2026-11-04T00:00:00Z"),[],c);
+ expect(plan.actions).toHaveLength(3);
+ expect(plan.actions.map(a=>"fingerprints" in a)).toEqual([false,false,false]);
+ const unsigned=JSON.parse(JSON.stringify(plan)) as {plan_fingerprint?:string;actions:Record<string,unknown>[]};
+ delete unsigned.plan_fingerprint;
+ unsigned.actions.forEach(a=>{a.fingerprints=[{path:"AGENTS.md",sha256:sha256("# Agents\n")}];});
+ const older={...unsigned,plan_fingerprint:sha256(canonical(unsigned))};
+ expect(parsePlan(JSON.stringify(older))).toEqual(older as unknown as typeof plan);
+});
