@@ -18,7 +18,7 @@ export function attestationIssues(a:Attestation,m:Fingerprint[],v:Versions,scope
  if(/^(yes|no|true|false|有|沒有|是|否)$/i.test((a.answer??"").trim())) out.push("answer_not_substantive");
  const at=Date.parse(a.attested_at), end=Date.parse(a.expires_at), time=Date.parse(now);
  if(!Number.isFinite(at)) out.push("invalid_time (attested_at is not a date)");
- else if(at>time) out.push("invalid_time (attested_at "+a.attested_at+" is later than now "+now+")");
+ else if(at>time) out.push("invalid_time (attested_at "+new Date(at).toISOString()+" is later than now "+now+")");
  if(!Number.isFinite(end)) out.push("invalid_time (expires_at is not a date)");
  else if(end<=at) out.push("invalid_time (expires_at must be later than attested_at)");
  if(end<=time) out.push("expired");
