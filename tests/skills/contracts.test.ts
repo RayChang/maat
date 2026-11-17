@@ -46,3 +46,7 @@ test("diagnose skill explains claims already listed, the remaining-work count, a
  expect(diagnose).toContain("is the number to report as remaining work");
  expect(diagnose).toContain("Other diagnostics, such as detector_unsupported");
 });
+test("diagnose skill's answer example names no project line numbers",async()=>{
+ const diagnose=await Bun.file("skills/maat-diagnose/SKILL.md").text();
+ expect(diagnose).toContain("for example: bun run test runs the unit tests (the test script in package.json), and AGENTS.md tells agents to run it before finishing; cite the real line ranges in the materials.");
+});
